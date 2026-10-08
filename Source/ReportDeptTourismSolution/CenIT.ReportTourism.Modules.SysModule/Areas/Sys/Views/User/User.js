@@ -1,4 +1,4 @@
-﻿var _UserActionURLs = {
+var _UserActionURLs = {
     User_GetData: "/Sys/User/Get"
 };
 var _tableUser;
@@ -85,6 +85,16 @@ function initTableUser() {
                                 "/Sys/User/SendMail/" + data,
                                 "",
                                 "Reset mật khẩu");
+                            if (row.CanEditIndustryPermissions === true) {
+                                var industryTitle = $("#DSUser").attr("data-industry-permissions-title") || "";
+                                // The shared renderer places titles inside an HTML attribute.
+                                industryTitle = industryTitle.replace(/&/g, "&amp;").replace(/"/g, "&quot;")
+                                    .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                                html += _renderButton(true, "IndustryPermissions",
+                                    "fa fa-industry btn btn-default btn-form",
+                                    "/Sys/User/IndustryPermissions/" + data, "", industryTitle);
+                            }
+
                             html += _renderButton(true,
                                 "EnterprisesUser",
                                 "fa fa-object-group btn btn-sm bg-purple btn-form",

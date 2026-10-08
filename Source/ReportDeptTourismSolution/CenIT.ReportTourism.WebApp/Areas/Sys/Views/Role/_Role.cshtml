@@ -5,9 +5,9 @@
 @Html.HiddenFor(model => model.RoleId)
 
 <div class="form-group">
-    @Html.TitleFor(model => model.Name, new { @class = "control-label col-md-3" })
-    <div class="col-md-9">
-        @Html.TextBoxFor(model => model.Name, new { @class = "col-md-9", placeholder = AppProcessor.Messagor.GetMessage("Role_Label_Name") })
+    <div class="col-md-12">
+        @Html.TitleFor(model => model.Name, new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.Name, new { @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("Role_Label_Name") })
         @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
     </div>
 </div>

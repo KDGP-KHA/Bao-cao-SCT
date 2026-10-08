@@ -1,0 +1,31 @@
+﻿@{
+    var prefix = ViewBag.TradePrefix as string ?? "XK";
+}
+
+<div id="TradeCatalogProductModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Đóng"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><i class="fa fa-plus"></i> Thêm mặt hàng @(prefix == "XK" ? "xuất khẩu" : "nhập khẩu")</h4>
+            </div>
+            <form id="AddTradeCatalogProductForm" autocomplete="off">
+                <div class="modal-body">
+                    <input type="hidden" name="prefix" value="@prefix" />
+                    <div class="form-group">
+                        <label>Tên mặt hàng <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="productName" maxlength="500" required="required" autofocus="autofocus" />
+                    </div>
+                    <div class="form-group mb-0">
+                        <label>Đơn vị tính</label>
+                        <input type="text" class="form-control" name="unit" maxlength="500" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

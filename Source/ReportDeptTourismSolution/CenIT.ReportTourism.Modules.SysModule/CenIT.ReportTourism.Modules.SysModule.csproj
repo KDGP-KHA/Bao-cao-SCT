@@ -155,6 +155,7 @@
     <Compile Include="Areas\Sys\Controllers\UserController.cs" />
     <Compile Include="Areas\Sys\Models\AppConfigModel.cs" />
     <Compile Include="Areas\Sys\Models\EnterpriseUserModel.cs" />
+    <Compile Include="Areas\Sys\Models\IndustryPermissionsModel.cs" />
     <Compile Include="Areas\Sys\Models\DigitalSignModel.cs" />
     <Compile Include="Areas\Sys\Models\LoginSmartCAModel.cs" />
     <Compile Include="Areas\Sys\Models\ResetPasswordModel.cs" />
@@ -232,6 +233,7 @@
     <Content Include="Areas\Sys\Views\SysConfigs\_SysConfig.cshtml" />
     <Content Include="Areas\Sys\Views\User\_ConfirmSendMail.cshtml" />
     <Content Include="Areas\Sys\Views\User\_EnterprisePermissions.cshtml" />
+    <Content Include="Areas\Sys\Views\User\_IndustryPermissions.cshtml" />
     <Content Include="Areas\Sys\Views\User\_EnterpriseUser.cshtml" />
     <Content Include="Areas\Sys\Views\Job\_Add.cshtml" />
     <Content Include="Areas\Sys\Views\Job\_Delete.cshtml" />

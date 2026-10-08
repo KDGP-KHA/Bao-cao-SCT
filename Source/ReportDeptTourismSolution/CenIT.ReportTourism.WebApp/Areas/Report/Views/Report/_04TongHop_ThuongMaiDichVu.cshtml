@@ -1,0 +1,44 @@
+﻿@model CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Models.ReportViewModel
+
+@Html.HiddenFor(model => model.ReportKey)
+@Html.HiddenFor(model => model.ReportName)
+@Html.HiddenFor(model => model.ViewName)
+@Html.HiddenFor(model => model.Reporter)
+@*@Html.Hidden("TypeReport", (int)EnumTypeBusiness.Trading)*@
+
+<div id="TongHop_TinhHinhHoatDong_ThuongMaiDichVu">
+    <div class="form-group row">
+        <div class="col-md-4">
+            <label class="control-label">Tháng báo cáo</label>
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                </div>
+                @Html.TextBox("OnMonth", DateTime.Now.ToString("MM/yyyy"), new { @class = "col-md-12", placeholder = "MM/YYYY" })
+            </div>
+        </div>
+        @*<div class="col-md-6">
+            <div class="radio">
+                @Html.RadioButtonFor(m => m.TypeReport, (int)EnumTypeBusiness.Manufacturing, new { id = "Manufacturing" })
+                <label for="Manufacturing" data-toggle="tooltip" data-placement="top" title="Doanh nghiệp sản xuất, kinh doanh">Doanh nghiệp sản xuất, kinh doanh</label>
+            </div>
+            <div class="radio">
+                @Html.RadioButtonFor(m => m.TypeReport, (int)EnumTypeBusiness.Trading, new { id = "Trading" })
+                <label for="Trading" data-toggle="tooltip" data-placement="top" title="Doanh nghiệp thương mại, dịch vụ">Doanh nghiệp thương mại, dịch vụ</label>
+            </div>
+        </div>*@
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#OnMonth").datepicker("remove");
+        $("#OnMonth").datepicker({
+            format: "mm/yyyy",
+            viewMode: "months",
+            minViewMode: "months",
+            autoclose: true
+        });
+        $("#OnMonth").datepicker().trigger("update");
+    });
+</script>

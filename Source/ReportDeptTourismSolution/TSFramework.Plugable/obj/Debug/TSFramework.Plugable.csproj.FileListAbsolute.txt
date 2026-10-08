@@ -27,3 +27,13 @@ F:\Extends\Projects\Gits\BaoCao.SCT\Source\ReportDeptTourismSolution\TSFramework
 F:\Extends\Projects\Gits\BaoCao.SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\obj\Debug\TSFramew.33487EC0.Up2Date
 F:\Extends\Projects\Gits\BaoCao.SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\obj\Debug\TSFramework.Plugable.dll
 F:\Extends\Projects\Gits\BaoCao.SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\obj\Debug\TSFramework.Plugable.pdb
+C:\Git\B-o-c-o-SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\bin\Debug\TSFramework.Plugable.dll
+C:\Git\B-o-c-o-SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\bin\Debug\TSFramework.Plugable.pdb
+C:\Git\B-o-c-o-SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\bin\Debug\TiSun.dll
+C:\Git\B-o-c-o-SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\bin\Debug\Interop.DAO.dll
+C:\Git\B-o-c-o-SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\bin\Debug\TiSun.pdb
+C:\Git\B-o-c-o-SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\obj\Debug\TSFramework.Plugable.csproj.AssemblyReference.cache
+C:\Git\B-o-c-o-SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\obj\Debug\TSFramework.Plugable.csproj.CoreCompileInputs.cache
+C:\Git\B-o-c-o-SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\obj\Debug\TSFramew.33487EC0.Up2Date
+C:\Git\B-o-c-o-SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\obj\Debug\TSFramework.Plugable.dll
+C:\Git\B-o-c-o-SCT\Source\ReportDeptTourismSolution\TSFramework.Plugable\obj\Debug\TSFramework.Plugable.pdb

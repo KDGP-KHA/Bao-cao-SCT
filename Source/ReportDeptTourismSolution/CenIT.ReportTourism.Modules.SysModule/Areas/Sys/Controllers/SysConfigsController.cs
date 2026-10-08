@@ -212,7 +212,7 @@ namespace CenIT.ReportTourism.Modules.SysModule.Areas.Sys.Controllers
 
             var userInfo = _sysUserCache.GetByUserName(UserName);
 
-            if (userInfo == null)
+            if (userInfo == null || userInfo.UserId.GetValueOrDefault() <= 0)
             {
                 var empTitle = AppProcessor.Messagor.GetMessage("User_Title");
                 var response = CreateMessage($"{empTitle} không tồn tại hoặc đã ngưng hoạt động",
@@ -222,6 +222,7 @@ namespace CenIT.ReportTourism.Modules.SysModule.Areas.Sys.Controllers
 
             var loginUser = new AppPrincipalSerializeModel
             {
+                UserId = userInfo.UserId.Value,
                 FullName = userInfo.FullName,
                 UserName = userInfo.UserName,
                 Email = userInfo.Email,

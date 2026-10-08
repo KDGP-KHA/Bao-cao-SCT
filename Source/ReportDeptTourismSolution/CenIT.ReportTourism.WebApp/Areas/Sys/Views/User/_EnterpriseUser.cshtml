@@ -24,67 +24,136 @@
         <div class="col-md-12">
             @Html.TitleFor(model => model.StrEnterprisesSelected, new { @class = "control-label" })
             <div class="col-md-12 row">
-                @Html.DropDownList("SelectedEnterprises", new SelectList(Model.Enterprises, "Value", "Text"),
-                    new { @class = "col-md-12 form-control none-select2", multiple = "multiple", placeholder = AppProcessor.Messagor.GetMessage("Combobox_Select_Enterprises") })
+                @Html.DropDownListFor(model => model.ListEnterpiseIds, new SelectList(Model.Enterprises, "Value", "Text"),
+                    new { @class = "col-md-12 form-control none-select2", multiple = true, placeholder = AppProcessor.Messagor.GetMessage("Combobox_Select_Enterprises") })
             </div>
         </div>
         @Html.HiddenFor(model => model.StrEnterprisesSelected)
     </div>
 
-    <script type="text/javascript" src="~/Contents/Modules/Sys/plugins/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
+    @*<script type="text/javascript" src="~/Contents/Modules/Sys/plugins/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>*@
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('select#SelectedEnterprises').multiselect({
-                maxHeight: 400,
-                numberDisplayed: 1,
-                includeSelectAllOption: true,
-                selectAllNumber: true,
-                selectAllText: 'Chọn/Bỏ chọn tất cả!',
-                nonSelectedText: 'Chọn doanh nghiệp',
-                resetText: "Reset",
-                enableFiltering: true,
-                enableCaseInsensitiveFiltering: true,
-                includeResetOption: true,
-                includeResetDivider: true,
-                filterPlaceholder: 'Tìm kiếm doanh nghiệp',
-                allSelectedText: 'Chọn tất cả',
-                nSelectedText: 'doanh nghiệp đã được chọn',
-                enableClickableOptGroups: true,
-                enableCollapsibleOptGroups: true,
-                onChange: function (option, checked, select) {
-                    var selectedValues = $('input[type="hidden"][id$="StrEnterprisesSelected"]').val();
-                    var arrSelectedValues = selectedValues != undefined && selectedValues.length > 0
-                        ? selectedValues.split(',')
-                        : [];
-                    var idxOpt = arrSelectedValues.indexOf($(option).val());
+<script type="text/javascript">
 
-                    if (checked) {
-                        if (idxOpt < 0) {
-                            arrSelectedValues.push($(option).val());
-                            $('input[type="hidden"][id$="StrEnterprisesSelected"]').val(arrSelectedValues);
-                        }
-                    } else {
-                        if (idxOpt > -1) {
-                            arrSelectedValues.splice(idxOpt, 1);
-                            $('input[type="hidden"][id$="StrEnterprisesSelected"]').val(arrSelectedValues);
-                        }
-                    }
-                },
-                onSelectAll: function () {
-                    var arrSelectedValues = $('select#SelectedEnterprises option:selected')
-                        .map(function (a, item) { return item.value; });
-                    $('input[type="hidden"][id$="StrEnterprisesSelected"]').val(arrSelectedValues.toArray());
-                },
-                onDeselectAll: function (options) {
-                    $('input[type="hidden"][id$="StrEnterprisesSelected"]').val('');
-                }
-            });
+    debugger;
+    $(document).ready(function () {
+        $(document).on('shown.bs.modal', function () {
+            initSelect2();
+        });
+    });
+
+    function initSelect2() {
+        var arrSelectedEnterprise = JSON.parse('@Html.Raw(Model.SelectedEnterprise)');
+        $select = $('select#ListEnterpiseIds');
+        $select.empty().trigger('change');
+        arrSelectedEnterprise.forEach(item => {
+            const option = new Option(
+                item.text,
+                item.id,
+                true,
+                true
+            );
+
+            $select.append(option);
         });
 
-        $(function () {
-            var selectedValues = $('input[type="hidden"][id$="StrEnterprisesSelected"]').val();
-            $('select#SelectedEnterprises').multiselect('select', selectedValues.split(","));
+        $select.select2({
+            placeholder: "Nhập để tìm Doanh nghiệp...",
+            minimumInputLength: 2, // Minimum characters to type before a search triggers
+            allowClear: true,
+            closeOnSelect: false,
+            width: 'element',
+            ajax: {
+                url: '@Url.Action("SearchEnterprise")', // Your API endpoint
+                dataType: 'json',
+                delay: 250, // Wait 250ms after typing stops before sending the request (debouncing)
+
+                // 1. Prepare query parameters sent to the server
+                data: function (params) {
+                    return {
+                        q: params.term, // The search term typed by the user
+                        username: '@Model.UserName', // Pass the username to the server for filtering
+                        page: params.page || 1 // Support for infinite scrolling/pagination
+                    };
+                },
+
+                // 2. Parse the server response into the format Select2 expects
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    // Select2 requires an array of objects, each containing an 'id' and 'text' property
+                    // Maps your server's payload schema to the required Select2 schema
+                    var formattedResults = $.map(data.results, function (item) {
+                        return {
+                            id: item.id,       // Value submitted with the form
+                            text: item.text    // Text displayed in the dropdown
+                        };
+                    });
+
+                    return {
+                        results: formattedResults,
+                        pagination: {
+                            // True if there are more pages of data left to load
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                cache: true
+            }
         });
-    </script>
+    }
+
+        //$(document).ready(function () {
+        //    $('select#ListEnterpiseIds').multiselect({
+        //        maxHeight: 400,
+        //        numberDisplayed: 1,
+        //        includeSelectAllOption: true,
+        //        selectAllNumber: true,
+        //        selectAllText: 'Chọn/Bỏ chọn tất cả!',
+        //        nonSelectedText: 'Chọn doanh nghiệp',
+        //        resetText: "Reset",
+        //        enableFiltering: true,
+        //        enableCaseInsensitiveFiltering: true,
+        //        includeResetOption: true,
+        //        includeResetDivider: true,
+        //        filterPlaceholder: 'Tìm kiếm doanh nghiệp',
+        //        allSelectedText: 'Chọn tất cả',
+        //        nSelectedText: 'doanh nghiệp đã được chọn',
+        //        enableClickableOptGroups: true,
+        //        enableCollapsibleOptGroups: true,
+        //        onChange: function (option, checked, select) {
+        //            var selectedValues = $('input[type="hidden"][id$="StrEnterprisesSelected"]').val();
+        //            var arrSelectedValues = selectedValues != undefined && selectedValues.length > 0
+        //                ? selectedValues.split(',')
+        //                : [];
+        //            var idxOpt = arrSelectedValues.indexOf($(option).val());
+
+        //            if (checked) {
+        //                if (idxOpt < 0) {
+        //                    arrSelectedValues.push($(option).val());
+        //                    $('input[type="hidden"][id$="StrEnterprisesSelected"]').val(arrSelectedValues);
+        //                }
+        //            } else {
+        //                if (idxOpt > -1) {
+        //                    arrSelectedValues.splice(idxOpt, 1);
+        //                    $('input[type="hidden"][id$="StrEnterprisesSelected"]').val(arrSelectedValues);
+        //                }
+        //            }
+        //        },
+        //        onSelectAll: function () {
+        //            var arrSelectedValues = $('select#ListEnterpiseIds option:selected')
+        //                .map(function (a, item) { return item.value; });
+        //            $('input[type="hidden"][id$="StrEnterprisesSelected"]').val(arrSelectedValues.toArray());
+        //        },
+        //        onDeselectAll: function (options) {
+        //            $('input[type="hidden"][id$="StrEnterprisesSelected"]').val('');
+        //        }
+        //    });
+        //});
+
+        //$(function () {
+        //    var selectedValues = $('input[type="hidden"][id$="StrEnterprisesSelected"]').val();
+        //    $('select#ListEnterpiseIds').multiselect('select', selectedValues.split(","));
+        //});
+</script>
 </div>

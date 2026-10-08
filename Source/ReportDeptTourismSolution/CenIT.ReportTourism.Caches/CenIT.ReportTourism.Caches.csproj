@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{44F493FC-AF88-45BB-A5C0-1E23EA5B6C8A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CenIT.ReportTourism.Caches</RootNamespace>
+    <AssemblyName>CenIT.ReportTourism.Caches</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cate\CateEnterpriseRegisterNotifyCache.cs" />
+    <Compile Include="Cate\CateEnterpriseCache.cs" />
+    <Compile Include="Cate\CateDocCache.cs" />
+    <Compile Include="Cate\CateNationalCache.cs" />
+    <Compile Include="Cate\CateProvinceCache.cs" />
+    <Compile Include="Cate\CatePublicCateCache.cs" />
+    <Compile Include="Cate\CateStreetCache.cs" />
+    <Compile Include="Cate\CateTeamCache.cs" />
+    <Compile Include="Cate\CateWardCache.cs" />
+    <Compile Include="Cate\CateBusinessIndustryCache.cs" />
+    <Compile Include="Cate\CateBusinessProductCache.cs" />
+    <Compile Include="Cate\CateEconomicSectorCache.cs" />
+    <Compile Include="Cate\CateEnterpriseStatusCache.cs" />
+    <Compile Include="Cate\CateEnterpriseTypeCache.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Report\ReportExtendInfoCache.cs" />
+    <Compile Include="Report\ReportCache.cs" />
+    <Compile Include="Report\ReportDashboardCache.cs" />
+    <Compile Include="Report\ReportDataImportCache.cs" />
+    <Compile Include="Report\ReportGeneratSaleCache.cs" />
+    <Compile Include="Sys\SysJobCache.cs" />
+    <Compile Include="Sys\SysConfigsCache.cs" />
+    <Compile Include="Sys\SysContentPanelCache.cs" />
+    <Compile Include="Sys\SysFunctionActionCache.cs" />
+    <Compile Include="Sys\SysFunctionCache.cs" />
+    <Compile Include="Sys\SysIPRequestCache.cs" />
+    <Compile Include="Sys\SysLayoutCache.cs" />
+    <Compile Include="Sys\SysMenuCache.cs" />
+    <Compile Include="Sys\SysMessageCache.cs" />
+    <Compile Include="Sys\SysModuleCache.cs" />
+    <Compile Include="Sys\SysPermissionCache.cs" />
+    <Compile Include="Sys\SysRoleCache.cs" />
+    <Compile Include="Sys\SysUserCache.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CenIT.ReportTourism.Biz\CenIT.ReportTourism.Biz.csproj">
+      <Project>{9717A466-E0FA-4093-9E25-A3199F33C2BA}</Project>
+      <Name>CenIT.ReportTourism.Biz</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CenIT.ReportTourism.Models\CenIT.ReportTourism.Models.csproj">
+      <Project>{83FE85EF-EB13-4D47-9663-EC6C76641CE6}</Project>
+      <Name>CenIT.ReportTourism.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TSFramework.Core\TSFramework.Core.csproj">
+      <Project>{04290B90-CB09-4C09-8F26-1BE6728ED3F7}</Project>
+      <Name>TSFramework.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

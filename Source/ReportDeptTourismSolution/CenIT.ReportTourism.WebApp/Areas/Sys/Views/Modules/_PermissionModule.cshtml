@@ -6,104 +6,183 @@
 @Html.HiddenFor(model => model.ModuleId)
 @Html.HiddenFor(model => model.ModuleName)
 
-<link rel="stylesheet" href="~/Contents/Modules/Sys/plugins/bootstrap-multiselect/css/bootstrap-multiselect.css" type="text/css"/>
+<link rel="stylesheet" href="~/Contents/Modules/Sys/plugins/bootstrap-multiselect/css/bootstrap-multiselect.css" type="text/css" />
 
 <div id="PermissionModule">
     <div class="form-group">
-        @Html.TitleFor(model => model.ModuleName, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextBoxFor(model => model.ModuleName, new { @class = "col-md-7", disabled = true, placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_ModuleName") })
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.ModuleName, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.ModuleName, new { @class = "col-md-12", disabled = true, placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_ModuleName") })
             @Html.ValidationMessageFor(model => model.ModuleName, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
-        @Html.TitleFor(model => model.Description, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextAreaFor(model => model.Description, new { rows = "3", @class = "col-md-8", disabled = true, placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_Description") })
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.Description, new { @class = "control-label" })
+            @Html.TextAreaFor(model => model.Description, new { rows = "2", @class = "col-md-12", disabled = true, placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_Description") })
             @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
         </div>
     </div>
     @*<div class="form-group" id="PermissionUser">
-        @Html.TitleFor(model => model.Users, new { @class = "control-label col-md-3" })
-        <div class="col-sm-9">
-            @Html.HiddenFor(model => model.PermissionUserIDs)
-            @Html.DropDownList("SelectedUsers", new SelectList(Model.Users, "Value", "Text"),
-                new { @class = "form-control col-md-10 chosen-select", multiple = "multiple", data_placeholder = AppProcessor.Messagor.GetMessage("Combobox_Select_User") })
-        </div>
-        @Html.ValidationMessageFor(model => model.PermissionUserIDs, "", new { @class = "text-danger" })
-    </div>*@
+            @Html.TitleFor(model => model.Users, new { @class = "control-label" })
+            <div class="col-sm-9">
+                @Html.HiddenFor(model => model.PermissionUserIDs)
+                @Html.DropDownList("SelectedUsers", new SelectList(Model.Users, "Value", "Text"),
+                    new { @class = "form-control col-md-10 chosen-select", multiple = "multiple", data_placeholder = AppProcessor.Messagor.GetMessage("Combobox_Select_User") })
+            </div>
+            @Html.ValidationMessageFor(model => model.PermissionUserIDs, "", new { @class = "text-danger" })
+        </div>*@
     <div class="form-group">
-        @Html.TitleFor(model => model.Users, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.DropDownList("SelectedUsers", new SelectList(Model.Users, "Value", "Text"),
-                new { @class = "form-control col-md-10 none-select2", multiple = "multiple", placeholder = AppProcessor.Messagor.GetMessage("Combobox_Select_User") })
+        @*<div class="col-md-12 row">
+                @Html.TitleFor(model => model.Users, new { @class = "control-label" })
+                @Html.DropDownList("SelectedUsers", new SelectList(Model.Users, "Value", "Text"),
+                    new { @class = "form-control col-md-10 none-select2", multiple = "multiple", placeholder = AppProcessor.Messagor.GetMessage("Combobox_Select_User") })
+            </div>
+            @Html.HiddenFor(model => model.PermissionUserIDs)*@
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.ListUserIds, new { @class = "control-label" })
+            <div class="col-md-12 row">
+                @Html.DropDownListFor(model => model.ListUserIds, new SelectList(Model.Users, "Value", "Text"),
+                    new { @class = "col-md-12 form-control none-select2", multiple = true, placeholder = AppProcessor.Messagor.GetMessage("Combobox_Select_User") })
+            </div>
         </div>
-        @Html.HiddenFor(model => model.PermissionUserIDs)
+        @Html.HiddenFor(model => model.PermissionUserIds)
     </div>
 </div>
 
-@*<script type="text/javascript">
-    $(function() {
-        $('#PermissionModule #SelectedUsers').val(("@Model.PermissionUserIDs").split(','));
-        $('#PermissionModule #SelectedUsers').select2({ no_results_text: "@AppProcessor.Messagor.GetMessage("Common_NotFound")" }).change(function(item) {
-            var val = $('#PermissionModule select[id$=SelectedUsers] option:selected').map(function() { return this.value }).get().join(",");
-            $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val(val);
+<script type="text/javascript">
+    debugger;
+    $(document).ready(function () {
+        $(document).on('shown.bs.modal', function () {
+            initSelect2();
         });
     });
-</script>*@
-<script type="text/javascript" src="~/Contents/Modules/Sys/plugins/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
 
-<script type="text/javascript">
-    $(document).ready(function() {
-        $('#PermissionModule select#SelectedUsers').multiselect({
-            maxHeight: 400,
-            numberDisplayed: 1,
-            includeSelectAllOption: true,
-            selectAllNumber: true,
-            selectAllText: 'Chọn tất cả!',
-            nonSelectedText: 'Chọn người dùng',
-            resetText: "Bỏ chọn tất cả",
-            enableFiltering: true,
-            enableCaseInsensitiveFiltering: true,
-            includeResetOption: true,
-            includeResetDivider: true,
-            filterPlaceholder: 'Tìm kiếm người dùng',
-            allSelectedText: 'Chọn tất cả',
-            nSelectedText: 'người dùng đã được chọn',
-            enableClickableOptGroups: true,
-            enableCollapsibleOptGroups: true,
-            onChange: function(option, checked, select) {
-                var selectedValues = $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val();
-                var arrSelectedValues = selectedValues != undefined && selectedValues.length > 0
-                    ? selectedValues.split(',')
-                    : [];
-                var idxOpt = arrSelectedValues.indexOf($(option).val());
+    function initSelect2() {
+        var arrSelectedUser = JSON.parse('@Html.Raw(Model.SelectedUser)');
+        $select = $('select#ListUserIds');
+        $select.empty().trigger('change');
+        arrSelectedUser.forEach(item => {
+            const option = new Option(
+                item.text,
+                item.id,
+                true,
+                true
+            );
 
-                if (checked) {
-                    if (idxOpt < 0) {
-                        arrSelectedValues.push($(option).val());
-                        $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val(arrSelectedValues);
-                    }
-                } else {
-                    if (idxOpt > -1) {
-                        arrSelectedValues.splice(idxOpt, 1);
-                        $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val(arrSelectedValues);
-                    }
-                }
-            },
-            onSelectAll: function() {
-                var arrSelectedValues = $('#PermissionModule select#SelectedUsers option:selected')
-                    .map(function(a, item) { return item.value; });
-                $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val(arrSelectedValues.toArray());
-            },
-            onDeselectAll: function() {
-                $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val('');
+            $select.append(option);
+        });
+
+        $select.select2({
+            placeholder: "Nhập để tìm Tài khoản...",
+            minimumInputLength: 2, // Minimum characters to type before a search triggers
+            allowClear: true,
+            closeOnSelect: false,
+            width: 'element',
+            ajax: {
+                url: '@Url.Action("SearchUser")', // Your API endpoint
+                dataType: 'json',
+                delay: 250, // Wait 250ms after typing stops before sending the request (debouncing)
+
+                // 1. Prepare query parameters sent to the server
+                data: function (params) {
+                    return {
+                        q: params.term, // The search term typed by the user
+                        moduleId: '@Model.ModuleId',
+                        page: params.page || 1 // Support for infinite scrolling/pagination
+                    };
+                },
+
+                // 2. Parse the server response into the format Select2 expects
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    // Select2 requires an array of objects, each containing an 'id' and 'text' property
+                    // Maps your server's payload schema to the required Select2 schema
+                    var formattedResults = $.map(data.results, function (item) {
+                        return {
+                            id: item.id,       // Value submitted with the form
+                            text: item.text    // Text displayed in the dropdown
+                        };
+                    });
+
+                    return {
+                        results: formattedResults,
+                        pagination: {
+                            // True if there are more pages of data left to load
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                cache: true
             }
         });
-    });
-
-    $(function() {
-        var selectedValues = $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val();
-        $('#PermissionModule select#SelectedUsers').multiselect('select', selectedValues.split(","));
-    });
+    }
 </script>
+
+@*<script type="text/javascript">
+        $(function() {
+            $('#PermissionModule #SelectedUsers').val(("@Model.PermissionUserIDs").split(','));
+            $('#PermissionModule #SelectedUsers').select2({ no_results_text: "@AppProcessor.Messagor.GetMessage("Common_NotFound")" }).change(function(item) {
+                var val = $('#PermissionModule select[id$=SelectedUsers] option:selected').map(function() { return this.value }).get().join(",");
+                $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val(val);
+            });
+        });
+    </script>*@
+
+@*<script type="text/javascript" src="~/Contents/Modules/Sys/plugins/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#PermissionModule select#SelectedUsers').multiselect({
+                maxHeight: 400,
+                numberDisplayed: 1,
+                includeSelectAllOption: true,
+                selectAllNumber: true,
+                selectAllText: 'Chọn tất cả!',
+                nonSelectedText: 'Chọn người dùng',
+                resetText: "Bỏ chọn tất cả",
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                filterPlaceholder: 'Tìm kiếm người dùng',
+                allSelectedText: 'Chọn tất cả',
+                nSelectedText: 'người dùng đã được chọn',
+                enableClickableOptGroups: true,
+                enableCollapsibleOptGroups: true,
+                onChange: function(option, checked, select) {
+                    var selectedValues = $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val();
+                    var arrSelectedValues = selectedValues != undefined && selectedValues.length > 0
+                        ? selectedValues.split(',')
+                        : [];
+                    var idxOpt = arrSelectedValues.indexOf($(option).val());
+
+                    if (checked) {
+                        if (idxOpt < 0) {
+                            arrSelectedValues.push($(option).val());
+                            $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val(arrSelectedValues);
+                        }
+                    } else {
+                        if (idxOpt > -1) {
+                            arrSelectedValues.splice(idxOpt, 1);
+                            $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val(arrSelectedValues);
+                        }
+                    }
+                },
+                onSelectAll: function() {
+                    var arrSelectedValues = $('#PermissionModule select#SelectedUsers option:selected')
+                        .map(function(a, item) { return item.value; });
+                    $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val(arrSelectedValues.toArray());
+                },
+                onDeselectAll: function() {
+                    $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val('');
+                }
+            });
+        });
+
+        $(function() {
+            var selectedValues = $('#PermissionModule input[type="hidden"][id$="PermissionUserIDs"]').val();
+            $('#PermissionModule select#SelectedUsers').multiselect('select', selectedValues.split(","));
+        });
+    </script>*@

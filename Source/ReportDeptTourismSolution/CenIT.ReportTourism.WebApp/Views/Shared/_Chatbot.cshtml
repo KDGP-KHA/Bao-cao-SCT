@@ -1,0 +1,20 @@
+@using CenIT.ReportTourism.WebApp.Chatbot
+@{
+    // Never load Chatbot resources on the public/login layout. Session verifies the cookie again.
+    var showChatbot = Request.IsAuthenticated && ChatbotOptions.Enabled;
+    ChatbotOptions chatbotOptions = null;
+    if (showChatbot)
+    {
+        try { chatbotOptions = ChatbotOptions.Load(); }
+        catch (System.Configuration.ConfigurationErrorsException) { showChatbot = false; }
+    }
+}
+@if (showChatbot)
+{
+    <div id="sct-chatbot" hidden
+         data-session-url="@Url.Action("Session", "Chatbot", new { area = "" })"
+         data-loader-url="@chatbotOptions.WidgetLoaderUrl.AbsoluteUri">
+        @Html.AntiForgeryToken()
+    </div>
+    <script src="@Url.Content("~/Contents/js/chatbot.js")" defer></script>
+}

@@ -84,10 +84,11 @@ namespace CenIT.ReportTourism.AppMembership
             var userModel = _userApi.Login(email, password);
             if (userModel == null) return false;
             var user = (AppMembershipUser) GetUser(userModel.UserName, false);
-            if (user == null) return false;
+            if (user == null || user.UserId.GetValueOrDefault() <= 0) return false;
             if (HttpContext.Current == null) return false;
             var loginUser = new AppPrincipalSerializeModel
             {
+                UserId = user.UserId.Value,
                 FullName = user.FullName,
                 UserName = user.UserName,
                 Email = user.Email,

@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 using CenIT.ReportTourism.Caches.Cate;
+using CenIT.ReportTourism.Biz.Report;
 using CenIT.ReportTourism.Core.Apps;
 using CenIT.ReportTourism.Core.Conts;
 using CenIT.ReportTourism.Models.Cate;
@@ -22,12 +23,17 @@ namespace CenIT.ReportTourism.Modules.CateModule.Controllers
 {
     public class MyEnterpriseController : AppController
     {
+        private ReportIndustryScope IndustryScope
+        {
+            get { return ReportIndustryScope.Current ?? ReportIndustryScope.Begin(User.UserName); }
+        }
+
         // GET: MyEnterprise
         public ActionResult Index()
         {
             var searchModel = new MyEnterpiseSearchModel
             {
-                ListEnterprises = _enterpriseCache.GetViaUser(User.UserName)
+                ListEnterprises = IndustryScope.GetEnterprises()
                     .Select(e => new ListItem(e.BusinessName, e.EnterpriseId.ToString())).ToList()
             };
             return View(searchModel);
@@ -59,6 +65,7 @@ namespace CenIT.ReportTourism.Modules.CateModule.Controllers
         [ActionType(Type = EnumActionType.Edit)]
         public ActionResult Info(int id = 0)
         {
+            IndustryScope.Demand(id);
             var model = _enterpriseCache.GetById(id);
             if (model == null)
                 return Json(new
@@ -112,6 +119,7 @@ namespace CenIT.ReportTourism.Modules.CateModule.Controllers
         [ActionType(Type = EnumActionType.Edit)]
         public ActionResult Info(CateEnterpriseModel model)
         {
+            IndustryScope.Demand(model.EnterpriseId);
             // Tạm thời bỏ ràng buộc bắt buộc nhập "Lý do"
             RemoveModelState("Reason");
 

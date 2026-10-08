@@ -187,6 +187,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Report\Controllers\DashboardController.cs" />
+    <Compile Include="Areas\Report\Controllers\ExtendInfoController.cs" />
+    <Compile Include="Areas\Report\Controllers\IndustryScopedReportController.cs" />
     <Compile Include="Areas\Report\Controllers\HomeController.cs" />
     <Compile Include="Areas\Report\Controllers\ImportController.cs" />
     <Compile Include="Areas\Report\Controllers\ReportController.cs" />
@@ -258,6 +260,7 @@
     <Content Include="Areas\Report\Views\Dashboard\Warnings.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\Progress.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_DashboardFilters.cshtml" />
+    <Content Include="Areas\Report\Views\Dashboard\_DashboardEnterpriseDetail.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_DashboardNavigation.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_EnterpriseMovement.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_DashboardAlerts.cshtml" />
@@ -361,6 +364,10 @@
     <ProjectReference Include="..\CenIT.Libs.VNPTSmartCA\CenIT.Libs.VNPTSmartCA.csproj">
       <Project>{2BEFDA80-7083-4A2A-8092-6F7AE38A5675}</Project>
       <Name>CenIT.Libs.VNPTSmartCA</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CenIT.ReportTourism.Biz\CenIT.ReportTourism.Biz.csproj">
+      <Project>{9717A466-E0FA-4093-9E25-A3199F33C2BA}</Project>
+      <Name>CenIT.ReportTourism.Biz</Name>
     </ProjectReference>
     <ProjectReference Include="..\CenIT.ReportTourism.Caches\CenIT.ReportTourism.Caches.csproj">
       <Project>{44F493FC-AF88-45BB-A5C0-1E23EA5B6C8A}</Project>

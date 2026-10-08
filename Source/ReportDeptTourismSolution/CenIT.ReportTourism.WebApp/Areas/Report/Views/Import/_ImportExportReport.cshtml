@@ -1,0 +1,691 @@
+﻿@model List<CenIT.ReportTourism.Models.Report.ReportDataImportModel>
+
+@{
+    var listNationals = ViewBag.ListNationals as List<CenIT.ReportTourism.Models.Cate.CateNationalModel>
+                         ?? new List<CenIT.ReportTourism.Models.Cate.CateNationalModel>();
+
+    DateTime forMonth = ViewBag.ForMonth is DateTime ? (DateTime)ViewBag.ForMonth : DateTime.Now;
+    int currentMonth = forMonth.Month;
+    int prevMonth = currentMonth == 1 ? 12 : currentMonth - 1;
+    int prevYear = currentMonth == 1 ? forMonth.Year - 1 : forMonth.Year;
+
+    var rowNumber = 1;
+    bool isEdit = ViewBag.IsEdit is bool && (bool)ViewBag.IsEdit;
+}
+
+@functions {
+    public static string FormatNumber(double? val)
+    {
+        if (!val.HasValue) return "";
+        return val.Value.ToString("#,##0.##", new System.Globalization.CultureInfo("vi-VN"));
+    }
+}
+
+<div class="row">
+    <div class="col-md-12 table-responsive">
+        <input type="hidden" name="ImportExportReport" value="true" />
+        <style>
+            #ImportExportDataReport th, #ImportExportDataReport td {
+                vertical-align: middle !important;
+                padding: 6px 8px;
+            }
+            #ImportExportDataReport .ie-summary td {
+                font-weight: 700;
+                background-color: #f9fbfd;
+            }
+            #ImportExportDataReport .ie-header-row td {
+                font-weight: 600;
+                background-color: #fdfdfd;
+            }
+            #ImportExportDataReport .ie-readonly-input {
+                background-color: #f0f3f5 !important;
+                cursor: not-allowed;
+                font-weight: 700;
+            }
+            .btn-remove-ie-row {
+                cursor: pointer;
+                margin-left: 6px;
+                font-size: 14px;
+            }
+            .btn-remove-ie-row:hover {
+                color: #a94442 !important;
+            }
+            .ie-picker-container {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                width: 100%;
+            }
+            .ie-product-input {
+                width: 45%;
+                min-width: 100px;
+            }
+            .ie-select-wrapper {
+                flex: 1;
+                min-width: 120px;
+            }
+        </style>
+
+
+        <table id="ImportExportDataReport" class="table table-bordered table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th rowspan="3" width="36%" style="vertical-align: middle; text-align: center;">Tên chỉ tiêu</th>
+                    <th colspan="4" width="64%" class="text-center">Năm @forMonth.Year</th>
+                </tr>
+                <tr>
+                    <th colspan="2" width="32%" class="text-center">Thực hiện tháng @prevMonth.ToString("D2")</th>
+                    <th colspan="2" width="32%" class="text-center">Ước thực hiện tháng @currentMonth.ToString("D2")</th>
+                </tr>
+                <tr>
+                    <th width="16%" class="text-center">Lượng</th>
+                    <th width="16%" class="text-center">Trị giá (USD)</th>
+                    <th width="16%" class="text-center">Lượng</th>
+                    <th width="16%" class="text-center">Trị giá (USD)</th>
+                </tr>
+                <tr class="text-center" style="background-color: #f7f7f7; font-size: 12px;">
+                    <td>A</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var fobRow = Model.FirstOrDefault(x => x.Code == "FOB");
+                    var xkTtRow = Model.FirstOrDefault(x => x.Code == "XK_TT");
+                    var xkQgHeader = Model.FirstOrDefault(x => x.Code == "XK_QG_HEADER");
+                    var xkMhHeader = Model.FirstOrDefault(x => x.Code == "XK_MH_HEADER");
+                    var utXkRow = Model.FirstOrDefault(x => x.Code == "UT_XK");
+                    var utMhHeader = Model.FirstOrDefault(x => x.Code == "UT_MH_HEADER");
+
+                    var countryRows = Model.Where(x => !string.IsNullOrWhiteSpace(x.Code) &&
+                        !string.Equals(x.Code, "XK_QG_HEADER", StringComparison.OrdinalIgnoreCase) &&
+                        (x.Code.StartsWith("XK_QG_", StringComparison.OrdinalIgnoreCase) || (x.Level ?? "").StartsWith("1.1."))).ToList();
+
+                    var productCountryRows = Model.Where(x => !string.IsNullOrWhiteSpace(x.Code) &&
+                        !string.Equals(x.Code, "XK_MH_HEADER", StringComparison.OrdinalIgnoreCase) &&
+                        (x.Code.StartsWith("XK_MH_", StringComparison.OrdinalIgnoreCase) || (x.Level ?? "").StartsWith("1.2."))).ToList();
+
+                    var utHeaderIdx = Model.FindIndex(x => x.Code == "UT_MH_HEADER");
+                    var trustRows = utHeaderIdx >= 0
+                        ? Model.Skip(utHeaderIdx + 1).Where(x => !string.IsNullOrWhiteSpace(x.Code)).ToList()
+                        : new List<CenIT.ReportTourism.Models.Report.ReportDataImportModel>();
+                }
+
+                @* 1. TỔNG GIÁ TRỊ (FOB) = I + II *@
+                <tr class="ie-summary" data-code="FOB">
+                    <td class="text-left">
+                        @Html.Hidden("Target_" + rowNumber, fobRow != null ? fobRow.Targets : "TỔNG GIÁ TRỊ (FOB) = I + II")
+                        @Html.Hidden("Unit_" + rowNumber, "Kg")
+                        @Html.Hidden("Index_" + rowNumber, fobRow != null && fobRow.Index.HasValue ? fobRow.Index.Value : 0)
+                        @Html.Hidden("Level_" + rowNumber, "0")
+                        @Html.Hidden("Code_" + rowNumber, "FOB")
+                        <strong>TỔNG GIÁ TRỊ (FOB) = I + II</strong>
+                    </td>
+                    <td><input type="text" id="PerformPreviousPeriod_@rowNumber" name="PerformPreviousPeriod_@rowNumber" value="@FormatNumber(fobRow != null ? fobRow.PerformPreviousPeriod : null)" class="form-control text-right number-separator ie-readonly-input ie-fob-prev-qty" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                    <td><input type="text" id="CompareSamePeriodLastYear_@rowNumber" name="CompareSamePeriodLastYear_@rowNumber" value="@FormatNumber(fobRow != null ? fobRow.ComparedSamePeriodLastYear : null)" class="form-control text-right number-separator ie-readonly-input ie-fob-prev-val" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                    <td><input type="text" id="PerformInPeriod_@rowNumber" name="PerformInPeriod_@rowNumber" value="@FormatNumber(fobRow != null ? fobRow.PerformInPeriod : null)" class="form-control text-right number-separator ie-readonly-input ie-fob-curr-qty" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                    <td><input type="text" id="AccumulatedBeginingOfYear_@rowNumber" name="AccumulatedBeginingOfYear_@rowNumber" value="@FormatNumber(fobRow != null ? fobRow.AccumulatedBeginingOfYear : null)" class="form-control text-right number-separator ie-readonly-input ie-fob-curr-val" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                </tr>
+                @{ rowNumber++; }
+
+                @* 2. I.Tổng trị giá xuất khẩu trực tiếp *@
+                <tr class="ie-summary" data-code="XK_TT">
+                    <td class="text-left">
+                        @Html.Hidden("Target_" + rowNumber, xkTtRow != null ? xkTtRow.Targets : "I.Tổng trị giá xuất khẩu trực tiếp")
+                        @Html.Hidden("Unit_" + rowNumber, "Kg")
+                        @Html.Hidden("Index_" + rowNumber, xkTtRow != null && xkTtRow.Index.HasValue ? xkTtRow.Index.Value : 1)
+                        @Html.Hidden("Level_" + rowNumber, "1")
+                        @Html.Hidden("Code_" + rowNumber, "XK_TT")
+                        <strong>I.Tổng trị giá xuất khẩu trực tiếp</strong>
+                    </td>
+                    <td><input type="text" id="PerformPreviousPeriod_@rowNumber" name="PerformPreviousPeriod_@rowNumber" value="@FormatNumber(xkTtRow != null ? xkTtRow.PerformPreviousPeriod : null)" class="form-control text-right number-separator ie-readonly-input ie-xk-prev-qty" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                    <td><input type="text" id="CompareSamePeriodLastYear_@rowNumber" name="CompareSamePeriodLastYear_@rowNumber" value="@FormatNumber(xkTtRow != null ? xkTtRow.ComparedSamePeriodLastYear : null)" class="form-control text-right number-separator ie-readonly-input ie-xk-prev-val" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                    <td><input type="text" id="PerformInPeriod_@rowNumber" name="PerformInPeriod_@rowNumber" value="@FormatNumber(xkTtRow != null ? xkTtRow.PerformInPeriod : null)" class="form-control text-right number-separator ie-readonly-input ie-xk-curr-qty" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                    <td><input type="text" id="AccumulatedBeginingOfYear_@rowNumber" name="AccumulatedBeginingOfYear_@rowNumber" value="@FormatNumber(xkTtRow != null ? xkTtRow.AccumulatedBeginingOfYear : null)" class="form-control text-right number-separator ie-readonly-input ie-xk-curr-val" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                </tr>
+                @{ rowNumber++; }
+
+                @* 3. Chia theo nước cuối cùng hàng đến (Header) *@
+                <tr class="ie-header-row" data-code="XK_QG_HEADER">
+                    <td class="text-left" colspan="5">
+                        @Html.Hidden("Target_" + rowNumber, "Chia theo nước cuối cùng hàng đến")
+                        @Html.Hidden("Unit_" + rowNumber, "")
+                        @Html.Hidden("Index_" + rowNumber, rowNumber - 1)
+                        @Html.Hidden("Level_" + rowNumber, "1.1")
+                        @Html.Hidden("Code_" + rowNumber, "XK_QG_HEADER")
+                        <span style="font-weight: 600;">Chia theo nước cuối cùng hàng đến</span>
+                    </td>
+                </tr>
+                @{ rowNumber++; }
+
+                @* Saved country rows *@
+                @foreach (var cRow in countryRows)
+                {
+                    var natCode = (cRow.Code ?? "").Replace("XK_QG_", "");
+                    var selectedNation = listNationals.FirstOrDefault(n => n.NationalCode == natCode);
+                    var natName = selectedNation != null ? selectedNation.NationalName : (cRow.Targets ?? "").TrimStart('-', ' ');
+                    <tr class="ie-row ie-country-row" data-group="XK_QG">
+                        <td class="text-left">
+                            @Html.Hidden("Target_" + rowNumber, "- " + natName)
+                            @Html.Hidden("Unit_" + rowNumber, cRow.Unit ?? "Kg")
+                            @Html.Hidden("Index_" + rowNumber, cRow.Index.HasValue ? cRow.Index.Value : rowNumber - 1)
+                            @Html.Hidden("Level_" + rowNumber, cRow.Level ?? "1.1")
+                            @Html.Hidden("Code_" + rowNumber, cRow.Code)
+                            @if (isEdit)
+                            {
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding-left: 10px;">
+                                    <span style="font-weight: 500;">- @natName</span>
+                                    <a href="javascript:void(0)" class="text-danger btn-remove-ie-row" title="Xóa" style="flex-shrink: 0;"><i class="fa fa-trash"></i></a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="ie-picker-container">
+                                    <span style="font-weight: bold;">-</span>
+                                    <div class="ie-select-wrapper">
+                                        <select class="form-control ie-country-select" style="width: 100%;"><option value="@natCode" data-name="@natName" selected="selected">@natName</option></select>
+                                    </div>
+                                    <a href="javascript:void(0)" class="text-danger btn-remove-ie-row" title="Xóa"><i class="fa fa-trash"></i></a>
+                                </div>
+                            }
+                        </td>
+                        <td><input type="text" name="PerformPreviousPeriod_@rowNumber" value="@FormatNumber(cRow.PerformPreviousPeriod)" class="form-control text-right number-separator ie-val ie-prev-qty" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                        <td><input type="text" name="CompareSamePeriodLastYear_@rowNumber" value="@FormatNumber(cRow.ComparedSamePeriodLastYear)" class="form-control text-right number-separator ie-val ie-prev-val" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                        <td><input type="text" name="PerformInPeriod_@rowNumber" value="@FormatNumber(cRow.PerformInPeriod)" class="form-control text-right number-separator ie-val ie-curr-qty" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                        <td><input type="text" name="AccumulatedBeginingOfYear_@rowNumber" value="@FormatNumber(cRow.AccumulatedBeginingOfYear)" class="form-control text-right number-separator ie-val ie-curr-val" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                    </tr>
+                    rowNumber++;
+                }
+
+                <tr id="RowAddCountry">
+                    <td colspan="5" class="text-left">
+                        <button type="button" class="btn btn-sm btn-primary" id="BtnAddCountry">
+                            <i class="fa fa-plus"></i> Thêm dữ liệu
+                        </button>
+                    </td>
+                </tr>
+
+                @* 4. Mặt hàng xuất khẩu trực tiếp chia theo nước cuối cùng hàng đến (Header) *@
+                <tr class="ie-header-row" data-code="XK_MH_HEADER">
+                    <td class="text-left" colspan="5">
+                        @Html.Hidden("Target_" + rowNumber, "Mặt hàng xuất khẩu trực tiếp chia theo nước cuối cùng hàng đến")
+                        @Html.Hidden("Unit_" + rowNumber, "")
+                        @Html.Hidden("Index_" + rowNumber, rowNumber - 1)
+                        @Html.Hidden("Level_" + rowNumber, "1.2")
+                        @Html.Hidden("Code_" + rowNumber, "XK_MH_HEADER")
+                        <span style="font-weight: 600;">Mặt hàng xuất khẩu trực tiếp chia theo nước cuối cùng hàng đến</span>
+                    </td>
+                </tr>
+                @{ rowNumber++; }
+
+                @* Saved product-country rows *@
+                @foreach (var pcRow in productCountryRows)
+                {
+                    var rawTarget = (pcRow.Targets ?? "").TrimStart('-', ' ');
+                    var parts = rawTarget.Split(new[] { " / " }, StringSplitOptions.None);
+                    var prodName = parts.Length > 0 ? parts[0].Trim() : "";
+                    var cntryName = parts.Length > 1 ? parts[1].Trim() : "";
+                    var displayText = string.IsNullOrEmpty(cntryName) ? prodName : (prodName + " / " + cntryName);
+                    <tr class="ie-row ie-country-product-row" data-group="XK_MH">
+                        <td class="text-left">
+                            @Html.Hidden("Target_" + rowNumber, "- " + displayText)
+                            @Html.Hidden("Unit_" + rowNumber, "Kg")
+                            @Html.Hidden("Index_" + rowNumber, pcRow.Index.HasValue ? pcRow.Index.Value : rowNumber - 1)
+                            @Html.Hidden("Level_" + rowNumber, pcRow.Level ?? "1.2")
+                            @Html.Hidden("Code_" + rowNumber, pcRow.Code)
+                            @if (isEdit)
+                            {
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding-left: 10px;">
+                                    <span style="font-weight: 500;">- @displayText</span>
+                                    <a href="javascript:void(0)" class="text-danger btn-remove-ie-row" title="Xóa" style="flex-shrink: 0;"><i class="fa fa-trash"></i></a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="ie-picker-container">
+                                    <span style="font-weight: bold;">-</span>
+                                    <select class="form-control ie-product-select" style="width:45%;"><option value="@prodName" selected="selected">@prodName</option></select>
+                                    <span>/</span>
+                                    <div class="ie-select-wrapper">
+                                        <select class="form-control ie-country-select" style="width: 100%;"><option value="@cntryName" data-name="@cntryName" selected="selected">@cntryName</option></select>
+                                    </div>
+                                    <a href="javascript:void(0)" class="text-danger btn-remove-ie-row" title="Xóa"><i class="fa fa-trash"></i></a>
+                                </div>
+                            }
+                        </td>
+                        <td><input type="text" name="PerformPreviousPeriod_@rowNumber" value="@FormatNumber(pcRow.PerformPreviousPeriod)" class="form-control text-right number-separator ie-val" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                        <td><input type="text" name="CompareSamePeriodLastYear_@rowNumber" value="@FormatNumber(pcRow.ComparedSamePeriodLastYear)" class="form-control text-right number-separator ie-val" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                        <td><input type="text" name="PerformInPeriod_@rowNumber" value="@FormatNumber(pcRow.PerformInPeriod)" class="form-control text-right number-separator ie-val" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                        <td><input type="text" name="AccumulatedBeginingOfYear_@rowNumber" value="@FormatNumber(pcRow.AccumulatedBeginingOfYear)" class="form-control text-right number-separator ie-val" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                    </tr>
+                    rowNumber++;
+                }
+
+                <tr id="RowAddProductCountry">
+                    <td colspan="5" class="text-left">
+                        <button type="button" class="btn btn-sm btn-primary" id="BtnAddProductCountry">
+                            <i class="fa fa-plus"></i> Thêm dữ liệu
+                        </button>
+                    </td>
+                </tr>
+
+                @* 5. II. Trị giá ủy thác xuất khẩu *@
+                <tr class="ie-summary" data-code="UT_XK">
+                    <td class="text-left">
+                        @Html.Hidden("Target_" + rowNumber, utXkRow != null ? utXkRow.Targets : "II. Trị giá ủy thác xuất khẩu")
+                        @Html.Hidden("Unit_" + rowNumber, "Kg")
+                        @Html.Hidden("Index_" + rowNumber, utXkRow != null && utXkRow.Index.HasValue ? utXkRow.Index.Value : rowNumber - 1)
+                        @Html.Hidden("Level_" + rowNumber, "2")
+                        @Html.Hidden("Code_" + rowNumber, "UT_XK")
+                        <strong>II. Trị giá ủy thác xuất khẩu</strong>
+                    </td>
+                    <td><input type="text" id="PerformPreviousPeriod_@rowNumber" name="PerformPreviousPeriod_@rowNumber" value="@FormatNumber(utXkRow != null ? utXkRow.PerformPreviousPeriod : null)" class="form-control text-right number-separator ie-readonly-input ie-ut-prev-qty" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                    <td><input type="text" id="CompareSamePeriodLastYear_@rowNumber" name="CompareSamePeriodLastYear_@rowNumber" value="@FormatNumber(utXkRow != null ? utXkRow.ComparedSamePeriodLastYear : null)" class="form-control text-right number-separator ie-readonly-input ie-ut-prev-val" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                    <td><input type="text" id="PerformInPeriod_@rowNumber" name="PerformInPeriod_@rowNumber" value="@FormatNumber(utXkRow != null ? utXkRow.PerformInPeriod : null)" class="form-control text-right number-separator ie-readonly-input ie-ut-curr-qty" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                    <td><input type="text" id="AccumulatedBeginingOfYear_@rowNumber" name="AccumulatedBeginingOfYear_@rowNumber" value="@FormatNumber(utXkRow != null ? utXkRow.AccumulatedBeginingOfYear : null)" class="form-control text-right number-separator ie-readonly-input ie-ut-curr-val" readonly="readonly" tabindex="-1" placeholder="0" /></td>
+                </tr>
+                @{ rowNumber++; }
+
+                @* 6. Mặt hàng ủy thác xuất khẩu (Header) *@
+                <tr class="ie-header-row" data-code="UT_MH_HEADER">
+                    <td class="text-left" colspan="5">
+                        @Html.Hidden("Target_" + rowNumber, "Mặt hàng ủy thác xuất khẩu")
+                        @Html.Hidden("Unit_" + rowNumber, "")
+                        @Html.Hidden("Index_" + rowNumber, rowNumber - 1)
+                        @Html.Hidden("Level_" + rowNumber, "2.1")
+                        @Html.Hidden("Code_" + rowNumber, "UT_MH_HEADER")
+                        <span style="font-weight: 600;">Mặt hàng ủy thác xuất khẩu</span>
+                    </td>
+                </tr>
+                @{ rowNumber++; }
+
+                @* Child products loaded from industry *@
+                @if (trustRows.Any())
+                {
+                    foreach (var tRow in trustRows)
+                    {
+                        <tr class="ie-row ie-trust-row" data-group="UT_MH" data-code="@tRow.Code">
+                            <td class="text-left" style="padding-left: 24px;">
+                                @Html.Hidden("Target_" + rowNumber, tRow.Targets)
+                                @Html.Hidden("Unit_" + rowNumber, tRow.Unit)
+                                @Html.Hidden("Index_" + rowNumber, tRow.Index.HasValue ? tRow.Index.Value : rowNumber - 1)
+                                @Html.Hidden("Level_" + rowNumber, tRow.Level ?? "2.1")
+                                @Html.Hidden("Code_" + rowNumber, tRow.Code)
+                                - @tRow.Targets @(!string.IsNullOrEmpty(tRow.Unit) ? "(" + tRow.Unit + ")" : "")
+                            </td>
+                            <td><input type="text" name="PerformPreviousPeriod_@rowNumber" value="@FormatNumber(tRow.PerformPreviousPeriod)" class="form-control text-right number-separator ie-val ie-prev-qty" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                            <td><input type="text" name="CompareSamePeriodLastYear_@rowNumber" value="@FormatNumber(tRow.ComparedSamePeriodLastYear)" class="form-control text-right number-separator ie-val ie-prev-val" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                            <td><input type="text" name="PerformInPeriod_@rowNumber" value="@FormatNumber(tRow.PerformInPeriod)" class="form-control text-right number-separator ie-val ie-curr-qty" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                            <td><input type="text" name="AccumulatedBeginingOfYear_@rowNumber" value="@FormatNumber(tRow.AccumulatedBeginingOfYear)" class="form-control text-right number-separator ie-val ie-curr-val" placeholder="0" autocomplete="off" inputmode="decimal" /></td>
+                        </tr>
+                        rowNumber++;
+                    }
+                }
+                else
+                {
+                    <tr class="ie-no-product-row">
+                        <td colspan="5" class="text-muted text-left" style="padding-left: 24px; font-style: italic;">
+                            Doanh nghiệp chưa có sản phẩm theo ngành công nghiệp.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var importExportEnterpriseId = @((ViewBag.ImportExportEnterpriseId ?? 0).ToString());
+    function ValidForm() {
+        return true;
+    }
+
+    function parseFormattedNumberIE(val) {
+        if (!val) return 0;
+        var s = val.toString().replace(/\./g, "").replace(",", ".");
+        return parseFloat(s) || 0;
+    }
+
+    function formatNumberIE(num) {
+        if (!num || isNaN(num)) return "";
+        return Number(num).toLocaleString("vi-VN", { maximumFractionDigits: 2 });
+    }
+
+    function recalculateImportExport() {
+        // 1. Calculate Section I ("I.Tổng trị giá xuất khẩu trực tiếp" = tổng Chia theo nước cuối cùng hàng đến + Mặt hàng xuất khẩu trực tiếp chia theo nước cuối cùng hàng đến)
+        var sumI_prevQty = 0, sumI_prevVal = 0, sumI_currQty = 0, sumI_currVal = 0;
+        $("#ImportExportDataReport tr[data-group='XK_QG'], #ImportExportDataReport tr[data-group='XK_MH']").each(function () {
+            sumI_prevQty += parseFormattedNumberIE($(this).find("input[name^='PerformPreviousPeriod_']").val());
+            sumI_prevVal += parseFormattedNumberIE($(this).find("input[name^='CompareSamePeriodLastYear_']").val());
+            sumI_currQty += parseFormattedNumberIE($(this).find("input[name^='PerformInPeriod_']").val());
+            sumI_currVal += parseFormattedNumberIE($(this).find("input[name^='AccumulatedBeginingOfYear_']").val());
+        });
+
+        var $rowI = $("#ImportExportDataReport tr[data-code='XK_TT']");
+        $rowI.find(".ie-xk-prev-qty").val(formatNumberIE(sumI_prevQty));
+        $rowI.find(".ie-xk-prev-val").val(formatNumberIE(sumI_prevVal));
+        $rowI.find(".ie-xk-curr-qty").val(formatNumberIE(sumI_currQty));
+        $rowI.find(".ie-xk-curr-val").val(formatNumberIE(sumI_currVal));
+
+        // 2. Calculate Section II ("II. Trị giá ủy thác xuất khẩu" = tổng số liệu của các mặt hàng con)
+        var sumII_prevQty = 0, sumII_prevVal = 0, sumII_currQty = 0, sumII_currVal = 0;
+        $("#ImportExportDataReport tr[data-group='UT_MH']").each(function () {
+            sumII_prevQty += parseFormattedNumberIE($(this).find("input[name^='PerformPreviousPeriod_']").val());
+            sumII_prevVal += parseFormattedNumberIE($(this).find("input[name^='CompareSamePeriodLastYear_']").val());
+            sumII_currQty += parseFormattedNumberIE($(this).find("input[name^='PerformInPeriod_']").val());
+            sumII_currVal += parseFormattedNumberIE($(this).find("input[name^='AccumulatedBeginingOfYear_']").val());
+        });
+
+        var $rowII = $("#ImportExportDataReport tr[data-code='UT_XK']");
+        $rowII.find(".ie-ut-prev-qty").val(formatNumberIE(sumII_prevQty));
+        $rowII.find(".ie-ut-prev-val").val(formatNumberIE(sumII_prevVal));
+        $rowII.find(".ie-ut-curr-qty").val(formatNumberIE(sumII_currQty));
+        $rowII.find(".ie-ut-curr-val").val(formatNumberIE(sumII_currVal));
+
+        // 3. Calculate FOB Total ("TỔNG GIÁ TRỊ (FOB) = I + II")
+        var total_prevQty = sumI_prevQty + sumII_prevQty;
+        var total_prevVal = sumI_prevVal + sumII_prevVal;
+        var total_currQty = sumI_currQty + sumII_currQty;
+        var total_currVal = sumI_currVal + sumII_currVal;
+
+        var $rowFOB = $("#ImportExportDataReport tr[data-code='FOB']");
+        $rowFOB.find(".ie-fob-prev-qty").val(formatNumberIE(total_prevQty));
+        $rowFOB.find(".ie-fob-prev-val").val(formatNumberIE(total_prevVal));
+        $rowFOB.find(".ie-fob-curr-qty").val(formatNumberIE(total_currQty));
+        $rowFOB.find(".ie-fob-curr-val").val(formatNumberIE(total_currVal));
+    }
+
+    // Number separator formatting
+    $(document).off("input.ieNumSep", "#ImportExportDataReport .number-separator").on("input.ieNumSep", "#ImportExportDataReport .number-separator", function () {
+        var cursor = this.selectionStart;
+        var original = this.value;
+        var numCharsBefore = original.substring(0, cursor).replace(/[^\d,]/g, "").length;
+
+        var raw = original.replace(/[^0-9,]/g, "");
+        var commaParts = raw.split(",");
+        var intPart = commaParts[0] ? commaParts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".") : "";
+        var decPart = commaParts.length > 1 ? "," + commaParts.slice(1).join("").substring(0, 2) : "";
+        var formatted = intPart + decPart;
+        this.value = formatted;
+
+        var newPos = 0, counted = 0;
+        while (newPos < formatted.length && counted < numCharsBefore) {
+            if (/[\d,]/.test(formatted[newPos])) counted++;
+            newPos++;
+        }
+        this.setSelectionRange(newPos, newPos);
+
+        recalculateImportExport();
+    });
+
+    $(document).off("blur.ieNumSep", "#ImportExportDataReport .number-separator").on("blur.ieNumSep", "#ImportExportDataReport .number-separator", function () {
+        if (this.value && this.value.endsWith(",")) {
+            this.value = this.value.slice(0, -1);
+        }
+    });
+
+    // Remove row
+    $(document).off("click.ieRemove", "#ImportExportDataReport .btn-remove-ie-row").on("click.ieRemove", "#ImportExportDataReport .btn-remove-ie-row", function () {
+        var $row = $(this).closest("tr");
+        var $sel = $row.find("select.ie-country-select");
+        if ($sel.length && $sel.data("select2")) {
+            $sel.select2("destroy");
+        }
+        $row.remove();
+        recalculateImportExport();
+    });
+
+    // Modal scroll fix for Select2
+    // Modal scroll fix for Select2
+    if ($.fn.modal && $.fn.modal.Constructor && $.fn.modal.Constructor.prototype.enforceFocus) {
+        $.fn.modal.Constructor.prototype.enforceFocus = function () {};
+    }
+    $(document).off("focusin.bs.modal");
+
+    $(document).off("click.s2forceOpenIE", "#ImportExportDataReport .select2-container").on("click.s2forceOpenIE", "#ImportExportDataReport .select2-container", function (e) {
+        var $sel = $(this).prev("select.ie-country-select, select.ie-product-select");
+        if (!$sel.length) {
+            $sel = $(this).siblings("select.ie-country-select, select.ie-product-select");
+        }
+        if ($sel.length && $sel.data("select2")) {
+            if (!$sel.data("select2").isOpen()) {
+                $sel.select2("open");
+            }
+        }
+    });
+
+    $(document).off("select2:open.fixModalScrollIE").on("select2:open.fixModalScrollIE", function (e) {
+        var s2 = $(e.target).data("select2");
+        var id = s2 ? s2.id : "";
+        setTimeout(function () {
+            $(e.target).parents().off("scroll.select2." + id).off("scroll.select2");
+            $(".modal").off("scroll.select2." + id).off("scroll.select2");
+            $(window).off("scroll.select2." + id).off("scroll.select2");
+            $(document).off("focusin.bs.modal");
+
+            // Kích hoạt nạp dữ liệu ngay khi mở dropdown nếu chưa có từ khóa
+            var $search = $(".select2-container--open .select2-search__field");
+            if ($search.length && !$search.val()) {
+                $search.trigger("input");
+            }
+        }, 50);
+    });
+
+    $(document).off("scroll.closeS2IE", ".modal").on("scroll.closeS2IE", ".modal", function () {
+        $("#ImportExportDataReport select.ie-country-select, #ImportExportDataReport select.ie-product-select").each(function () {
+            var s2 = $(this).data("select2");
+            if (s2 && s2.isOpen()) {
+                $(this).select2("close");
+            }
+        });
+    });
+
+    function initCountrySelect($sel) {
+        var $modalContent = $sel.closest(".modal-content");
+        if ($.fn.select2) {
+            $sel.select2({
+                placeholder: "-- Chọn quốc gia --", allowClear: true, width: "100%",
+                dropdownParent: $modalContent.length ? $modalContent : $sel.parent(),
+                ajax: { url: "/Report/Import/SearchNationals", dataType: "json", delay: 250, global: false,
+                    data: function(params) { return { q: params.term || "", page: params.page || 1 }; }, processResults: function(data) { return data; }, cache: true }, minimumInputLength: 0
+            });
+        }
+    }
+    function initExportProductSelect($sel) {
+        var $modalContent = $sel.closest(".modal-content");
+        if ($.fn.select2) {
+            $sel.select2({
+                placeholder: "-- Chọn mặt hàng xuất khẩu --", allowClear: true, width: "45%",
+                dropdownParent: $modalContent.length ? $modalContent : $sel.parent(),
+                ajax: { url: "/Report/Import/SearchExportProducts", dataType: "json", delay: 250, global: false,
+                    data: function(params) { return { enterpriseId: importExportEnterpriseId, q: params.term || "", page: params.page || 1 }; }, processResults: function(data) { return data; }, cache: true }, minimumInputLength: 0
+            });
+        }
+    }
+    function getExportProductUnit($sel) {
+        var selected = $sel.data("select2") ? ($sel.select2("data")[0] || {}) : {};
+        return selected.unit || $sel.find("option:selected").data("unit") || "Kg";
+    }
+    // Initialize existing selects
+    $("#ImportExportDataReport select.ie-country-select").each(function () {
+        initCountrySelect($(this));
+    });
+    $("#ImportExportDataReport select.ie-product-select").each(function () {
+        initExportProductSelect($(this));
+    });
+
+    // Add country row
+    $("#BtnAddCountry").off("click").on("click", function () {
+        var indices = $("#ImportExportDataReport input[name^='Target_']").map(function () {
+            return parseInt(this.name.replace("Target_", ""), 10) || 0;
+        }).get();
+        var index = (indices.length ? Math.max.apply(null, indices) : 0) + 1;
+
+        var numCountryRows = $("#ImportExportDataReport tr[data-group='XK_QG']").length;
+        var level = "1.1." + (numCountryRows + 1);
+
+        var $select = $("<select><option value=''></option></select>")
+            .attr("id", "CountrySelect_" + index)
+            .addClass("form-control ie-country-select");
+
+        var $target = $("<input />", { id: "Target_" + index, name: "Target_" + index, type: "hidden" });
+        var $unit = $("<input />", { id: "Unit_" + index, name: "Unit_" + index, type: "hidden", value: "Kg" });
+        var $indexInput = $("<input />", { id: "Index_" + index, name: "Index_" + index, type: "hidden", value: index });
+        var $levelInput = $("<input />", { id: "Level_" + index, name: "Level_" + index, type: "hidden", value: level });
+        var $codeInput = $("<input />", { id: "Code_" + index, name: "Code_" + index, type: "hidden" });
+
+        var $removeBtn = $("<a href='javascript:void(0)' class='text-danger btn-remove-ie-row' title='Xóa' style='flex-shrink:0;'><i class='fa fa-trash'></i></a>");
+        var $selectWrapper = $("<div class='ie-select-wrapper'></div>").append($select);
+        var $container = $("<div class='ie-picker-container'></div>")
+            .append($("<span style='font-weight:bold;'>-</span>"))
+            .append($selectWrapper)
+            .append($removeBtn);
+
+        var inputField = function (name, extraCls) {
+            return $("<input />", {
+                id: name,
+                name: name,
+                type: "text",
+                "class": "form-control text-right number-separator ie-val " + (extraCls || ""),
+                placeholder: "0",
+                autocomplete: "off",
+                inputmode: "decimal"
+            });
+        };
+
+        var $row = $("<tr class='ie-row ie-country-row' data-group='XK_QG'></tr>");
+        $row.append($("<td class='text-left'></td>").append($target).append($unit).append($indexInput).append($levelInput).append($codeInput).append($container));
+        $row.append($("<td></td>").append(inputField("PerformPreviousPeriod_" + index, "ie-prev-qty")));
+        $row.append($("<td></td>").append(inputField("CompareSamePeriodLastYear_" + index, "ie-prev-val")));
+        $row.append($("<td></td>").append(inputField("PerformInPeriod_" + index, "ie-curr-qty")));
+        $row.append($("<td></td>").append(inputField("AccumulatedBeginingOfYear_" + index, "ie-curr-val")));
+
+        $select.on("change select2:select", function () {
+            var selected = $(this).find("option:selected");
+            var natCode = selected.val() || "";
+            var natName = selected.text() || "";
+            $target.val(natName ? "- " + natName : "");
+            $codeInput.val(natCode ? "XK_QG_" + natCode : "");
+            recalculateImportExport();
+        });
+
+        $("#RowAddCountry").before($row);
+
+        initCountrySelect($select);
+        recalculateImportExport();
+    });
+
+    // Add product according to country row
+    $("#BtnAddProductCountry").off("click").on("click", function () {
+        var indices = $("#ImportExportDataReport input[name^='Target_']").map(function () {
+            return parseInt(this.name.replace("Target_", ""), 10) || 0;
+        }).get();
+        var index = (indices.length ? Math.max.apply(null, indices) : 0) + 1;
+
+        var numMhRows = $("#ImportExportDataReport tr[data-group='XK_MH']").length;
+        var level = "1.2." + (numMhRows + 1);
+
+        var $select = $("<select><option value=''></option></select>")
+            .attr("id", "CountrySelect_" + index)
+            .addClass("form-control ie-country-select");
+
+        var $prodInput = $("<select><option value=''></option></select>").addClass("form-control ie-product-select").css("width", "45%");
+
+        var $target = $("<input />", { id: "Target_" + index, name: "Target_" + index, type: "hidden" });
+        var $unit = $("<input />", { id: "Unit_" + index, name: "Unit_" + index, type: "hidden", value: "Kg" });
+        var $indexInput = $("<input />", { id: "Index_" + index, name: "Index_" + index, type: "hidden", value: index });
+        var $levelInput = $("<input />", { id: "Level_" + index, name: "Level_" + index, type: "hidden", value: level });
+        var $codeInput = $("<input />", { id: "Code_" + index, name: "Code_" + index, type: "hidden" });
+
+        var $removeBtn = $("<a href='javascript:void(0)' class='text-danger btn-remove-ie-row' title='Xóa' style='flex-shrink:0;'><i class='fa fa-trash'></i></a>");
+        var $selectWrapper = $("<div class='ie-select-wrapper'></div>").append($select);
+        var $container = $("<div class='ie-picker-container'></div>")
+            .append($("<span style='font-weight:bold;'>-</span>"))
+            .append($prodInput)
+            .append($("<span>/</span>"))
+            .append($selectWrapper)
+            .append($removeBtn);
+
+        var inputField = function (name) {
+            return $("<input />", {
+                id: name,
+                name: name,
+                type: "text",
+                "class": "form-control text-right number-separator ie-val",
+                placeholder: "0",
+                autocomplete: "off",
+                inputmode: "decimal"
+            });
+        };
+
+        var $row = $("<tr class='ie-row ie-country-product-row' data-group='XK_MH'></tr>");
+        $row.append($("<td class='text-left'></td>").append($target).append($unit).append($indexInput).append($levelInput).append($codeInput).append($container));
+        $row.append($("<td></td>").append(inputField("PerformPreviousPeriod_" + index)));
+        $row.append($("<td></td>").append(inputField("CompareSamePeriodLastYear_" + index)));
+        $row.append($("<td></td>").append(inputField("PerformInPeriod_" + index)));
+        $row.append($("<td></td>").append(inputField("AccumulatedBeginingOfYear_" + index)));
+
+        function syncProductCountryTarget() {
+            var pName = $.trim($prodInput.find("option:selected").text() || "");
+            var pCode = $prodInput.val() || "";
+            var cName = $select.find("option:selected").text() || "";
+            var cCode = $select.val() || "ITEM";
+            var combined = (pName ? pName : "") + (pName && cName ? " / " : "") + cName;
+            $target.val(combined ? "- " + combined : "");
+            $codeInput.val(combined ? (pCode ? pCode : ("XK_MH_" + cCode + "_" + index)) : "");
+        }
+
+        $prodInput.on("change select2:select", syncProductCountryTarget);
+        $select.on("change select2:select", syncProductCountryTarget);
+
+        $("#RowAddProductCountry").before($row);
+
+        initCountrySelect($select);
+        initExportProductSelect($prodInput);
+    });
+
+    // Listen on existing product-country inputs
+    $(document).off("change.syncPcTarget", "#ImportExportDataReport .ie-country-product-row .ie-product-select")
+        .on("change.syncPcTarget", "#ImportExportDataReport .ie-country-product-row .ie-product-select", function () {
+            var $r = $(this).closest("tr");
+            var pName = $.trim($(this).find("option:selected").text() || "");
+            var pCode = $(this).val() || "";
+            var cName = $r.find(".ie-country-select option:selected").text() || "";
+            var combined = (pName ? pName : "") + (pName && cName ? " / " : "") + cName;
+            $r.find("input[name^='Target_']").val(combined ? "- " + combined : "");
+            if (pCode) {
+                $r.find("input[name^='Code_']").val(pCode);
+            }
+        });
+
+    $(document).off("change.syncPcTarget", "#ImportExportDataReport .ie-country-product-row .ie-country-select")
+        .on("change.syncPcTarget", "#ImportExportDataReport .ie-country-product-row .ie-country-select", function () {
+            var $r = $(this).closest("tr");
+            var pName = $.trim($r.find(".ie-product-select option:selected").text() || "");
+            var pCode = $r.find(".ie-product-select").val() || "";
+            var cName = $(this).find("option:selected").text() || "";
+            var combined = (pName ? pName : "") + (pName && cName ? " / " : "") + cName;
+            $r.find("input[name^='Target_']").val(combined ? "- " + combined : "");
+            if (pCode) {
+                $r.find("input[name^='Code_']").val(pCode);
+            }
+        });
+
+    $(document).off("change.syncQgTarget", "#ImportExportDataReport .ie-country-row .ie-country-select")
+        .on("change.syncQgTarget", "#ImportExportDataReport .ie-country-row .ie-country-select", function () {
+            var $r = $(this).closest("tr");
+            var cName = $(this).find("option:selected").data("name") || "";
+            $r.find("input[name^='Target_']").val(cName ? "- " + cName : "");
+            recalculateImportExport();
+        });
+
+    $(document).ready(function () {
+        recalculateImportExport();
+        if ($('#ButtonLoginSmartCA').hasClass('hidden') || !$('#ButtonLoginSmartCA').length) {
+            $('#modal_AddReport button[type="submit"], #modal_EditReport button[type="submit"]').removeAttr('disabled');
+        }
+    });
+</script>

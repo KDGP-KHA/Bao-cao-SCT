@@ -2,6 +2,8 @@
 
 <Provider xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
      <StoredProcedures ProviderName="SysProvider">
+          <Procedure Name="Report_IndustryPermissions_Get" Value="p_Report_IndustryPermissions_Get" />
+          <Procedure Name="Report_IndustryPermissions_Save" Value="p_Report_IndustryPermissions_Save" />
 
           <Procedure Name="Cate_Province_Delete" Value="p_Cate_Province_Delete" />
           <Procedure Name="Cate_Province_Get" Value="p_Cate_Province_Get" />
@@ -185,6 +187,8 @@
           <Procedure Name="Cate_EnterpriseType_Delete" Value="p_Cate_EnterpriseType_Delete" />
           <Procedure Name="Cate_EnterpriseType_GetByID" Value="p_Cate_EnterpriseType_GetByID" />
           
+          <Procedure Name="Cate_Chatbot_EnterpriseProducts" Value="p_Cate_Chatbot_EnterpriseProducts" />
+          <Procedure Name="Cate_Chatbot_EnterpriseScope" Value="p_Cate_Chatbot_EnterpriseScope" />
      </StoredProcedures>
 
 </Provider>

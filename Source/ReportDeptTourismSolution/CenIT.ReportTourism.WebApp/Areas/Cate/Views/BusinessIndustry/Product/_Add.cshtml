@@ -1,0 +1,27 @@
+﻿@using TSFramework.App.Processors
+@{
+    ViewBag.Title = string.Format(AppProcessor.Messagor.GetMessage("Modal_Title_Add"), AppProcessor.Messagor.GetMessage("BusinessProduct_Title"));
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+@section FormType{
+    bg-primary
+}
+
+@section FormIcon{
+    <i class="fa fa-plus"></i>
+}
+
+@section FormBody{
+
+    @using (Ajax.BeginForm("AddProduct", "BusinessIndustry", new { area = "Cate" }, new AjaxOptions
+    {
+        HttpMethod = "POST",
+        OnSuccess = "BusinessProduct_OnProcessSuccess(data, 'AddProduct')"
+    }, new { @class = "form-horizontal" }))
+    {
+        <div id="bodyForm">
+            @Html.Partial("Product/_Product")
+        </div>
+    }
+}

@@ -1,0 +1,94 @@
+# ReportDeptTourismSolution: classic ASP.NET MVC / .NET Framework.
+# Keep solution/project files, packages.config, shared configuration, SQL scripts,
+# report templates, App_Data mappings, and mirrored WebApp views/assets tracked.
+# Vendored DLLs/PDBs in libs/ and WebApp/Libraries/ are required to build/run;
+# do not add global *.dll, *.exe, *.pdb, App_Data/, dist/, or Libraries/ rules.
+
+# Build and publish output
+[Bb]in/
+[Oo]bj/
+[Pp]ublish/
+_PublishedWebsites/
+*.build.csdef
+*.csproj.FileListAbsolute.txt
+*.msbuild.binlog
+
+# Restorable NuGet packages (keep packages.config and .nuget build files)
+/Source/ReportDeptTourismSolution/packages/
+*.nupkg
+*.snupkg
+
+# Visual Studio / IDE state (keep shared .pubxml publish profiles)
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln.ide
+*.pubxml.user
+*.rsuser
+*.sln.cache
+*.VC.db
+*.VC.VC.opendb
+*.pidb
+*.svclog
+_ReSharper*/
+*.DotSettings.user
+_NCrunch_*/
+*.ncrunchsolution
+*.ncrunchproject
+.vscode/*
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+
+# Test runs and coverage reports
+[Tt]est[Rr]esults/
+.coverage/
+*.coverage
+*.coveragexml
+*.trx
+
+# Local database audit/validation outputs; keep deployment guidance in Markdown
+/docs/*-audit.json
+/docs/*-validation.json
+/docs/*-timeout-evidence.json
+
+# Runtime logs; never ignore Log/ (TSFramework.Core/Members/Log is source)
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Logs/
+*.log
+
+# Local database files and backups; keep every SQL deployment/migration script
+*.mdf
+*.ldf
+*.ndf
+*.bak
+*.bacpac
+
+# Local environment overrides; shared Web.config/app.config stay tracked
+.env
+.env.*
+!.env.example
+!.env.sample
+*.local.config
+
+# Temporary/editor/OS files
+*.tmp
+*.temp
+*.orig
+*.rej
+*.swp
+*.swo
+*~
+~$*
+.DS_Store
+._*
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+
+# Local assistant state
+.claude/settings.local.json
+.claude/scheduled_tasks.lock

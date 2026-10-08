@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
-using CenIT.ReportTourism.Biz.Cate;
-using CenIT.ReportTourism.Models.Cate;
+
+
 using CenIT.ReportTourism.Models.Report;
 
 namespace CenIT.ReportTourism.Biz.Report
@@ -14,7 +14,35 @@ namespace CenIT.ReportTourism.Biz.Report
         private const string SnapshotProcedure = "Report_Dashboard_IndustrialSnapshot";
         private const string SummaryProcedure = "Report_Dashboard_OverviewSummary";
         private static readonly CultureInfo Vietnamese = CultureInfo.GetCultureInfo("vi-VN");
-        private readonly ReportBiz _reports = new ReportBiz();
+        private readonly Func<string, object[], DataTable> _read;
+
+        public ReportDashboardBiz() : this(null) { }
+
+        /// <summary>Creates a dashboard reader with an optional account-scoped procedure executor.</summary>
+        /// <param name="read">Procedure reader; null uses the existing application reader.</param>
+        public ReportDashboardBiz(Func<string, object[], DataTable> read)
+        {
+            _read = read ?? ((name, parameters) => new ReportBiz().GetDataReport(name, parameters));
+        }
+
+        private readonly object _requestCacheKey = new object();
+
+        private DataTable Read(string name, params object[] parameters)
+        {
+            var context = System.Web.HttpContext.Current;
+            if (context == null) return _read(name, parameters);
+            var results = context.Items[_requestCacheKey] as List<Tuple<string, object[], DataTable>>;
+            if (results == null)
+            {
+                results = new List<Tuple<string, object[], DataTable>>();
+                context.Items[_requestCacheKey] = results;
+            }
+            var found = results.FirstOrDefault(result => result.Item1 == name && result.Item2.SequenceEqual(parameters));
+            if (found != null) return found.Item3;
+            var table = _read(name, parameters);
+            results.Add(Tuple.Create(name, (object[])parameters.Clone(), table));
+            return table;
+        }
 
         private static DashboardMetric[] Metrics(int type)
         {
@@ -47,15 +75,22 @@ namespace CenIT.ReportTourism.Biz.Report
         {
             filters = Normalize(filters);
             var byType = Enumerable.Range(1, 3).ToDictionary(type => type, type => GetRows(filters, type));
+            var summary = GetSummary(filters);
             var cards = byType.Select(pair =>
             {
                 var current = At(pair.Value, filters.Year, filters.Month).ToList();
                 var metric = Metrics(pair.Key)[0];
+                var mom = Comparable(pair.Value, filters, "primary");
+                var yoy = Comparable(pair.Value, filters, "primary", -12);
                 return new DashboardTypeCard
                 {
                     ReportType = pair.Key, Name = TypeName(pair.Key), MetricLabel = metric.Label,
                     Unit = metric.Unit, Value = FormatOrDash(SumOrNull(current.Select(r => r.PrimaryValue))),
-                    Assigned = current.Count, Received = current.Count(r => r.DataImported),
+                    Assigned = summary.Expected(pair.Key), MetricCoverage = current.Count(r => r.PrimaryValue.HasValue),
+                    Mom = Rate(mom), Yoy = Rate(yoy),
+                    Compared = mom.Count(x => x.Percent.HasValue),
+                    Declines = mom.Count(x => x.Percent < -10),
+                    Incomplete = current.Count(r => r.DataImported && !Complete(r)), Received = current.Count(r => r.DataImported),
                     Conflicts = current.Count(r => r.MetricConflict)
                 };
             }).ToList();
@@ -63,19 +98,25 @@ namespace CenIT.ReportTourism.Biz.Report
             var today = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
             if (end > today) end = today;
             var trend = Enumerable.Range(0, 12).Select(offset => end.AddMonths(offset - 11)).Select(date =>
-                new DashboardReceiptPoint
+            {
+                var type1 = At(byType[1], date.Year, date.Month).Count(r => r.DataImported);
+                var type2 = At(byType[2], date.Year, date.Month).Count(r => r.DataImported);
+                var type3 = At(byType[3], date.Year, date.Month).Count(r => r.DataImported);
+                return new DashboardReceiptPoint
                 {
                     Month = date.ToString("yyyy-MM"),
-                    Type1 = At(byType[1], date.Year, date.Month).Count(r => r.DataImported),
-                    Type2 = At(byType[2], date.Year, date.Month).Count(r => r.DataImported),
-                    Type3 = At(byType[3], date.Year, date.Month).Count(r => r.DataImported)
-                }).ToList();
-            var movements = Comparable(byType[1], filters, "primary")
+                    Type1 = type1, Type2 = type2, Type3 = type3,
+                    Type1Rate = Coverage(type1, summary.Type1Expected),
+                    Type2Rate = Coverage(type2, summary.Type2Expected),
+                    Type3Rate = Coverage(type3, summary.Type3Expected)
+                };
+            }).ToList();
+            var movements = Comparable(byType[filters.ReportType], filters, "primary")
                 .OrderByDescending(x => Math.Abs(x.Change)).Take(5).ToList();
             return new DashboardModel
             {
-                Filters = filters, FilterOptions = BuildOptions(byType.Values.SelectMany(x => x).ToList(), filters, "Index", false),
-                TypeCards = cards, Classification = GetSummary(filters), ReceiptTrend = trend,
+                Filters = filters, FilterOptions = BuildOptions(filters, "Index", false),
+                TypeCards = cards, Classification = summary, ReceiptTrend = trend,
                 Movements = movements
             };
         }
@@ -86,6 +127,7 @@ namespace CenIT.ReportTourism.Biz.Report
             var rows = GetRows(filters, filters.ReportType);
             var current = At(rows, filters.Year, filters.Month).ToList();
             var metric = SelectedMetric(filters);
+            var summary = GetSummary(filters);
             var values = current.Select(r => Value(r, metric.Key));
             var monthly = Enumerable.Range(1, filters.Month).Select(month =>
                 SumOrNull(At(rows, filters.Year, month).Select(r => Value(r, metric.Key)))).ToList();
@@ -96,24 +138,27 @@ namespace CenIT.ReportTourism.Biz.Report
                 .Select(date => new DashboardMetricPoint
                 {
                     Month = date.ToString("yyyy-MM"),
-                    Value = SumOrNull(At(rows, date.Year, date.Month).Select(r => Value(r, metric.Key)))
+                    Value = SumOrNull(At(rows, date.Year, date.Month).Select(r => Value(r, metric.Key))),
+                    Coverage = At(rows,date.Year,date.Month).Count(r => Value(r,metric.Key).HasValue), Expected = summary.Expected(filters.ReportType)
                 }).ToList();
-            var sectorValues = current.GroupBy(r => String.IsNullOrWhiteSpace(r.EconomicSectorName) ? DashboardText.Get("UnknownSector") : r.EconomicSectorName)
-                .Select(g => new DashboardBreakdown { Name = g.Key, Value = SumOrNull(g.Select(r => Value(r, metric.Key))) ?? 0 })
+            var sectorValues = current.GroupBy(r => filters.Breakdown == "industry" ? r.IndustryName : filters.Breakdown == "enterprise" ? r.EnterpriseId.ToString() : r.EconomicSectorId.ToString())
+                .Select(g => new DashboardBreakdown { Name = filters.Breakdown == "industry" ? g.First().IndustryName : filters.Breakdown == "enterprise" ? g.First().BusinessName : (String.IsNullOrWhiteSpace(g.First().EconomicSectorName) ? "Chưa phân loại" : g.First().EconomicSectorName), Key = filters.Breakdown == "sector" ? g.First().EconomicSectorId.ToString() : filters.Breakdown == "enterprise" ? g.First().EnterpriseId.ToString() : null,
+                    Members = g.Select(r => new DashboardBreakdown { Key=r.EnterpriseId.ToString(),Name=r.BusinessName,Value=Value(r,metric.Key) }).OrderByDescending(x => x.Value).ToList(),
+                    Value = SumOrNull(g.Select(r => Value(r,metric.Key))), Received = g.Count(r => Value(r,metric.Key).HasValue), Assigned = g.Count() })
                 .OrderByDescending(g => g.Value).ToList();
-            var sectorTotal = sectorValues.Sum(g => g.Value);
-            foreach (var sector in sectorValues) sector.Share = sectorTotal > 0 ? sector.Value * 100 / sectorTotal : 0;
+            var sectorTotal = sectorValues.Sum(g => g.Value ?? 0);
+            foreach (var sector in sectorValues) sector.Share = sectorTotal > 0 ? (sector.Value ?? 0) * 100 / sectorTotal : 0;
             var mom = Comparable(rows, filters, metric.Key).ToList();
             var yoy = Comparable(rows, filters, metric.Key, -12).ToList();
             return new DashboardAnalysisModel
             {
-                Filters = filters, FilterOptions = BuildOptions(rows, filters, "Analysis", true),
+                Filters = filters, FilterOptions = BuildOptions(filters, "Analysis", true),
                 TypeName = TypeName(filters.ReportType), SelectedMetric = metric, Metrics = Metrics(filters.ReportType),
                 CurrentValue = FormatOrDash(SumOrNull(values)),
                 YtdValue = ytdValues.Count == 0 ? "—" : Format(ytdValues.Sum(v => v.Value)),
                 YtdMonths = ytdValues.Count,
                 Mom = Rate(mom), Yoy = Rate(yoy), MomCompared = mom.Count, YoyCompared = yoy.Count,
-                Assigned = current.Count,
+                Assigned = summary.Expected(filters.ReportType), MetricCoverage = current.Count(r => Value(r,metric.Key).HasValue), Orphans = summary.OutsideCohortEnterprises,
                 Trend = trend, Sectors = sectorValues,
                 Movements = mom.OrderByDescending(x => Math.Abs(x.Change)).Take(8).ToList()
             };
@@ -123,7 +168,8 @@ namespace CenIT.ReportTourism.Biz.Report
         {
             filters = Normalize(filters);
             var rows = GetRows(filters, filters.ReportType);
-            var movements = Comparable(rows, filters, "primary").ToList();
+            var movements = Comparable(rows, filters, "primary").Where(x => x.Percent.HasValue).ToList();
+            var summary = GetSummary(filters);
             var current = At(rows, filters.Year, filters.Month).ToList();
             var end = new DateTime(filters.Year, filters.Month, 1);
             var trend = Enumerable.Range(0, 12).Select(offset => end.AddMonths(offset - 11))
@@ -131,27 +177,30 @@ namespace CenIT.ReportTourism.Biz.Report
                 .Select(date =>
                 {
                     var period = new DashboardFilters { Year = date.Year, Month = date.Month };
-                    var pairs = Comparable(rows, period, "primary").ToList();
+                    var pairs = Comparable(rows, period, "primary").Where(x => x.Percent.HasValue).ToList();
                     return new DashboardMetricPoint
                     {
-                        Month = date.ToString("yyyy-MM"),
+                        Month = date.ToString("yyyy-MM"), Coverage = pairs.Count, Expected = summary.Expected(filters.ReportType),
                         Value = pairs.Count == 0 ? (decimal?)null :
-                            pairs.Count(x => x.Percent.HasValue && x.Percent.Value < (filters.ReportType == 1 ? -10 : 0))
+                            pairs.Count(x => x.Percent.HasValue && x.Percent.Value < -10)
                     };
                 }).ToList();
             return new DashboardWarningsModel
             {
-                Filters = filters, FilterOptions = BuildOptions(rows, filters, "Warnings", false),
+                Filters = filters, FilterOptions = BuildOptions(filters, "Warnings", false),
                 TypeName = TypeName(filters.ReportType), Metric = Metrics(filters.ReportType)[0],
-                IsIndustrial = filters.ReportType == 1, ComparableCount = movements.Count,
-                Assigned = current.Count,
+                ComparableCount = movements.Count,
+                Assigned = summary.Expected(filters.ReportType),
+                Incomplete = current.Count(r => r.DataImported && !Complete(r)), Orphans = summary.OutsideCohortEnterprises,
+                Issues = GetDetails(filters,"incomplete",1).Item1.Take(8).ToList(),
                 DeclineOver10 = movements.Count(x => x.Percent < -10),
                 DeclineOver20 = movements.Count(x => x.Percent < -20),
                 DeclineOver30 = movements.Count(x => x.Percent < -30),
                 ConflictCount = current.Count(r => r.MetricConflict), Trend = trend,
-                Movements = (filters.ReportType == 1
-                    ? movements.Where(x => x.Percent < -10).OrderBy(x => x.Change)
-                    : movements.OrderByDescending(x => Math.Abs(x.Change))).Take(8).ToList()
+                Movements = movements.Where(x => x.Percent < -10).OrderBy(x => x.Change).ThenBy(x => x.Percent)
+                    .ThenBy(x => x.EnterpriseId)
+                    .Skip((int)Math.Min((long)(filters.Page - 1) * DashboardWarningsModel.PageSize, Int32.MaxValue))
+                    .Take(DashboardWarningsModel.PageSize).ToList()
             };
         }
 
@@ -161,48 +210,44 @@ namespace CenIT.ReportTourism.Biz.Report
             var rows = GetRows(filters, filters.ReportType);
             var current = At(rows, filters.Year, filters.Month).ToList();
             var metrics = Metrics(filters.ReportType);
+            var summary = GetSummary(filters);
+            var details = GetDetails(filters,filters.Status,filters.Page);
             var end = new DateTime(filters.Year, filters.Month, 1);
             var trend = Enumerable.Range(0, 12).Select(offset => end.AddMonths(offset - 11))
                 .Where(date => date <= DateTime.Today)
                 .Select(date => new DashboardMetricPoint
                 {
                     Month = date.ToString("yyyy-MM"),
-                    Value = At(rows, date.Year, date.Month).Count(r => r.DataImported)
+                    Value = At(rows, date.Year, date.Month).Count(r => r.DataImported),
+                    Rate = Coverage(At(rows,date.Year,date.Month).Count(r => r.DataImported),summary.Expected(filters.ReportType)),
+                    Coverage = At(rows,date.Year,date.Month).Count(r => r.DataImported),
+                    Files = At(rows,date.Year,date.Month).Count(r => r.FileAnyType), Expected = summary.Expected(filters.ReportType)
                 }).ToList();
             return new DashboardProgressModel
             {
-                Filters = filters, FilterOptions = BuildOptions(rows, filters, "Progress", false),
-                TypeName = TypeName(filters.ReportType), Assigned = current.Count,
+                Filters = filters, FilterOptions = BuildOptions(filters, "Progress", false),
+                TypeName = TypeName(filters.ReportType), Assigned = summary.Expected(filters.ReportType),
+                Complete = current.Count(Complete), Incomplete = current.Count(r => r.DataImported && !Complete(r)),
+                FileLate = current.Count(r => r.FileLate), TotalRows = details.Item2, Orphans = summary.OutsideCohortEnterprises,
                 Received = current.Count(r => r.DataImported),
                 FileAnyType = current.Count(r => r.FileAnyType),
-                MetricValues = current.Count(r => r.PrimaryValue.HasValue),
                 MetricPresence = metrics.Select(metric => new DashboardBreakdown
                 {
                     Name = metric.Label + " (" + metric.Code + ")",
-                    Assigned = current.Count,
+                    Assigned = summary.Expected(filters.ReportType),
                     Received = current.Count(r => Value(r, metric.Key).HasValue)
                 }).ToList(),
                 Conflicts = current.Count(r => r.MetricConflict),
-                CoveragePercent = current.Count == 0 ? 0 : 100m * current.Count(r => r.DataImported) / current.Count,
+                CoveragePercent = Coverage(current.Count(r => r.DataImported),summary.Expected(filters.ReportType)),
                 ReceiptTrend = trend,
-                Areas = Breakdown(current, r => r.WardName, DashboardText.Get("UnknownArea")),
-                Sectors = Breakdown(current, r => r.EconomicSectorName, DashboardText.Get("UnknownSector")),
-                Enterprises = current.OrderByDescending(r => r.MetricConflict).ThenBy(r => r.DataImported)
-                    .ThenBy(r => r.PrimaryValue.HasValue)
-                    .ThenBy(r => r.BusinessName).Select(r => new DashboardEnterpriseRow
-                    {
-                        EnterpriseId = r.EnterpriseId, Name = r.BusinessName, WardName = r.WardName,
-                        DataImported = r.DataImported, FileAnyType = r.FileAnyType,
-                        HasMetricValue = r.PrimaryValue.HasValue, MetricConflict = r.MetricConflict,
-                        MissingMetricCodes = String.Join(", ", metrics
-                            .Where(metric => !Value(r, metric.Key).HasValue).Select(metric => metric.Code))
-                    }).ToList()
+                Areas = Breakdown(rows,filters,"ward"), Sectors = Breakdown(rows,filters,"sector"),
+                Enterprises = details.Item1
             };
         }
 
         private DashboardOverviewSummary GetSummary(DashboardFilters filters)
         {
-            var table = _reports.GetDataReport(SummaryProcedure, new DateTime(filters.Year, filters.Month, 1));
+            var table = Read(SummaryProcedure, new DateTime(filters.Year, filters.Month, 1), DbFilter(filters.AreaId), DbFilter(filters.EconomicSectorId), DbFilter(filters.IndustryId), DbFilter(filters.EnterpriseId), DBNull.Value);
             if (table.Rows.Count == 0) return new DashboardOverviewSummary();
             var row = table.Rows[0];
             return new DashboardOverviewSummary
@@ -213,13 +258,15 @@ namespace CenIT.ReportTourism.Biz.Report
                 MissingIndustry = Convert.ToInt32(row["MissingIndustry"]),
                 MissingReportType = Convert.ToInt32(row["MissingReportType"]),
                 TypeZeroRows = Convert.ToInt32(row["TypeZeroRows"]),
-                FutureDatedRows = Convert.ToInt32(row["FutureDatedRows"])
+                FutureDatedRows = Convert.ToInt32(row["FutureDatedRows"]),
+                Type1Expected = Convert.ToInt32(row["Type1Expected"]), Type2Expected = Convert.ToInt32(row["Type2Expected"]),
+                Type3Expected = Convert.ToInt32(row["Type3Expected"]), OutsideCohortEnterprises = Convert.ToInt32(row["OutsideCohortEnterprises"])
             };
         }
 
         private List<SnapshotRow> GetRows(DashboardFilters filters, int reportType)
         {
-            var table = _reports.GetDataReport(SnapshotProcedure,
+            var table = Read(SnapshotProcedure,
                 new DateTime(filters.Year, filters.Month, 1), reportType, DbFilter(filters.AreaId),
                 DbFilter(filters.EconomicSectorId), DbFilter(filters.IndustryId),
                 DbFilter(filters.EnterpriseId));
@@ -230,7 +277,8 @@ namespace CenIT.ReportTourism.Biz.Report
                 WardId = NullableInt(row["WardId"]), WardName = Convert.ToString(row["WardName"]),
                 EconomicSectorId = NullableInt(row["EconomicSectorId"]),
                 EconomicSectorName = Convert.ToString(row["EconomicSectorName"]),
-                IndustryIds = Convert.ToString(row["IndustryIds"]),
+                IndustryIds = Convert.ToString(row["IndustryIds"]), IndustryName = Convert.ToString(row["IndustryName"]),
+                TaxCode = Convert.ToString(row["TaxCode"]), Reason = Convert.ToString(row["Reason"]), FileLate = Convert.ToBoolean(row["FileLate"]),
                 DataImported = Convert.ToBoolean(row["DataImported"]),
                 FileAnyType = Convert.ToBoolean(row["FileSubmittedAnyType"]),
                 MetricConflict = Convert.ToBoolean(row["MetricConflict"]),
@@ -248,26 +296,42 @@ namespace CenIT.ReportTourism.Biz.Report
 
         private static int? NullableInt(object value) { return value == DBNull.Value ? (int?)null : Convert.ToInt32(value); }
         private static decimal? NullableDecimal(object value) { return value == DBNull.Value ? (decimal?)null : Convert.ToDecimal(value); }
-        private static string Format(decimal value) { return value.ToString(decimal.Truncate(value) == value ? "#,##0" : "#,##0.##", Vietnamese); }
-        private static string FormatOrDash(decimal? value) { return value.HasValue ? Format(value.Value) : "—"; }
+        private static string Format(decimal value) { return DashboardNumber.Amount(value); }
+        private static string FormatOrDash(decimal? value) { return DashboardNumber.Amount(value); }
 
-        private static DashboardFilters Normalize(DashboardFilters filters)
+        public DashboardFilters Normalize(DashboardFilters filters)
         {
             filters = filters ?? new DashboardFilters();
-            var previous = DateTime.Today.AddMonths(-1);
-            if (filters.Year < 2000 || filters.Year > 2100 || filters.Month < 1 || filters.Month > 12 ||
-                new DateTime(filters.Year, filters.Month, 1) > new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1))
+            if (filters.Year == 0 || filters.Month == 0)
             {
-                filters.Year = previous.Year; filters.Month = previous.Month;
+                var latest = GetFilterOptions("latest", null, null, 1, 1).FirstOrDefault();
+                DateTime date;
+                if (latest == null || !DateTime.TryParseExact(latest.Value,"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out date)) date = DateTime.Today.AddMonths(-1);
+                if (filters.Year == 0) filters.Year = date.Year;
+                if (filters.Month == 0) filters.Month = date.Month;
             }
-            if (filters.ReportType < 1 || filters.ReportType > 3) filters.ReportType = 1;
-            filters.AreaId = filters.AreaId ?? "all";
-            filters.EconomicSectorId = filters.EconomicSectorId ?? "all";
-            filters.IndustryId = filters.IndustryId ?? "all";
-            filters.EnterpriseId = filters.EnterpriseId ?? "all";
+            if (filters.Year < 2000 || filters.Year > 2100 || filters.Month < 1 || filters.Month > 12 ||
+                new DateTime(filters.Year,filters.Month,1) > new DateTime(DateTime.Today.Year,DateTime.Today.Month,1))
+                throw new ArgumentException("Kỳ báo cáo không hợp lệ hoặc ở tương lai.");
+            if (filters.ReportType < 1 || filters.ReportType > 3) throw new ArgumentException("Loại báo cáo không hợp lệ.");
+            filters.AreaId = ValidFilter(filters.AreaId); filters.EconomicSectorId = ValidFilter(filters.EconomicSectorId);
+            filters.IndustryId = ValidFilter(filters.IndustryId); filters.EnterpriseId = ValidFilter(filters.EnterpriseId);
             if (filters.Metric != "secondary" && filters.Metric != "tertiary") filters.Metric = "primary";
+            if (filters.Breakdown != "industry" && filters.Breakdown != "enterprise") filters.Breakdown = "sector";
+            if (String.IsNullOrEmpty(filters.Status)) filters.Status = "all";
+            if (!new[] { "all","missing","incomplete","complete","conflict","file-late" }.Contains(filters.Status)) throw new ArgumentException("Trạng thái không hợp lệ.");
+            if (filters.Page < 1) throw new ArgumentException("Trang không hợp lệ.");
             return filters;
         }
+        private static string ValidFilter(string value)
+        {
+            if (String.IsNullOrWhiteSpace(value) || value == "all") return "all";
+            int id;
+            if (!Int32.TryParse(value,out id) || id <= 0) throw new ArgumentException("Mã lọc không hợp lệ.");
+            return id.ToString(CultureInfo.InvariantCulture);
+        }
+        private static decimal Coverage(int count,int expected) { return expected == 0 ? 0 : 100m * count / expected; }
+        private static bool Complete(SnapshotRow row) { return row.PrimaryValue.HasValue && row.SecondaryValue.HasValue && row.TertiaryValue.HasValue; }
 
         private static DashboardMetric SelectedMetric(DashboardFilters filters)
         {
@@ -306,7 +370,7 @@ namespace CenIT.ReportTourism.Biz.Report
                 if (!value.HasValue || !baseline.HasValue) continue;
                 result.Add(new DashboardMovement
                 {
-                    Name = row.BusinessName, WardName = row.WardName,
+                    EnterpriseId = row.EnterpriseId, Reason = row.Reason, Name = row.BusinessName, WardName = row.WardName,
                     CurrentValue = value.Value, PreviousValue = baseline.Value,
                     Change = value.Value - baseline.Value,
                     Percent = baseline.Value > 0 ? (value.Value - baseline.Value) * 100m / baseline.Value : (decimal?)null
@@ -319,58 +383,94 @@ namespace CenIT.ReportTourism.Biz.Report
         {
             if (movements.Count == 0) return null;
             var baseline = movements.Sum(m => m.PreviousValue);
-            return baseline == 0 ? (decimal?)null : movements.Sum(m => m.Change) * 100m / baseline;
+            return baseline <= 0 ? (decimal?)null : movements.Sum(m => m.Change) * 100m / baseline;
         }
 
-        private static IList<DashboardBreakdown> Breakdown(List<SnapshotRow> rows,
-            Func<SnapshotRow, string> label, string unknown)
+        private IList<DashboardBreakdown> Breakdown(List<SnapshotRow> rows,DashboardFilters filters,string group)
         {
-            return rows.GroupBy(r => String.IsNullOrWhiteSpace(label(r)) ? unknown : label(r))
-                .Select(g => new DashboardBreakdown
-                {
-                    Name = g.Key, Assigned = g.Count(), Received = g.Count(r => r.DataImported)
-                }).OrderByDescending(g => g.Received).ThenBy(g => g.Name).ToList();
+            var table = Read(SummaryProcedure,new DateTime(filters.Year,filters.Month,1),DbFilter(filters.AreaId),
+                DbFilter(filters.EconomicSectorId),DbFilter(filters.IndustryId),DbFilter(filters.EnterpriseId),group);
+            var current = At(rows,filters.Year,filters.Month).ToList();
+            return table.Rows.Cast<DataRow>().Select(r => {
+                var id = NullableInt(r["DimensionId"]);
+                return new DashboardBreakdown { Key = id.ToString(),Name = Convert.ToString(r["DimensionName"]),
+                    Assigned = Convert.ToInt32(r["Type" + filters.ReportType + "Expected"]),
+                    Received = current.Count(x => x.DataImported && (group == "ward" ? x.WardId : x.EconomicSectorId) == id) };
+            }).Where(x => x.Assigned > 0).OrderBy(x => Coverage(x.Received,x.Assigned)).ThenByDescending(x => x.Assigned).ToList();
         }
 
-        private static DashboardFilterOptions BuildOptions(List<SnapshotRow> rows, DashboardFilters filters,
-            string action, bool includeMetric)
+        public IList<DashboardOption> GetFilterOptions(string kind,int? type,string search,int page,int pageSize=50)
         {
-            var industryIds = rows.SelectMany(r => (r.IndustryIds ?? "").Split(','))
-                .Select(id => id.Trim()).Where(id => id.Length > 0).Distinct().ToList();
-            int total;
-            var industryNames = (new CateBusinessIndustryBiz().Get(out total, null) ?? new List<CateBusinessIndustryModel>())
-                .Where(i => i.IsActive && !i.IsDeleted)
-                .GroupBy(i => i.IndustryId).ToDictionary(g => g.Key.ToString(), g => g.First().IndustryName);
-            var industries = new List<DashboardOption> { new DashboardOption { Value = "all", Text = DashboardText.Get("Filter_AllIndustries") } };
-            industries.AddRange(industryIds.Select(id => new DashboardOption
+            var table = Read("Report_Dashboard_FilterOptions",kind,(object)type ?? DBNull.Value,(object)search ?? DBNull.Value,page,pageSize);
+            return table.Rows.Cast<DataRow>().Where(r => r["Value"] != DBNull.Value).Select(r => new DashboardOption {
+                Value = Convert.ToString(r["Value"]), Text = Convert.ToString(r["Text"]), TotalRow = Convert.ToInt32(r["TotalRow"]) }).ToList();
+        }
+        private IList<DashboardOption> AllOptions(string kind,int? type,string allLabel,string selected = "all")
+        {
+            var options = new List<DashboardOption> { new DashboardOption { Value="all",Text=allLabel } };
+            for (var page=1;;page++)
             {
-                Value = id, Text = industryNames.ContainsKey(id) ? industryNames[id] : DashboardText.Get("Filter_IndustryCode") + " " + id
-            }).OrderBy(x => x.Text));
-            var years = rows.Where(r => r.DataImported || r.PrimaryValue.HasValue || r.SecondaryValue.HasValue || r.TertiaryValue.HasValue)
-                .Select(r => r.ForMonth.Year).Concat(new[] { filters.Year, DateTime.Today.Year })
-                .Distinct().OrderByDescending(y => y).Select(y => new DashboardOption { Value = y.ToString(), Text = y.ToString() }).ToList();
-            return new DashboardFilterOptions
-            {
-                Filters = filters, Action = action, Years = years,
-                Months = Enumerable.Range(1, 12).Select(m => new DashboardOption
-                { Value = m.ToString(), Text = Vietnamese.DateTimeFormat.GetMonthName(m) }).ToList(),
-                Areas = Options(rows, r => r.WardId, r => r.WardName, DashboardText.Get("Filter_AllAreas")),
-                EconomicSectors = Options(rows, r => r.EconomicSectorId, r => r.EconomicSectorName, DashboardText.Get("Filter_AllSectors")),
-                Industries = industries,
-                Enterprises = Options(rows, r => (int?)r.EnterpriseId, r => r.BusinessName, DashboardText.Get("Filter_AllEnterprises")),
-                Metrics = includeMetric ? Metrics(filters.ReportType).Select(m => new DashboardOption
-                { Value = m.Key, Text = m.Label }).ToList() : new List<DashboardOption>()
+                var batch = GetFilterOptions(kind,type,null,page,100); options.AddRange(batch);
+                if (batch.Count == 0 || page*100 >= batch[0].TotalRow) break;
+            }
+            if (selected != "all" && !options.Any(x => x.Value == selected)) options.Add(new DashboardOption { Value=selected,Text="Mã " + selected + " (ngoài nhóm được chọn)" });
+            return options;
+        }
+        private DashboardFilterOptions BuildOptions(DashboardFilters filters,string action,bool includeMetric)
+        {
+            int? type = action == "Index" ? (int?)null : filters.ReportType;
+            var enterprises = new List<DashboardOption> { new DashboardOption { Value="all",Text=DashboardText.Get("Filter_AllEnterprises") } };
+            if (filters.EnterpriseId != "all") enterprises.AddRange(GetFilterOptions("enterprise",type,filters.EnterpriseId,1,100).Where(x => x.Value == filters.EnterpriseId));
+            if (filters.EnterpriseId != "all" && !enterprises.Any(x => x.Value == filters.EnterpriseId)) enterprises.Add(new DashboardOption { Value=filters.EnterpriseId,Text="Mã " + filters.EnterpriseId + " (ngoài nhóm được chọn)" });
+            var years = AllOptions("year",type,"").Where(x => x.Value != "all").ToList();
+            if (!years.Any(x => x.Value == filters.Year.ToString())) years.Add(new DashboardOption { Value=filters.Year.ToString(),Text=filters.Year.ToString() });
+            return new DashboardFilterOptions {
+                Filters=filters,Action=action,Years=years.OrderByDescending(x => x.Value).ToList(),
+                Months=Enumerable.Range(1,12).Select(m => new DashboardOption { Value=m.ToString(),Text=Vietnamese.DateTimeFormat.GetMonthName(m) }).ToList(),
+                Areas=AllOptions("ward",type,DashboardText.Get("Filter_AllAreas"),filters.AreaId),
+                EconomicSectors=AllOptions("sector",type,DashboardText.Get("Filter_AllSectors"),filters.EconomicSectorId),
+                Industries=AllOptions("industry",type,DashboardText.Get("Filter_AllIndustries"),filters.IndustryId),Enterprises=enterprises,
+                Metrics=includeMetric ? Metrics(filters.ReportType).Select(m => new DashboardOption { Value=m.Key,Text=m.Label }).ToList() : new List<DashboardOption>()
             };
         }
-
-        private static IList<DashboardOption> Options(List<SnapshotRow> rows, Func<SnapshotRow, int?> id,
-            Func<SnapshotRow, string> label, string allLabel)
+        public Tuple<IList<DashboardEnterpriseRow>, int, int> GetProgressEnterprises(DashboardFilters filters, string search, int page, int pageSize)
         {
-            var options = new List<DashboardOption> { new DashboardOption { Value = "all", Text = allLabel } };
-            options.AddRange(rows.Where(r => id(r).HasValue).GroupBy(r => id(r).Value)
-                .Select(g => new DashboardOption { Value = g.Key.ToString(), Text = label(g.First()) })
-                .OrderBy(x => x.Text));
-            return options;
+            filters = Normalize(filters);
+            if (page < 1 || !new[] { 10, 25, 50, 100 }.Contains(pageSize) || (search != null && search.Length > 250))
+                throw new ArgumentException("Bộ lọc danh sách không hợp lệ.");
+            int total;
+            var details = ReadDetails(filters, filters.Status, page, pageSize, search, out total);
+            return Tuple.Create(details.Item1, details.Item2, total);
+        }
+
+        private Tuple<IList<DashboardEnterpriseRow>,int> GetDetails(DashboardFilters filters,string status,int page)
+        {
+            int total;
+            return ReadDetails(filters, status, page, 50, null, out total);
+        }
+
+        private Tuple<IList<DashboardEnterpriseRow>,int> ReadDetails(DashboardFilters filters, string status, int page, int pageSize, string search, out int total)
+        {
+            DataTable table;
+            try { table = Read("Report_Dashboard_ProgressDetails",new DateTime(filters.Year,filters.Month,1),filters.ReportType,
+                DbFilter(filters.AreaId),DbFilter(filters.EconomicSectorId),DbFilter(filters.IndustryId),DbFilter(filters.EnterpriseId),status,page,pageSize,
+                String.IsNullOrWhiteSpace(search) ? (object)DBNull.Value : search.Trim()); }
+            catch (System.Data.SqlClient.SqlException ex)
+            {
+                if (ex.Number != 201 && ex.Number != 8144 && ex.Number != 2812) throw;
+                throw new System.Web.HttpException(503, "Dashboard database contract is incompatible. Apply the reviewed SQL scripts before deploying the application.", ex);
+            }
+            if (new[] { "TotalRow", "TotalUnfiltered", "EnterpriseId", "BusinessName", "TaxCode", "WardName", "DataImported", "FileSubmittedAnyType", "FileLate", "Reason", "MetricConflict", "PrimaryValue", "SecondaryValue", "TertiaryValue" }.Any(column => !table.Columns.Contains(column)))
+                throw new System.Web.HttpException(503, "Dashboard database result contract is incompatible. Apply the reviewed SQL deployment scripts.");
+            var metrics=Metrics(filters.ReportType);
+            var list=table.Rows.Cast<DataRow>().Where(r => r["EnterpriseId"] != DBNull.Value).Select(r => new DashboardEnterpriseRow {
+                EnterpriseId=Convert.ToInt32(r["EnterpriseId"]),Name=Convert.ToString(r["BusinessName"]),TaxCode=Convert.ToString(r["TaxCode"]),WardName=Convert.ToString(r["WardName"]),
+                DataImported=Convert.ToBoolean(r["DataImported"]),FileAnyType=Convert.ToBoolean(r["FileSubmittedAnyType"]),FileLate=Convert.ToBoolean(r["FileLate"]),
+                Reason=Convert.ToString(r["Reason"]),MetricConflict=Convert.ToBoolean(r["MetricConflict"]),
+                MissingMetricCodes=String.Join(", ",metrics.Where((m,i) => r[new[] { "PrimaryValue","SecondaryValue","TertiaryValue" }[i]] == DBNull.Value).Select(m => m.Code))
+            }).ToList();
+            total = table.Rows.Count == 0 ? 0 : Convert.ToInt32(table.Rows[0]["TotalUnfiltered"]);
+            return Tuple.Create((IList<DashboardEnterpriseRow>)list,table.Rows.Count==0 ? 0 : Convert.ToInt32(table.Rows[0]["TotalRow"]));
         }
 
         private sealed class SnapshotRow
@@ -383,6 +483,10 @@ namespace CenIT.ReportTourism.Biz.Report
             public int? EconomicSectorId;
             public string EconomicSectorName;
             public string IndustryIds;
+            public string IndustryName;
+            public string TaxCode;
+            public string Reason;
+            public bool FileLate;
             public bool DataImported;
             public bool FileAnyType;
             public bool MetricConflict;

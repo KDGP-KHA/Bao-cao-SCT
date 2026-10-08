@@ -1,0 +1,114 @@
+[
+  {
+    "name": "generate",
+    "command": [
+      "/tmp/report-powershell/pwsh",
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "/Users/itzmealvin/GitHub/VNPT/web/B-o-c-o-SCT/Source/ReportDeptTourismSolution/SqlScripts/Scripts/Build_SCT_IndustryChatbot_Deployment.ps1"
+    ],
+    "exitCode": 0,
+    "status": "PASS",
+    "evidence": "docs/sql-scope-audit/evidence/generate.txt"
+  },
+  {
+    "name": "regenerate",
+    "command": [
+      "/tmp/report-powershell/pwsh",
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "/Users/itzmealvin/GitHub/VNPT/web/B-o-c-o-SCT/Source/ReportDeptTourismSolution/SqlScripts/Scripts/Build_SCT_IndustryChatbot_Deployment.ps1"
+    ],
+    "exitCode": 0,
+    "status": "PASS",
+    "evidence": "docs/sql-scope-audit/evidence/regenerate.txt"
+  },
+  {
+    "name": "fixtures-generate",
+    "command": [
+      "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+      "-m",
+      "tools.sql_scope_audit.build_fixtures"
+    ],
+    "exitCode": 0,
+    "status": "PASS",
+    "evidence": "docs/sql-scope-audit/evidence/fixtures-generate.txt"
+  },
+  {
+    "name": "source-regressions",
+    "command": [
+      "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/sql_scope_audit",
+      "-v"
+    ],
+    "exitCode": 0,
+    "status": "PASS",
+    "evidence": "docs/sql-scope-audit/evidence/source-regressions.txt"
+  },
+  {
+    "name": "sql-2012-parse",
+    "command": [
+      "/tmp/report-powershell/pwsh",
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "tests/sql_scope_audit/validate-sql.ps1",
+      "-ScriptDomPath",
+      "/tmp/report-scriptdom/lib/netstandard2.0/Microsoft.SqlServer.TransactSql.ScriptDom.dll"
+    ],
+    "exitCode": 0,
+    "status": "PASS",
+    "evidence": "docs/sql-scope-audit/evidence/sql-2012-parse.txt"
+  },
+  {
+    "name": "csharp-contracts",
+    "command": [
+      "/tmp/report-powershell/pwsh",
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "tests/sql_scope_audit/run-contracts.ps1"
+    ],
+    "exitCode": 0,
+    "status": "PASS",
+    "evidence": "docs/sql-scope-audit/evidence/csharp-contracts.txt"
+  },
+  {
+    "name": "chatbot-tampering",
+    "command": [
+      "/tmp/report-powershell/pwsh",
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "tests/sql_scope_audit/run-catalog.ps1"
+    ],
+    "exitCode": 0,
+    "status": "PASS",
+    "evidence": "docs/sql-scope-audit/evidence/chatbot-tampering.txt"
+  },
+  {
+    "name": "alternate-names",
+    "command": [
+      "/tmp/report-powershell/pwsh",
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "/Users/itzmealvin/GitHub/VNPT/web/B-o-c-o-SCT/Source/ReportDeptTourismSolution/SqlScripts/Scripts/Build_SCT_IndustryChatbot_Deployment.ps1",
+      "-CategoryDatabase",
+      "Audit Category.v2",
+      "-ReportDatabase",
+      "Audit Report.v2",
+      "-OutputDirectory",
+      "/var/folders/p8/c8nxvh4902j2r20qy60xslyh0000gn/T/scope-portability-1886wb4w"
+    ],
+    "exitCode": 0,
+    "status": "PASS",
+    "evidence": "docs/sql-scope-audit/evidence/alternate-names.txt"
+  }
+]

@@ -15,7 +15,8 @@
         @if (ViewBag.ReportViewer != null)
         {
             <div class="table-responsive no-padding" style="height: calc(100vh); height: -moz-calc(100vh); height: -webkit-calc(100vh)">
-                @Html.ReportViewer(ViewBag.ReportViewer as ReportViewer, new { onload = "loadReport()" })
+                @*@Html.ReportViewer(ViewBag.ReportViewer as ReportViewer, new { onload = "loadReport()" })*@
+                @Html.ReportViewer(ViewBag.ReportViewer as ReportViewer, new { id = "reportFrame" })
             </div>
         }
         <script type="text/javascript">
@@ -26,11 +27,33 @@
             }
 
             $(document).ready(function() {
-                $('#FormBody iframe').on('load',
+                $('#FormBody iframe#reportFrame').on('load',
                     function() { $("#loader").removeClass("show pageload-loading").css("display", "none"); });
-                $('#FormBody iframe').css("height", "calc(100vh)");
-                $('#FormBody iframe').css("width", "100%");
+                $('#FormBody iframe#reportFrame').css("height", "calc(100vh)");
+                $('#FormBody iframe#reportFrame').css("width", "100%");
             });
+
+            const iframe = document.getElementById('reportFrame');
+
+            iframe.addEventListener('load', function () {
+                const doc = iframe.contentDocument;
+
+                if (!doc) return;
+
+                const observer = new MutationObserver(function () {
+                    // kiểm tra element đặc trưng của ReportViewer
+                    if (doc.querySelector('#ReportViewer1')) {
+                        observer.disconnect();
+                        loadReport();
+                    }
+                });
+
+                observer.observe(doc.body, {
+                    childList: true,
+                    subtree: true
+                });
+            });
+
 
         </script>
     </div>

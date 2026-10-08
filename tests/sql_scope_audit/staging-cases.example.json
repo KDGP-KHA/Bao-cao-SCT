@@ -1,0 +1,66 @@
+[
+  {
+    "name": "authorized create",
+    "method": "POST",
+    "path": "/Report/Import/Add",
+    "cookieEnv": "SCT_ASSIGNED_COOKIE",
+    "bodyFile": "/private/tmp/sct-fixtures/create.form",
+    "expectedHttpStatus": 200,
+    "expectedJson": {
+      "status": true
+    }
+  },
+  {
+    "name": "authorized update",
+    "method": "POST",
+    "path": "/Report/Import/Edit",
+    "cookieEnv": "SCT_ASSIGNED_COOKIE",
+    "bodyFile": "/private/tmp/sct-fixtures/edit.form",
+    "expectedHttpStatus": 200,
+    "expectedJson": {
+      "status": true
+    }
+  },
+  {
+    "name": "authorized delete",
+    "method": "POST",
+    "path": "/Report/Import/Delete",
+    "cookieEnv": "SCT_ASSIGNED_COOKIE",
+    "bodyFile": "/private/tmp/sct-fixtures/delete.form",
+    "expectedHttpStatus": 200,
+    "expectedJson": {
+      "status": true
+    }
+  },
+  {
+    "name": "foreign enterprise create denied",
+    "method": "POST",
+    "path": "/Report/Import/Add",
+    "cookieEnv": "SCT_ASSIGNED_COOKIE",
+    "bodyFile": "/private/tmp/sct-fixtures/foreign-create.form",
+    "expectedHttpStatus": 403
+  },
+  {
+    "name": "foreign enterprise update denied",
+    "method": "POST",
+    "path": "/Report/Import/Edit",
+    "cookieEnv": "SCT_ASSIGNED_COOKIE",
+    "bodyFile": "/private/tmp/sct-fixtures/foreign-edit.form",
+    "expectedHttpStatus": 403
+  },
+  {
+    "name": "foreign enterprise delete denied",
+    "method": "POST",
+    "path": "/Report/Import/Delete",
+    "cookieEnv": "SCT_ASSIGNED_COOKIE",
+    "bodyFile": "/private/tmp/sct-fixtures/foreign-delete.form",
+    "expectedHttpStatus": 403
+  },
+  {
+    "name": "operational enterprise picker",
+    "method": "GET",
+    "path": "/Report/Import/SearchEnterprisesSelect2?page=1",
+    "cookieEnv": "SCT_ASSIGNED_COOKIE",
+    "expectedHttpStatus": 200
+  }
+]

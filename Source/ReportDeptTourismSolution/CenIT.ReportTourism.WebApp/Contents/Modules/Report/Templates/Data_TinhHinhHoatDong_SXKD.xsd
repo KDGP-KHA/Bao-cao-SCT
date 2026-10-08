@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="Data_TinhHinhHoatDong_SXKD" targetNamespace="http://tempuri.org/Data_TinhHinhHoatDong_SXKD.xsd" xmlns:mstns="http://tempuri.org/Data_TinhHinhHoatDong_SXKD.xsd" xmlns="http://tempuri.org/Data_TinhHinhHoatDong_SXKD.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="Data_TinhHinhHoatDong_SXKD" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="Data_TinhHinhHoatDong_SXKD" msprop:Generator_UserDSName="Data_TinhHinhHoatDong_SXKD">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="TinhHinhHoatDong_SXKD" msprop:Generator_TableClassName="TinhHinhHoatDong_SXKDDataTable" msprop:Generator_TableVarName="tableTinhHinhHoatDong_SXKD" msprop:Generator_TablePropName="TinhHinhHoatDong_SXKD" msprop:Generator_RowDeletingName="TinhHinhHoatDong_SXKDRowDeleting" msprop:Generator_RowChangingName="TinhHinhHoatDong_SXKDRowChanging" msprop:Generator_RowEvHandlerName="TinhHinhHoatDong_SXKDRowChangeEventHandler" msprop:Generator_RowDeletedName="TinhHinhHoatDong_SXKDRowDeleted" msprop:Generator_UserTableName="TinhHinhHoatDong_SXKD" msprop:Generator_RowChangedName="TinhHinhHoatDong_SXKDRowChanged" msprop:Generator_RowEvArgName="TinhHinhHoatDong_SXKDRowChangeEvent" msprop:Generator_RowClassName="TinhHinhHoatDong_SXKDRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="TT" msprop:Generator_ColumnVarNameInTable="columnTT" msprop:Generator_ColumnPropNameInRow="TT" msprop:Generator_ColumnPropNameInTable="TTColumn" msprop:Generator_UserColumnName="TT" type="xs:string" minOccurs="0" />
+              <xs:element name="ChiTieu" msprop:Generator_ColumnVarNameInTable="columnChiTieu" msprop:Generator_ColumnPropNameInRow="ChiTieu" msprop:Generator_ColumnPropNameInTable="ChiTieuColumn" msprop:Generator_UserColumnName="ChiTieu" type="xs:string" minOccurs="0" />
+              <xs:element name="DonViTinh" msprop:Generator_ColumnVarNameInTable="columnDonViTinh" msprop:Generator_ColumnPropNameInRow="DonViTinh" msprop:Generator_ColumnPropNameInTable="DonViTinhColumn" msprop:Generator_UserColumnName="DonViTinh" type="xs:string" minOccurs="0" />
+              <xs:element name="KeHoachNam" msprop:Generator_ColumnVarNameInTable="columnKeHoachNam" msprop:Generator_ColumnPropNameInRow="KeHoachNam" msprop:Generator_ColumnPropNameInTable="KeHoachNamColumn" msprop:Generator_UserColumnName="KeHoachNam" type="xs:string" minOccurs="0" />
+              <xs:element name="NamTruoc_ThucHienThangBC" msprop:Generator_ColumnVarNameInTable="columnNamTruoc_ThucHienThangBC" msprop:Generator_ColumnPropNameInRow="NamTruoc_ThucHienThangBC" msprop:Generator_ColumnPropNameInTable="NamTruoc_ThucHienThangBCColumn" msprop:Generator_UserColumnName="NamTruoc_ThucHienThangBC" type="xs:string" minOccurs="0" />
+              <xs:element name="NamTruoc_CongDon" msprop:Generator_ColumnVarNameInTable="columnNamTruoc_CongDon" msprop:Generator_ColumnPropNameInRow="NamTruoc_CongDon" msprop:Generator_ColumnPropNameInTable="NamTruoc_CongDonColumn" msprop:Generator_UserColumnName="NamTruoc_CongDon" type="xs:string" minOccurs="0" />
+              <xs:element name="NamBC_ThucHienThangTruoc" msprop:Generator_ColumnVarNameInTable="columnNamBC_ThucHienThangTruoc" msprop:Generator_ColumnPropNameInRow="NamBC_ThucHienThangTruoc" msprop:Generator_ColumnPropNameInTable="NamBC_ThucHienThangTruocColumn" msprop:Generator_UserColumnName="NamBC_ThucHienThangTruoc" type="xs:string" minOccurs="0" />
+              <xs:element name="NamBC_UocThucHienThangBC" msprop:Generator_ColumnVarNameInTable="columnNamBC_UocThucHienThangBC" msprop:Generator_ColumnPropNameInRow="NamBC_UocThucHienThangBC" msprop:Generator_ColumnPropNameInTable="NamBC_UocThucHienThangBCColumn" msprop:Generator_UserColumnName="NamBC_UocThucHienThangBC" type="xs:string" minOccurs="0" />
+              <xs:element name="NamBC_CongDonDenThangBC" msprop:Generator_ColumnVarNameInTable="columnNamBC_CongDonDenThangBC" msprop:Generator_ColumnPropNameInRow="NamBC_CongDonDenThangBC" msprop:Generator_ColumnPropNameInTable="NamBC_CongDonDenThangBCColumn" msprop:Generator_UserColumnName="NamBC_CongDonDenThangBC" type="xs:string" minOccurs="0" />
+              <xs:element name="CongDon_ThangBC_KeHoachNam" msprop:Generator_ColumnVarNameInTable="columnCongDon_ThangBC_KeHoachNam" msprop:Generator_ColumnPropNameInRow="CongDon_ThangBC_KeHoachNam" msprop:Generator_ColumnPropNameInTable="CongDon_ThangBC_KeHoachNamColumn" msprop:Generator_UserColumnName="CongDon_ThangBC_KeHoachNam" type="xs:string" minOccurs="0" />
+              <xs:element name="CongDon_ThangBC_CungKy" msprop:Generator_ColumnVarNameInTable="columnCongDon_ThangBC_CungKy" msprop:Generator_ColumnPropNameInRow="CongDon_ThangBC_CungKy" msprop:Generator_ColumnPropNameInTable="CongDon_ThangBC_CungKyColumn" msprop:Generator_UserColumnName="CongDon_ThangBC_CungKy" type="xs:string" minOccurs="0" />
+              <xs:element name="ThucHien_ThangBC_CungKy" msprop:Generator_ColumnVarNameInTable="columnThucHien_ThangBC_CungKy" msprop:Generator_ColumnPropNameInRow="ThucHien_ThangBC_CungKy" msprop:Generator_ColumnPropNameInTable="ThucHien_ThangBC_CungKyColumn" msprop:Generator_UserColumnName="ThucHien_ThangBC_CungKy" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

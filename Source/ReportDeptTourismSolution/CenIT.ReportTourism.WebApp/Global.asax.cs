@@ -18,6 +18,7 @@ namespace CenIT.ReportTourism.WebApp
     {
         protected void Application_Start()
         {
+            CenIT.ReportTourism.Biz.Report.ReportRoleMapping.Validate();
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

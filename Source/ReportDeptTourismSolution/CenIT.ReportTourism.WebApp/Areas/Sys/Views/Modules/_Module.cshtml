@@ -7,55 +7,50 @@
 
 <div id="AppModule">
     <div class="form-group">
-        @Html.TitleFor(model => model.ModuleName, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextBoxFor(model => model.ModuleName, new { @class = "col-md-7", placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_ModuleName") })
+        <div class="col-md-3">
+            @Html.TitleFor(model => model.ModuleName, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.ModuleName, new { @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_ModuleName") })
             @Html.ValidationMessageFor(model => model.ModuleName, "", new { @class = "text-danger" })
         </div>
-    </div>
-    <div class="form-group">
-        @Html.TitleFor(model => model.MainController, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextBoxFor(model => model.MainController, new { @class = "col-md-7", placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_MainController") })
+        <div class="col-md-5">
+            @Html.TitleFor(model => model.MainController, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.MainController, new { @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_MainController") })
             @Html.ValidationMessageFor(model => model.MainController, "", new { @class = "text-danger" })
         </div>
-    </div>
-    <div class="form-group">
-        @Html.TitleFor(model => model.ModuleView, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextBoxFor(model => model.ModuleView, new { @class = "col-md-7", placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_ModuleView") })
+        <div class="col-md-4">
+            @Html.TitleFor(model => model.ModuleView, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.ModuleView, new { @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_ModuleView") })
             @Html.ValidationMessageFor(model => model.ModuleView, "", new { @class = "text-danger" })
         </div>
     </div>
+
     <div class="form-group">
-        @Html.TitleFor(model => model.Description, new { @class = "control-label col-md-3" })
+        <div class="col-md-3">
+            @*<label class="control-label col-md-12">@AppProcessor.Messagor.GetMessage("Menu_Label_Icon")</label>*@
+            <button type="button" style="margin-top: 10px;" class="btn btn-default fa-3x iconpicker" data-iconset="fontawesome" role="iconpicker" id="iconpicker" data-icon="@Model.Icon"></button>
+            @Html.HiddenFor(model => model.Icon, new { @class = "form-control", Value = Model.Icon })
+            @Html.ValidationMessageFor(model => model.Icon, "", new { @class = "text-danger" })
+        </div>
         <div class="col-md-9">
-            @Html.TextAreaFor(model => model.Description, new { rows = "3", @class = "col-md-8", placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_Description") })
+            @Html.TitleFor(model => model.Description, new { @class = "control-label" })
+            @Html.TextAreaFor(model => model.Description, new { rows = "2", @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_Description") })
             @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
-        @Html.TitleFor(model => model.ModuleFileZip, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.ModuleFileZip, new { @class = "control-label" })
             @Html.FileFor(model => model.ModuleFileZip, ".zip", true, new { @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("AppModule_Label_ZipFile") })
             @Html.ValidationMessageFor(model => model.ModuleFileZip, "", new { @class = "text-danger" })
         </div>
     </div>
-    <div class="form-group">
-        <label class="control-label col-md-3">@AppProcessor.Messagor.GetMessage("Menu_Label_Icon")</label>
-        <div class="col-md-9">
-            <button type="button" class="btn btn-default fa-2x iconpicker" data-iconset="fontawesome" role="iconpicker" id="iconpicker" data-icon="@Model.Icon"></button>
-            @Html.HiddenFor(model => model.Icon, new { @class = "form-control", Value = Model.Icon })
-            @Html.ValidationMessageFor(model => model.Icon, "", new { @class = "text-danger" })
-        </div>
-    </div>
 </div>
 <script type="text/javascript">
-    $(function() {
+    $(function () {
         $('#iconpicker').iconpicker();
     });
     $('#iconpicker').on('change',
-        function(e) {
+        function (e) {
             $("#Icon").val(e.icon);
         });
 </script>

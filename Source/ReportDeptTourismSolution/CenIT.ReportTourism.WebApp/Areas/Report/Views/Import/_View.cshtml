@@ -1,6 +1,19 @@
-﻿@model CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Models.ReportDataImportViewModel
+﻿@using CenIT.ReportTourism.Core.Conts
+@model CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Models.ReportDataImportViewModel
 @{
     Layout = "~/Views/Shared/_Form.cshtml";
+    DateTime forMonth = Model.ForMonth ?? DateTime.Now;
+    int currentMonth = forMonth.Month;
+    int prevMonth = currentMonth == 1 ? 12 : currentMonth - 1;
+    var typeReport = Model.TypeReport.HasValue ? (EnumTypeBusiness)Model.TypeReport.Value : EnumTypeBusiness.Manufacturing;
+}
+
+@functions {
+    public static string FormatNumber(double? val)
+    {
+        if (!val.HasValue) return "";
+        return val.Value.ToString("#,##0.##", new System.Globalization.CultureInfo("vi-VN"));
+    }
 }
 
 @section FormType{
@@ -13,33 +26,225 @@
 
 @section FormBody{
     <style>
-        #ViewDataImports tr.business-product-category td,
-        #ViewDataImports tr.business-product-summary td {
+        .table-view-report th, .table-view-report td {
+            vertical-align: middle !important;
+            padding: 6px 8px;
+        }
+        .table-view-report tr.view-summary td {
             font-weight: 700;
+            background-color: #f9fbfd;
+        }
+        .table-view-report tr.view-category td {
+            font-weight: 700;
+            background-color: #fdfdfd;
+        }
+        .table-view-report tr.view-detail td:first-child {
+            font-style: italic;
+            padding-left: 28px;
         }
     </style>
-    <div id="bodyForm">
-        <table id="ViewDataImports" class="table table-bordered table-striped" width="100%">
-            <thead>
-            <tr>
-                <th width="20%">Chỉ tiêu</th>
-                <th width="3%">Đơn vị tính</th>
-                <th width="3%">Mã số</th>
-                <th width="13.3%">Kế hoạch năm báo cáo</th>
-                <th width="13.3%">Thực hiện tháng trước</th>
-                <th width="13.3%">Ước thực hiện tháng báo cáo</th>
-            </tr>
-            </thead>
-        </table>
-    </div>
-    <script type="text/javascript">
-        var enterpriseId = @Model.EnterpriseId;
-        var forMonth = '@Model.ForMonth.Value.ToString("yyyy-MM-dd")';
 
-    </script>
-    <script src="@Url.Content("~/Areas/Report/Views/Import/ViewDataImport.js")"></script>
+    <div id="bodyForm">
+        <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+        @if (typeReport == EnumTypeBusiness.Trading)
+        {
+            @* BÁO CÁO THƯƠNG MẠI, DỊCH VỤ - KHÔNG HIỂN THỊ MÃ SỐ *@
+            <table class="table table-bordered table-striped table-view-report" width="100%">
+                <thead>
+                    <tr>
+                        <th rowspan="2" width="50%" class="text-center" style="vertical-align: middle;">Tên chỉ tiêu</th>
+                        <th colspan="2" width="50%" class="text-center">Năm @forMonth.Year (triệu đồng)</th>
+                    </tr>
+                    <tr>
+                        <th width="25%" class="text-center">Thực hiện tháng @prevMonth.ToString("D2")</th>
+                        <th width="25%" class="text-center">Ước thực hiện tháng @currentMonth.ToString("D2")</th>
+                    </tr>
+                    <tr class="text-center" style="background-color: #f7f7f7; font-size: 12px;">
+                        <td>A</td>
+                        <td>1</td>
+                        <td>3</td>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (Model.ListDataImports != null && Model.ListDataImports.Any())
+                {
+                    foreach (var item in Model.ListDataImports)
+                    {
+                        var code = item.Code ?? "";
+                        if (code == "38" || code == "39" || code == "1.13.38" || code == "1.13.39" ||
+                            ((item.Level == "1.13.1" || item.Level == "1.13.2") && (string.Equals(item.Targets, "Trong đó: Bán lẻ", StringComparison.OrdinalIgnoreCase) || string.Equals(item.Targets, "Trong đó: Nền tảng trực tuyến", StringComparison.OrdinalIgnoreCase)) && !code.Contains("TM_")))
+                        {
+                            continue;
+                        }
+                        var isDynamic = code.StartsWith("TM_", StringComparison.OrdinalIgnoreCase) || code.Contains(".TM_");
+                        var isDynamicSub = isDynamic && (code.EndsWith("_BL", StringComparison.OrdinalIgnoreCase) || code.EndsWith("_TT", StringComparison.OrdinalIgnoreCase));
+                        var isDynamicParent = isDynamic && !isDynamicSub;
+                        var isCalculated = isDynamicParent || new[] { "01", "02", "03", "04", "07", "10", "13", "16", "19", "22", "25", "28", "31", "34" }.Contains(code);
+                        var isSummary = isCalculated || code == "40";
+                        var isDetail = isDynamicSub || new[] { "02", "03", "05", "06", "08", "09", "11", "12", "14", "15", "17", "18", "20", "21", "23", "24", "26", "27", "29", "30", "32", "33" }.Contains(code);
+                        var paddingStyle = isDetail ? "padding-left: 28px; font-style: italic;" : (isDynamicParent ? "padding-left: 14px;" : "");
+                        <tr class="@(isSummary ? "view-summary" : "") @(isDetail ? "view-detail" : "")">
+                            <td class="text-left" style="@paddingStyle">
+                                @if (isSummary)
+                                {
+                                    <strong>@item.Targets</strong>
+                                }
+                                else
+                                {
+                                    @item.Targets
+                                }
+                            </td>
+                            <td class="text-right">@FormatNumber(item.PerformPreviousPeriod)</td>
+                            <td class="text-right">@FormatNumber(item.PerformInPeriod)</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        }
+        else if (typeReport == EnumTypeBusiness.ImportExport)
+        {
+            @* BÁO CÁO XUẤT NHẬP KHẨU - KHÔNG HIỂN THỊ MÃ SỐ *@
+            <table class="table table-bordered table-striped table-view-report" width="100%">
+                <thead>
+                    <tr>
+                        <th rowspan="2" width="36%" class="text-center" style="vertical-align: middle;">Tên chỉ tiêu</th>
+                        <th colspan="2" width="32%" class="text-center">Thực hiện tháng @prevMonth.ToString("D2")</th>
+                        <th colspan="2" width="32%" class="text-center">Ước thực hiện tháng @currentMonth.ToString("D2")</th>
+                    </tr>
+                    <tr>
+                        <th width="16%" class="text-center">Lượng</th>
+                        <th width="16%" class="text-center">Trị giá (USD)</th>
+                        <th width="16%" class="text-center">Lượng</th>
+                        <th width="16%" class="text-center">Trị giá (USD)</th>
+                    </tr>
+                    <tr class="text-center" style="background-color: #f7f7f7; font-size: 12px;">
+                        <td>A</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (Model.ListDataImports != null && Model.ListDataImports.Any())
+                {
+                    foreach (var item in Model.ListDataImports)
+                    {
+                        var code = item.Code ?? "";
+                        var isSummary = code == "FOB" || code == "XK_TT" || code == "UT_XK";
+                        var isHeader = code == "XK_QG_HEADER" || code == "XK_MH_HEADER" || code == "UT_MH_HEADER";
+                        var isIndent = (item.Level ?? "").StartsWith("1.1.") || (item.Level ?? "").StartsWith("1.2.") || (item.Level ?? "").StartsWith("2.1.");
+
+                        if (isHeader)
+                        {
+                            <tr class="view-category">
+                                <td colspan="5" class="text-left">
+                                    <span style="font-weight: 600;">@item.Targets</span>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr class="@(isSummary ? "view-summary" : "")">
+                                <td class="text-left" style="@(isIndent ? "padding-left: 28px;" : "")">
+                                    @if (isSummary)
+                                    {
+                                        <strong>@item.Targets</strong>
+                                    }
+                                    else
+                                    {
+                                        @item.Targets
+                                    }
+                                </td>
+                                <td class="text-right">@FormatNumber(item.PerformPreviousPeriod)</td>
+                                <td class="text-right">@FormatNumber(item.ComparedSamePeriodLastYear)</td>
+                                <td class="text-right">@FormatNumber(item.PerformInPeriod)</td>
+                                <td class="text-right">@FormatNumber(item.AccumulatedBeginingOfYear)</td>
+                            </tr>
+                        }
+                    }
+                }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            @* BÁO CÁO SẢN XUẤT, KINH DOANH - KHÔNG HIỂN THỊ MÃ SỐ *@
+            <table class="table table-bordered table-striped table-view-report" width="100%">
+                <thead>
+                    <tr>
+                        <th rowspan="2" width="5%" class="text-center" style="vertical-align: middle;">TT</th>
+                        <th rowspan="2" width="34%" class="text-center" style="vertical-align: middle;">Chỉ tiêu</th>
+                        <th rowspan="2" width="11%" class="text-center" style="vertical-align: middle;">Đơn vị tính</th>
+                        <th rowspan="2" width="16%" class="text-center" style="vertical-align: middle;">Kế hoạch năm báo cáo</th>
+                        <th colspan="2" width="34%" class="text-center">Năm @forMonth.Year</th>
+                    </tr>
+                    <tr>
+                        <th width="17%" class="text-center">Thực hiện tháng @prevMonth.ToString("D2")</th>
+                        <th width="17%" class="text-center">Ước thực hiện tháng @currentMonth.ToString("D2")</th>
+                    </tr>
+                    <tr class="text-center" style="background-color: #f7f7f7; font-size: 12px;">
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>7</td>
+                        <td>8</td>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (Model.ListDataImports != null && Model.ListDataImports.Any())
+                {
+                    var index = 1;
+                    foreach (var item in Model.ListDataImports)
+                    {
+                        var isSummary = item.Targets == "Tổng doanh thu"
+                                        || item.Targets == "Nộp ngân sách"
+                                        || item.Targets == "Kim ngạch xuất khẩu"
+                                        || item.Targets == "Kim ngạch nhập khẩu";
+                        var isCategory = string.IsNullOrEmpty(item.Unit) || item.Code == "2" || item.Code == "6.0" || item.Code == "7.0";
+                        var isChild = !string.IsNullOrEmpty(item.Unit) && !isSummary && !isCategory;
+
+                        string displayIndex = "";
+                        if (!string.IsNullOrEmpty(item.Level))
+                        {
+                            displayIndex = item.Level;
+                        }
+                        else if (item.Index.HasValue && item.Index.Value > 0)
+                        {
+                            displayIndex = item.Index.Value.ToString();
+                        }
+                        else if (!isCategory)
+                        {
+                            displayIndex = (index++).ToString();
+                        }
+
+                        <tr class="@(isSummary ? "view-summary" : "") @(isCategory ? "view-category" : "")">
+                            <td class="text-center">@displayIndex</td>
+                            <td class="text-left" style="@(isChild ? "padding-left: 24px;" : "")">
+                                @if (isSummary || isCategory)
+                                {
+                                    <strong>@item.Targets</strong>
+                                }
+                                else
+                                {
+                                    @item.Targets
+                                }
+                            </td>
+                            <td class="text-center">@item.Unit</td>
+                            <td class="text-right">@FormatNumber(item.AccumulatedBeginingOfYear)</td>
+                            <td class="text-right">@FormatNumber(item.PerformPreviousPeriod)</td>
+                            <td class="text-right">@FormatNumber(item.PerformInPeriod)</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        }
+        </div>
+    </div>
 }
 
 @section submitControl{
-
 }

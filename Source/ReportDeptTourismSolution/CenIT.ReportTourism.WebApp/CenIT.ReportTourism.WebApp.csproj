@@ -316,6 +316,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>_02ThongKeQuocTichKhachDuLich.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Chatbot\ChatbotOptions.cs" />
+    <Compile Include="Chatbot\ChatbotCapability.cs" />
+    <Compile Include="Chatbot\ChatbotCatalog.cs" />
+    <Compile Include="Chatbot\ChatbotTools.cs" />
+    <Compile Include="Chatbot\ChatbotAnalytics.cs" />
+    <Compile Include="Chatbot\ChatbotQueries.cs" />
+    <Compile Include="Chatbot\ChatbotAccess.cs" />
+    <Compile Include="Controllers\ChatbotController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -382,7 +390,6 @@
     <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Report\Views\Dashboard\Dashboard.js" />
     <Content Include="Areas\Report\Views\ExtendInfo\ExtendInfo.js" />
     <Content Include="Areas\Report\Views\Import\Import.js" />
     <Content Include="Areas\Report\Views\Import\ViewDataImport.js" />
@@ -617,7 +624,7 @@
     <Content Include="Contents\plugins\bootstrap\js\bootstrap.js" />
     <Content Include="Contents\plugins\bootstrap\js\bootstrap.min.js" />
     <Content Include="Contents\plugins\bootstrap\js\npm.js" />
-    <Content Include="Contents\plugins\chosen\chosen-sprite%402x.png" />
+    <Content Include="Contents\plugins\chosen\chosen-sprite@2x.png" />
     <Content Include="Contents\plugins\chosen\chosen-sprite.png" />
     <Content Include="Contents\plugins\chosen\chosen.custom.css" />
     <Content Include="Contents\plugins\chosen\chosen.jquery.min.js" />
@@ -1617,14 +1624,13 @@
     <Content Include="Areas\Report\Views\Dashboard\Progress.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_DashboardNavigation.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_DashboardFilters.cshtml" />
+    <Content Include="Areas\Report\Views\Dashboard\_DashboardEnterpriseDetail.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_DashboardAlerts.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_DashboardSubmissionDetails.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_EnterpriseMovement.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_ReportedReasons.cshtml" />
-    <Content Include="Areas\Report\Views\Dashboard\_Dashboard.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_StatisticEnterprise.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_StatisticIncome.cshtml" />
-    <Content Include="Areas\Report\Views\Dashboard\_StatisticMapVisitor.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_StatisticTypeBusiness.cshtml" />
     <Content Include="Areas\Report\Views\Dashboard\_StatisticVisitor.cshtml" />
     <Content Include="Areas\Report\Views\ExtendInfo\Index.cshtml" />
@@ -1703,6 +1709,10 @@
     <Content Include="Contents\plugins\vegas\zepto.min.js" />
     <Content Include="Contents\plugins\widget\jquery-ui.custom.min.js" />
     <Content Include="Contents\plugins\widget\widget.css" />
+    <Content Include="Chatbot\external-tools.json" />
+    <Content Include="Areas\Sys\Views\User\_IndustryPermissions.cshtml" />
+    <Content Include="Contents\js\chatbot.js" />
+    <Content Include="Views\Shared\_Chatbot.cshtml" />
     <Content Include="Global.asax" />
     <Content Include="Libraries\Connectors\Plugable.OracleConnectority.dll" />
     <Content Include="Libraries\Connectors\Plugable.SQLConnectority.dll" />
@@ -1879,6 +1889,10 @@
     <ProjectReference Include="..\CenIT.ReportTourism.AppMembership\CenIT.ReportTourism.AppMembership.csproj">
       <Project>{cf5b0dc2-371b-4373-a315-fc976db86c8c}</Project>
       <Name>CenIT.ReportTourism.AppMembership</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CenIT.ReportTourism.Biz\CenIT.ReportTourism.Biz.csproj">
+      <Project>{9717A466-E0FA-4093-9E25-A3199F33C2BA}</Project>
+      <Name>CenIT.ReportTourism.Biz</Name>
     </ProjectReference>
     <ProjectReference Include="..\CenIT.ReportTourism.Caches\CenIT.ReportTourism.Caches.csproj">
       <Project>{44F493FC-AF88-45BB-A5C0-1E23EA5B6C8A}</Project>

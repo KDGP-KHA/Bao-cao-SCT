@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
@@ -13,7 +13,7 @@ using TSFramework.Core.Enums;
 
 namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
 {
-    public class ReportController : AppController
+    public class ReportController : IndustryScopedReportController
     {
         private readonly string _reportTitle = AppProcessor.Messagor.GetMessage("Report_Title");
         private readonly CateEnterpriseCache _enterpriseCache = new CateEnterpriseCache();
@@ -32,7 +32,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
         {
             var pReport = ReportProcessor.GetReportByKey(report);
             ViewBag.Title = pReport.ReportName;
-            var listEnterprise = _enterpriseCache.GetViaUser(User.UserName);
+            var listEnterprise = IndustryScope.GetEnterprises().ToList();
 
             var reportModel = new ReportViewModel
             {
@@ -60,6 +60,14 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
         [HttpPost]
         public async Task<ActionResult> RenderReport()
         {
+            var enterpriseValue = Request.Form["EnterpriseId"];
+            if (!string.IsNullOrEmpty(enterpriseValue))
+            {
+                int enterpriseId;
+                if (!int.TryParse(enterpriseValue, out enterpriseId) || enterpriseId <= 0)
+                    return new HttpStatusCodeResult(400);
+                IndustryScope.Demand(enterpriseId);
+            }
             var sReportKey = Request.Form["ReportKey"];
             ViewBag.Title = Request.Form["ReportName"];
 

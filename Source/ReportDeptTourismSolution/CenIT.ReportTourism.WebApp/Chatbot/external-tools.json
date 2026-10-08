@@ -1,0 +1,1202 @@
+{
+  "tools": [
+    {
+      "name": "search_enterprises",
+      "description": "Tìm doanh nghiệp Sở Công Thương theo tên, mã số thuế, địa chỉ, loại hình sản xuất/thương mại. Chỉ trả doanh nghiệp được phân công cho người đang đăng nhập.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "type": "string",
+            "description": "Từ khóa tên doanh nghiệp, mã số thuế hoặc địa chỉ.",
+            "maxLength": 200
+          },
+          "businessType": {
+            "type": "string",
+            "description": "Loại hình kinh doanh.",
+            "maxLength": 200,
+            "enum": [
+              "manufacturing",
+              "trading"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Số kết quả tối đa, mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu; dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_enterprise_detail",
+      "description": "Hồ sơ an toàn của doanh nghiệp được phân công và tối đa 50 sản phẩm thực sự được gán qua Cate_BusinessEnterpriseProduct, không dùng danh sách sản phẩm theo ngành làm sản phẩm doanh nghiệp.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "enterpriseId": {
+            "type": "integer",
+            "description": "ID doanh nghiệp nếu đã biết từ kết quả tìm kiếm.",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "query": {
+            "type": "string",
+            "description": "Tên doanh nghiệp hoặc mã số thuế, có thể chỉ một phần; không tự đoán ID.",
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_reports",
+      "description": "Tìm các báo cáo đã nộp của doanh nghiệp được phân công theo từ khóa, tháng hoặc khoảng thời gian tự nhiên. Mặc định tháng hiện tại với tài khoản doanh nghiệp; tài khoản dashboard dùng tháng có dữ liệu gần nhất trong phạm vi được cấp; recent là 3 tháng gần nhất. Chỉ đọc dữ liệu. Có offset/nextOffset; nếu danh sách ID phân công vượt giới hạn varchar(500) của SP thì yêu cầu chọn doanh nghiệp, không cắt bớt ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month",
+              "this_year",
+              "last_year",
+              "recent"
+            ]
+          },
+          "enterpriseId": {
+            "type": "integer",
+            "description": "ID doanh nghiệp nếu đã biết từ kết quả tìm kiếm.",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "keyword": {
+            "type": "string",
+            "description": "Từ khóa được bộ tìm kiếm báo cáo hiện hữu hỗ trợ.",
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Số kết quả tối đa, mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu; dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_report_detail",
+      "description": "Đọc các chỉ tiêu báo cáo tháng của một doanh nghiệp được phân công: tên chỉ tiêu, đơn vị, kỳ trước, kỳ này, lũy kế và so sánh cùng kỳ. Chọn doanh nghiệp bằng ID/tên/mã số thuế; tháng mặc định tháng hiện tại với tài khoản doanh nghiệp, hoặc tháng có dữ liệu gần nhất trong phạm vi tài khoản dashboard. Gọi p_Report_DataImports_GetDataImport cho các dòng chỉ tiêu, không dùng GetViaEnterpriseOnMonth (SP đó chỉ trả trạng thái). Trường số liệu là giá trị đã nhập, chưa kiểm chứng công thức.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "enterpriseId": {
+            "type": "integer",
+            "description": "ID doanh nghiệp nếu đã biết từ kết quả tìm kiếm.",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "query": {
+            "type": "string",
+            "description": "Tên doanh nghiệp hoặc mã số thuế, có thể chỉ một phần; không tự đoán ID.",
+            "maxLength": 200
+          },
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "reportType": {
+            "type": "integer",
+            "description": "Mã loại báo cáo lấy từ search_reports.",
+            "minimum": 1,
+            "maximum": 3
+          },
+          "indicator": {
+            "type": "string",
+            "description": "Tên hoặc mã chỉ tiêu cần đọc (một phần).",
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Số kết quả tối đa, mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí dòng bắt đầu (mặc định 0), dùng để đọc tiếp khi hasMore=true.",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_my_reporting_status",
+      "description": "Kiểm tra doanh nghiệp được phân công đã/chưa nộp báo cáo trong tháng, tổng số đã nộp và còn thiếu. Chưa nộp không đồng nghĩa quá hạn. Không suy đoán hạn nộp.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Lọc tình trạng nộp báo cáo.",
+            "maxLength": 200,
+            "enum": [
+              "submitted",
+              "missing",
+              "all"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Số kết quả tối đa, mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu; dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_commerce_statistics",
+      "description": "Tổng quan dashboard Sở Công Thương: giá trị chỉ tiêu chính, số báo cáo nhận được và xu hướng thu báo cáo 12 tháng. Có thể lọc loại báo cáo và tên doanh nghiệp/xã phường/ngành/khu vực kinh tế. Chỉ dành cho tài khoản có quyền xem dashboard; phạm vi giống dashboard hiện hữu. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "reportType": {
+            "type": "string",
+            "description": "Loại báo cáo: sản xuất công nghiệp, thương mại hoặc xuất nhập khẩu.",
+            "maxLength": 200,
+            "enum": [
+              "manufacturing",
+              "trading",
+              "export_import"
+            ]
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "Tên doanh nghiệp (một phần) hoặc ID đã biết; bỏ trống để xem toàn bộ phạm vi dashboard.",
+            "maxLength": 200
+          },
+          "area": {
+            "type": "string",
+            "description": "Tên xã/phường (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "industry": {
+            "type": "string",
+            "description": "Tên ngành công nghiệp (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "economicSector": {
+            "type": "string",
+            "description": "Tên khu vực kinh tế (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "analyze_commerce_indicator",
+      "description": "Phân tích chỉ tiêu công thương: giá trị tháng, lũy kế năm, so sánh tháng trước/cùng kỳ, xu hướng và cơ cấu khu vực kinh tế. Sản xuất: primary=doanh thu công nghiệp, secondary=xuất khẩu, tertiary=nhập khẩu. Thương mại: primary=bán buôn/bán lẻ, secondary=sửa chữa xe, tertiary=bán lẻ. Xuất nhập khẩu: primary=FOB, secondary=xuất trực tiếp, tertiary=xuất ủy thác. Cần quyền xem dashboard. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "reportType": {
+            "type": "string",
+            "description": "Loại báo cáo: sản xuất công nghiệp, thương mại hoặc xuất nhập khẩu.",
+            "maxLength": 200,
+            "enum": [
+              "manufacturing",
+              "trading",
+              "export_import"
+            ]
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "Tên doanh nghiệp (một phần) hoặc ID đã biết; bỏ trống để xem toàn bộ phạm vi dashboard.",
+            "maxLength": 200
+          },
+          "area": {
+            "type": "string",
+            "description": "Tên xã/phường (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "industry": {
+            "type": "string",
+            "description": "Tên ngành công nghiệp (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "economicSector": {
+            "type": "string",
+            "description": "Tên khu vực kinh tế (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "metric": {
+            "type": "string",
+            "description": "Chỉ tiêu cần phân tích theo reportType; mặc định primary.",
+            "maxLength": 200,
+            "enum": [
+              "primary",
+              "secondary",
+              "tertiary"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_reporting_warnings",
+      "description": "Cảnh báo dashboard hiện hữu cho chỉ tiêu primary của loại báo cáo chọn, so tháng trước, ngưỡng nghiêm ngặt >10/20/30%, danh sách tối đa 8 biến động và 8 trường hợp thiếu dữ liệu. Dùng get_indicator_alerts để chọn metric/comparison và phân trang đầy đủ. Cần Dashboard/View. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "reportType": {
+            "type": "string",
+            "description": "Loại báo cáo: sản xuất công nghiệp, thương mại hoặc xuất nhập khẩu.",
+            "maxLength": 200,
+            "enum": [
+              "manufacturing",
+              "trading",
+              "export_import"
+            ]
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "Tên doanh nghiệp (một phần) hoặc ID đã biết; bỏ trống để xem toàn bộ phạm vi dashboard.",
+            "maxLength": 200
+          },
+          "area": {
+            "type": "string",
+            "description": "Tên xã/phường (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "industry": {
+            "type": "string",
+            "description": "Tên ngành công nghiệp (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "economicSector": {
+            "type": "string",
+            "description": "Tên khu vực kinh tế (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_reporting_progress",
+      "description": "Xem tiến độ thu báo cáo trên dashboard: số được cấu hình, đã nhận, độ phủ dữ liệu, thiếu mã chỉ tiêu và xung đột. Có thể lọc tên doanh nghiệp/xã phường/ngành/khu vực kinh tế. Cần quyền xem dashboard. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "reportType": {
+            "type": "string",
+            "description": "Loại báo cáo: sản xuất công nghiệp, thương mại hoặc xuất nhập khẩu.",
+            "maxLength": 200,
+            "enum": [
+              "manufacturing",
+              "trading",
+              "export_import"
+            ]
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "Tên doanh nghiệp (một phần) hoặc ID đã biết; bỏ trống để xem toàn bộ phạm vi dashboard.",
+            "maxLength": 200
+          },
+          "area": {
+            "type": "string",
+            "description": "Tên xã/phường (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "industry": {
+            "type": "string",
+            "description": "Tên ngành công nghiệp (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "economicSector": {
+            "type": "string",
+            "description": "Tên khu vực kinh tế (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Số kết quả tối đa, mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "status": {
+            "type": "string",
+            "description": "Theo đúng trạng thái SP: chưa nhập chỉ tiêu, thiếu chỉ tiêu, đủ ba chỉ tiêu, xung đột hoặc tệp có IsLate. Không suy đoán quá hạn từ việc chưa nhập.",
+            "maxLength": 200,
+            "enum": [
+              "all",
+              "missing",
+              "incomplete",
+              "complete",
+              "conflict",
+              "file-late"
+            ]
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu, mặc định 0. Dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_indicator_comparison",
+      "description": "So sánh chỉ tiêu công thương tháng này/tháng bất kỳ: tháng trước, cùng kỳ năm trước, lũy kế và lũy kế cùng kỳ. Trả số thực, tăng giảm và độ phủ dữ liệu từ SP, không tự tạo số liệu. Cần quyền dashboard. Phạm vi là doanh nghiệp đang hoạt động được gán loại báo cáo, chưa đại diện toàn bộ doanh nghiệp tỉnh. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "Tên doanh nghiệp (một phần) hoặc ID đã biết; bỏ trống để xem toàn bộ phạm vi dashboard.",
+            "maxLength": 200
+          },
+          "area": {
+            "type": "string",
+            "description": "Tên xã/phường (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "industry": {
+            "type": "string",
+            "description": "ID/tên ngành; lọc doanh nghiệp có ngành được gán, không phân bổ sản lượng giữa các ngành.",
+            "maxLength": 200
+          },
+          "economicSector": {
+            "type": "string",
+            "description": "Tên khu vực kinh tế, DNNN, FDI hoặc ID từ kết quả trước. Nếu khớp nhiều nhóm, API yêu cầu làm rõ; không tự gán mã.",
+            "maxLength": 200
+          },
+          "metric": {
+            "type": "string",
+            "description": "Chỉ tiêu nghiệp vụ. GTSXCN=industrial_production_value; hiện chưa có nguồn xác nhận, API trả unsupported. industrial_revenue là doanh thu, tuyệt đối không gọi là GTSXCN. export_value/import_value dùng mã 06/07 của báo cáo sản xuất; export_fob dùng FOB của báo cáo XNK riêng, không cộng trùng hai nguồn. retail_revenue/repair_revenue dùng loại 2; direct_export_value/entrusted_export_value dùng loại 3; tổng FOB đã bao gồm hai thành phần này.",
+            "maxLength": 200,
+            "enum": [
+              "industrial_production_value",
+              "industrial_revenue",
+              "export_value",
+              "import_value",
+              "export_fob",
+              "wholesale_retail_revenue",
+              "retail_revenue",
+              "repair_revenue",
+              "direct_export_value",
+              "entrusted_export_value"
+            ]
+          },
+          "industryGroup": {
+            "type": "string",
+            "description": "Nhóm ngành được gán đầy đủ, chuỗi ID phân cách dấu phẩy từ nextInput. Chỉ dùng khi drill-down nhóm ngành; không tự đoán.",
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "analyze_growth_drivers",
+      "description": "Phân rã thay đổi thực trên doanh nghiệp có dữ liệu so sánh đủ, theo khu vực kinh tế, nhóm ngành được gán, địa bàn hoặc doanh nghiệp. Nhóm nhiều ngành giữ nguyên, mỗi doanh nghiệp được tính một lần. Trả nextInput để drill-down; không suy diễn nhân quả. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "Tên doanh nghiệp (một phần) hoặc ID đã biết; bỏ trống để xem toàn bộ phạm vi dashboard.",
+            "maxLength": 200
+          },
+          "area": {
+            "type": "string",
+            "description": "Tên xã/phường (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "industry": {
+            "type": "string",
+            "description": "ID/tên ngành; lọc doanh nghiệp có ngành được gán, không phân bổ sản lượng giữa các ngành.",
+            "maxLength": 200
+          },
+          "economicSector": {
+            "type": "string",
+            "description": "Tên khu vực kinh tế, DNNN, FDI hoặc ID từ kết quả trước. Nếu khớp nhiều nhóm, API yêu cầu làm rõ; không tự gán mã.",
+            "maxLength": 200
+          },
+          "metric": {
+            "type": "string",
+            "description": "Chỉ tiêu nghiệp vụ. GTSXCN=industrial_production_value; hiện chưa có nguồn xác nhận, API trả unsupported. industrial_revenue là doanh thu, tuyệt đối không gọi là GTSXCN. export_value/import_value dùng mã 06/07 của báo cáo sản xuất; export_fob dùng FOB của báo cáo XNK riêng, không cộng trùng hai nguồn. retail_revenue/repair_revenue dùng loại 2; direct_export_value/entrusted_export_value dùng loại 3; tổng FOB đã bao gồm hai thành phần này.",
+            "maxLength": 200,
+            "enum": [
+              "industrial_production_value",
+              "industrial_revenue",
+              "export_value",
+              "import_value",
+              "export_fob",
+              "wholesale_retail_revenue",
+              "retail_revenue",
+              "repair_revenue",
+              "direct_export_value",
+              "entrusted_export_value"
+            ]
+          },
+          "comparison": {
+            "type": "string",
+            "description": "Kỳ đối chiếu: tháng trước, cùng kỳ năm trước hoặc lũy kế từ tháng 1 đến tháng được chọn so với lũy kế cùng kỳ năm trước.",
+            "maxLength": 200,
+            "enum": [
+              "month_over_month",
+              "year_over_year",
+              "year_to_date"
+            ]
+          },
+          "groupBy": {
+            "type": "string",
+            "description": "Cấp drill-down, mặc định economic_sector.",
+            "maxLength": 200,
+            "enum": [
+              "economic_sector",
+              "industry",
+              "enterprise",
+              "area"
+            ]
+          },
+          "direction": {
+            "type": "string",
+            "description": "Chỉ xem bên tăng, giảm hoặc tất cả.",
+            "maxLength": 200,
+            "enum": [
+              "increase",
+              "decrease",
+              "all"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Số kết quả mỗi lần, mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu, mặc định 0. Dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "industryGroup": {
+            "type": "string",
+            "description": "Nhóm ngành được gán đầy đủ, chuỗi ID phân cách dấu phẩy từ nextInput. Chỉ dùng khi drill-down nhóm ngành; không tự đoán.",
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_indicator_alerts",
+      "description": "Tra cứu doanh nghiệp có chỉ tiêu giảm trên 10/20/30% theo tháng trước, cùng kỳ hoặc lũy kế cùng kỳ. Hỗ trợ XK/NK, doanh thu công nghiệp và FOB theo nguồn thực có. Thiếu đối chiếu hoặc baseline không dương thì không tính phần trăm/cảnh báo. Đây là cảnh báo tính tại thời điểm query, chưa phải job tự gửi thông báo. Cần quyền dashboard. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "Tên doanh nghiệp (một phần) hoặc ID đã biết; bỏ trống để xem toàn bộ phạm vi dashboard.",
+            "maxLength": 200
+          },
+          "area": {
+            "type": "string",
+            "description": "Tên xã/phường (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "industry": {
+            "type": "string",
+            "description": "ID/tên ngành; lọc doanh nghiệp có ngành được gán, không phân bổ sản lượng giữa các ngành.",
+            "maxLength": 200
+          },
+          "economicSector": {
+            "type": "string",
+            "description": "Tên khu vực kinh tế, DNNN, FDI hoặc ID từ kết quả trước. Nếu khớp nhiều nhóm, API yêu cầu làm rõ; không tự gán mã.",
+            "maxLength": 200
+          },
+          "metric": {
+            "type": "string",
+            "description": "Chỉ tiêu nghiệp vụ. GTSXCN=industrial_production_value; hiện chưa có nguồn xác nhận, API trả unsupported. industrial_revenue là doanh thu, tuyệt đối không gọi là GTSXCN. export_value/import_value dùng mã 06/07 của báo cáo sản xuất; export_fob dùng FOB của báo cáo XNK riêng, không cộng trùng hai nguồn. retail_revenue/repair_revenue dùng loại 2; direct_export_value/entrusted_export_value dùng loại 3; tổng FOB đã bao gồm hai thành phần này.",
+            "maxLength": 200,
+            "enum": [
+              "industrial_production_value",
+              "industrial_revenue",
+              "export_value",
+              "import_value",
+              "export_fob",
+              "wholesale_retail_revenue",
+              "retail_revenue",
+              "repair_revenue",
+              "direct_export_value",
+              "entrusted_export_value"
+            ]
+          },
+          "comparison": {
+            "type": "string",
+            "description": "Kỳ đối chiếu: tháng trước, cùng kỳ năm trước hoặc lũy kế từ tháng 1 đến tháng được chọn so với lũy kế cùng kỳ năm trước.",
+            "maxLength": 200,
+            "enum": [
+              "month_over_month",
+              "year_over_year",
+              "year_to_date"
+            ]
+          },
+          "declineThreshold": {
+            "type": "integer",
+            "description": "Ngưỡng giảm nghiêm ngặt: trên 10%, 20% hoặc 30%; mặc định 10.",
+            "minimum": 10,
+            "maximum": 30,
+            "enum": [
+              10,
+              20,
+              30
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Số kết quả mỗi lần, mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu, mặc định 0. Dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "industryGroup": {
+            "type": "string",
+            "description": "Nhóm ngành được gán đầy đủ, chuỗi ID phân cách dấu phẩy từ nextInput. Chỉ dùng khi drill-down nhóm ngành; không tự đoán.",
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_reporting_data_quality",
+      "description": "Kiểm tra độ phủ, thiếu chỉ tiêu, xung đột dữ liệu và khoảng cách giữa danh bạ doanh nghiệp với doanh nghiệp đang hoạt động được gán loại báo cáo. Trả rõ giới hạn phạm vi; không gọi cohort báo cáo là toàn bộ doanh nghiệp tỉnh. Cần quyền dashboard. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "Tên doanh nghiệp (một phần) hoặc ID đã biết; bỏ trống để xem toàn bộ phạm vi dashboard.",
+            "maxLength": 200
+          },
+          "area": {
+            "type": "string",
+            "description": "Tên xã/phường (một phần) hoặc ID đã biết.",
+            "maxLength": 200
+          },
+          "industry": {
+            "type": "string",
+            "description": "ID/tên ngành; lọc doanh nghiệp có ngành được gán, không phân bổ sản lượng giữa các ngành.",
+            "maxLength": 200
+          },
+          "economicSector": {
+            "type": "string",
+            "description": "Tên khu vực kinh tế, DNNN, FDI hoặc ID từ kết quả trước. Nếu khớp nhiều nhóm, API yêu cầu làm rõ; không tự gán mã.",
+            "maxLength": 200
+          },
+          "metric": {
+            "type": "string",
+            "description": "Chỉ tiêu nghiệp vụ. GTSXCN=industrial_production_value; hiện chưa có nguồn xác nhận, API trả unsupported. industrial_revenue là doanh thu, tuyệt đối không gọi là GTSXCN. export_value/import_value dùng mã 06/07 của báo cáo sản xuất; export_fob dùng FOB của báo cáo XNK riêng, không cộng trùng hai nguồn. retail_revenue/repair_revenue dùng loại 2; direct_export_value/entrusted_export_value dùng loại 3; tổng FOB đã bao gồm hai thành phần này.",
+            "maxLength": 200,
+            "enum": [
+              "industrial_production_value",
+              "industrial_revenue",
+              "export_value",
+              "import_value",
+              "export_fob",
+              "wholesale_retail_revenue",
+              "retail_revenue",
+              "repair_revenue",
+              "direct_export_value",
+              "entrusted_export_value"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Số kết quả mỗi lần, mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu, mặc định 0. Dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "industryGroup": {
+            "type": "string",
+            "description": "Nhóm ngành được gán đầy đủ, chuỗi ID phân cách dấu phẩy từ nextInput. Chỉ dùng khi drill-down nhóm ngành; không tự đoán.",
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_reported_reasons",
+      "description": "Đọc Reason của tệp báo cáo tháng gần nhất của doanh nghiệp qua SP ProgressDetails. Hỗ trợ bước cuối drill-down và dùng quyền dashboard. File có thể thuộc loại báo cáo bất kỳ; không khẳng định nội dung là nguyên nhân kinh doanh đã kiểm chứng. Thiếu nội dung thì nói rõ chưa có. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Mặc định latest (tháng chỉ tiêu gần nhất). this_month/last_month là kỳ lịch, kể cả chưa có số liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "reportType": {
+            "type": "string",
+            "description": "Loại báo cáo: sản xuất công nghiệp, thương mại hoặc xuất nhập khẩu.",
+            "maxLength": 200,
+            "enum": [
+              "manufacturing",
+              "trading",
+              "export_import"
+            ]
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "ID/tên doanh nghiệp lấy từ kết quả drill-down. Nếu chưa chọn được đúng một doanh nghiệp, API trả danh sách yêu cầu làm rõ.",
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_enterprise_registry",
+      "description": "Tìm doanh nghiệp đang hoạt động trong danh bạ ứng dụng bằng tên hoặc mã số thuế; có cả doanh nghiệp chưa cấu hình loại báo cáo. Dùng cho cán bộ có quyền dashboard. Doanh nghiệp thường dùng search_enterprises để chỉ xem doanh nghiệp được phân công. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "type": "string",
+            "description": "Tên/mã số thuế, có thể một phần.",
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Dùng nextOffset để đọc tiếp, mặc định 0.",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_enterprise_registry_detail",
+      "description": "Hồ sơ an toàn và tối đa 50 sản phẩm thực sự được gán của doanh nghiệp active trong danh bạ; cần Dashboard/View và Cate/Enterprise/View. Dùng get_enterprise_products scope=registry để phân trang sản phẩm. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "enterprise": {
+            "type": "string",
+            "description": "ID/tên/mã số thuế từ search_enterprise_registry, không tự đoán ID.",
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_reporting_dimensions",
+      "description": "Danh mục ID/tên dùng lọc câu hỏi; ngành/khu vực/địa bàn/doanh nghiệp lấy từ phạm vi danh bạ active, năm/latest từ dữ liệu thật. Cần Dashboard/View. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "description": "Mặc định sector.",
+            "maxLength": 200,
+            "enum": [
+              "year",
+              "latest",
+              "ward",
+              "sector",
+              "industry",
+              "enterprise"
+            ]
+          },
+          "reportType": {
+            "type": "string",
+            "description": "Loại báo cáo; mã thuộc từng loại, không dùng chung mã giữa các loại.",
+            "maxLength": 200,
+            "enum": [
+              "manufacturing",
+              "trading",
+              "export_import"
+            ]
+          },
+          "keyword": {
+            "type": "string",
+            "description": "Tìm tên hoặc ID.",
+            "maxLength": 200
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu; dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_indicator_catalog",
+      "description": "Tra cứu mã chỉ tiêu, đơn vị, nhóm cha và quy tắc động từ cấu hình và mã thực tế đã nhập. Bao gồm sản phẩm, lao động, thu nhập, ngân sách, thương mại và mã mặt hàng/thị trường XNK. Phân biệt configured/observed/dynamic_rule; mã cấu hình không chứng minh có số liệu. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "reportType": {
+            "type": "string",
+            "description": "Loại báo cáo; mã thuộc từng loại, không dùng chung mã giữa các loại.",
+            "maxLength": 200,
+            "enum": [
+              "manufacturing",
+              "trading",
+              "export_import"
+            ]
+          },
+          "keyword": {
+            "type": "string",
+            "description": "Mã/tên chỉ tiêu hoặc tiền tố.",
+            "maxLength": 200
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu; dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "query_report_indicators",
+      "description": "Đọc từng dòng chỉ tiêu đã nhập của mọi loại báo cáo công thương trong khoảng tối đa 12 tháng: sản lượng, lao động, thu nhập, ngân sách, mặt hàng và thị trường ghi trong mã/nhãn, kế hoạch và số liệu khai báo. Không tự cộng khác đơn vị, dòng cha/con hoặc biến thu nhập bình quân thành tổng. Cần Dashboard/View; không phải API chạy SQL. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Kỳ tháng; latest là tháng có chỉ tiêu gần nhất, fallback tháng hiện tại nếu chưa có dữ liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "fromMonth": {
+            "type": "string",
+            "description": "Tháng đầu yyyy-MM; mặc định month/latest. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200
+          },
+          "toMonth": {
+            "type": "string",
+            "description": "Tháng cuối yyyy-MM; mặc định month/latest. Khoảng tối đa 12 tháng. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200
+          },
+          "reportType": {
+            "type": "string",
+            "description": "Loại báo cáo; mã thuộc từng loại, không dùng chung mã giữa các loại.",
+            "maxLength": 200,
+            "enum": [
+              "manufacturing",
+              "trading",
+              "export_import"
+            ]
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "ID/tên/mã số thuế doanh nghiệp từ search_enterprise_registry.",
+            "maxLength": 200
+          },
+          "area": {
+            "type": "string",
+            "description": "ID/tên xã/phường.",
+            "maxLength": 200
+          },
+          "industry": {
+            "type": "string",
+            "description": "ID/tên ngành; lọc doanh nghiệp có ngành được gán, không phân bổ sản lượng giữa các ngành.",
+            "maxLength": 200
+          },
+          "economicSector": {
+            "type": "string",
+            "description": "ID/tên khu vực kinh tế hoặc DNNN/FDI.",
+            "maxLength": 200
+          },
+          "code": {
+            "type": "string",
+            "description": "Mã chính xác từ catalog; không tự đoán alias.",
+            "maxLength": 50
+          },
+          "codePrefix": {
+            "type": "string",
+            "description": "Tiền tố literal (không phải LIKE/SQL), ví dụ XK_MH_, 351, 2.351.",
+            "maxLength": 50
+          },
+          "keyword": {
+            "type": "string",
+            "description": "Tìm trong tên/mã chỉ tiêu.",
+            "maxLength": 200
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu; dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_reporting_policy",
+      "description": "Đọc hai cấu hình ngày hạn nộp và hạn nộp trễ hiện tại. Không khẳng định số liệu đã khóa hoặc có quyền mở lại; không trả cấu hình hệ thống khác. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_report_submission_history",
+      "description": "Danh sách bản ghi tệp báo cáo hiện tại/soft-delete của một doanh nghiệp, ngày tạo/sửa gần nhất, cờ trễ và Reason; không trả đường dẫn/tệp hoặc danh tính người dùng. Không có TypeReport và không phải lịch sử trước/sau từng lần sửa. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "description": "yyyy-MM. Mặc định tháng dữ liệu chỉ tiêu gần nhất, không phải tháng có tệp.",
+            "maxLength": 200
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Kỳ tháng; latest là tháng có chỉ tiêu gần nhất, fallback tháng hiện tại nếu chưa có dữ liệu. Latest chỉ xét dữ liệu được phép xem; doanh nghiệp không có quyền dashboard dùng tháng hiện tại.",
+            "maxLength": 200,
+            "enum": [
+              "latest",
+              "this_month",
+              "last_month"
+            ]
+          },
+          "fromMonth": {
+            "type": "string",
+            "description": "Tháng đầu yyyy-MM.",
+            "maxLength": 200
+          },
+          "toMonth": {
+            "type": "string",
+            "description": "Tháng cuối yyyy-MM; tối đa 12 tháng.",
+            "maxLength": 200
+          },
+          "enterprise": {
+            "type": "string",
+            "description": "ID/tên/mã số thuế doanh nghiệp từ search_enterprise_registry.",
+            "maxLength": 200
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu; dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_enterprise_products",
+      "description": "Phân trang các sản phẩm active thực sự được gán cho doanh nghiệp và cờ sản phẩm chính. Mặc định phạm vi phân công; scope=registry cần Dashboard/View + Cate/Enterprise/View. Nhiều cờ sản phẩm chính được giữ để đối soát.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "description": "Mặc định assigned.",
+            "maxLength": 200,
+            "enum": [
+              "assigned",
+              "registry"
+            ]
+          },
+          "enterpriseId": {
+            "type": "integer",
+            "description": "ID doanh nghiệp đã chọn.",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "query": {
+            "type": "string",
+            "description": "Tên/mã số thuế; trả yêu cầu làm rõ nếu nhiều kết quả.",
+            "maxLength": 200
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Vị trí bắt đầu; dùng nextOffset để đọc tiếp.",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Mặc định 10, tối đa 50.",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_data_capabilities",
+      "description": "Cho biết dữ liệu đang có: số dòng, số doanh nghiệp quan sát, số tháng, kỳ đầu/cuối, orphan và các giới hạn được xác nhận. Dùng trước khi trả lời câu hỏi vượt nguồn như GTSXCN, đầy đủ lịch sử, khóa/mở lại hoặc nhật ký sửa. Không đọc credentials/log bảo mật. Chỉ đọc phạm vi tài khoản do máy chủ xác định; cán bộ có phân công không tự được xem toàn tỉnh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "identical": true,
+  "sha256": {
+    "Deploy_SCT_All.sql": "33316014673ff9e0a15ffb962c268c32e4358c10bb947cfaa03307cf63764db7",
+    "Deploy_SCT_IndustryChatbot.sql": "59b97d229b37703b86feaf6cbc49687f82244fb21728525de93013e8258936ef",
+    "Deploy_SCT_ReportPerformanceIndexes.sql": "a73d2cece640995774ffcf05f6fd7f620165044908fd82f73b039690cacf4a11",
+    "Preflight_SCT_IndustryChatbot.sql": "44adbcba848f44f3e703ab4a122e2b0df7fa877bf933c5b0f29a5b46aeef2668",
+    "Verify_SCT_IndustryChatbot.sql": "67ca64daadd49b7f01574a7647bb85411d2fa753fbbda3664270847d5a3b88d2",
+    "sql-object-manifest.json": "2a753ca353fcc7e09e1c51bec4de588c18dbc69016e9c8bb4df3e69511683f90"
+  }
+}

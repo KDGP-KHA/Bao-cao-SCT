@@ -27,41 +27,133 @@
             @Html.Partial("_ReportBody")
         </div>
     }
+    <div id="modal_ConfirmEmptyReports" role="dialog" aria-hidden="true" style="display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,.45); overflow:auto;">
+        <div class="modal-dialog" style="width: 520px; max-width: calc(100vw - 30px); margin: 15vh auto;">
+            <div class="modal-content" style="border-radius: 12px; border: none; background-color: #fff9f5; box-shadow: 0 5px 25px rgba(0,0,0,0.2); padding: 25px 20px; text-align: center;">
+                <div style="margin-bottom: 12px;">
+                    <i class="fa fa-exclamation-triangle" style="font-size: 52px; color: #ef7d36;"></i>
+                </div>
+                <h4 style="font-weight: 700; color: #222; margin-top: 0; margin-bottom: 14px; font-size: 19px; letter-spacing: 0.5px;">CẢNH BÁO!</h4>
+                <div style="font-size: 14px; color: #333; line-height: 1.6; margin-bottom: 22px;">
+                    <span>Bạn chưa nhập thông tin các mẫu báo cáo sau:</span>
+                    <div id="confirmEmptyReportList" style="font-weight: 600; color: #111; margin: 8px 0;"></div>
+                    <span>Bạn vẫn muốn thực hiện Lưu và Gửi báo cáo?</span>
+                </div>
+                <div style="display: flex; justify-content: center; gap: 15px;">
+                    <button type="button" id="btnConfirmEmptyReportsOk" class="btn btn-primary" style="background-color: #2b78e4; border-color: #2b78e4; padding: 7px 24px; border-radius: 6px; font-weight: 600; min-width: 100px;">Đồng ý</button>
+                    <button type="button" id="btnConfirmEmptyReportsCancel" class="btn" style="background-color: #ef7d36; border-color: #ef7d36; color: #fff; padding: 7px 24px; border-radius: 6px; font-weight: 600; min-width: 100px;">Hủy bỏ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script type="text/javascript">
+        var additionalReportPosts = [];
+        var isConfirmedEmptyReports = false;
+        function finishAddReport(response) {
+            if (response.status != undefined) {
+                if (!response.status && response.errorCode == 1) {
+                    eval(response.message);
+                    response.status = undefined;
+                } else {
+                    $("#ModalContent #modal_AddReport").modal("hide");
+                    $("#ModalContent #modal_AddReport").on('hidden.bs.modal', function() {
+                        if (response.status != undefined) {
+                            eval(response.message);
+                            _tableDataImport.ajax.reload(null, true);
+                            $("#ActionArea").load("/Report/Import/ViewAction");
+                            response.status = undefined;
+                        }
+                    });
+                }
+            } else {
+                $("#ModalContent #modal_AddReport #bodyForm").html(response);
+            }
+        }
+        function postNextAdditionalReport($form) {
+            if (!additionalReportPosts.length) return null;
+            var data = additionalReportPosts.shift();
+            $.ajax({ url: $form.attr("action"), type: "POST", data: $.param(data), success: function(response) {
+                if (response && response.status === true && additionalReportPosts.length) postNextAdditionalReport($form);
+                else finishAddReport(response);
+            }, error: function() { finishAddReport({ status: false, errorCode: 1, message: "alert('Không thể lưu biểu mẫu báo cáo còn lại.');" }); } });
+            return true;
+        }
         $('form#AddReport').ajaxForm({
-            beforeSubmit: function() {
+            beforeSubmit: function(arr, $form) {
                 if (ValidForm()) {
+                    additionalReportPosts = [];
+                    var enterpriseId = $form.find("#EnterpriseId").val(), currentType = $form.find("#TypeReportSelect").val();
+                    var configuredTypes = ($form.find("#EnterpriseTypeBusiness").val() || "").toString().split(",");
+                    var drafts = $form.data("reportFormDrafts") || {};
+                    var typeNames = { "1": "sản xuất, kinh doanh", "2": "thương mại, dịch vụ", "3": "xuất, nhập khẩu" };
+                    var currentValues = {};
+                    $.each(arr, function(_, item) { currentValues[item.name] = item.value; });
+                    var hasEnteredData = function(values) {
+                        var entered = false;
+                        $.each(values || {}, function(name, value) {
+                            if (!/^(PerformPreviousPeriod|PerformInPeriod|AccumulatedBeginingOfYear|CompareSamePeriodLastYear)_/.test(name)) return;
+                            var number = parseFloat((value || "").toString().replace(/\./g, "").replace(",", "."));
+                            if (!isNaN(number) && number !== 0) { entered = true; return false; }
+                        });
+                        return entered;
+                    };
+                    var fullTypeNames = { "1": "Doanh nghiệp sản xuất, kinh doanh", "2": "Doanh nghiệp thương mại, dịch vụ", "3": "Doanh nghiệp xuất, nhập khẩu" };
+                    var emptyTypes = [];
+                    $.each(configuredTypes, function(_, type) {
+                        type = $.trim(type);
+                        if (!type) return;
+                        var values = type === currentType ? currentValues : (drafts[(enterpriseId || "") + "_" + type] || (window.GetReportDraftForSubmit && window.GetReportDraftForSubmit(enterpriseId, type, $form.find("#ForMonth").val())));
+                        if (!hasEnteredData(values)) emptyTypes.push(fullTypeNames[type] || ("loại " + type));
+                    });
+                    if (emptyTypes.length && !isConfirmedEmptyReports) {
+                        var htmlList = "";
+                        $.each(emptyTypes, function(_, tName) {
+                            htmlList += "<div style='margin: 4px 0;'>" + tName + "</div>";
+                        });
+                        $("#confirmEmptyReportList").html(htmlList);
+                        $("#modal_ConfirmEmptyReports").css("display", "block");
+                        return false;
+                    }
+                    isConfirmedEmptyReports = false;
+                    $.each(configuredTypes, function(_, type) {
+                        type = $.trim(type);
+                        if (!type || type === currentType) return;
+                        var values = drafts[(enterpriseId || "") + "_" + type];
+                        if (!values && window.GetReportDraftForSubmit) values = window.GetReportDraftForSubmit(enterpriseId, type, $form.find("#ForMonth").val());
+                        if (!values) return;
+                        var post = $.grep(arr, function(item) { return !/^(Target|Unit|Index|Level|Code|PerformPreviousPeriod|PerformInPeriod|AccumulatedBeginingOfYear|ComparedSamePeriodLastYear)_|^(BusinessProductReport|TradingReport|ImportExportReport|TypeReport|TypeReportName)$/.test(item.name); });
+                        post.push({ name: "TypeReport", value: type });
+                        post.push({ name: "TypeReportName", value: type === "2" ? "Doanh nghiệp thương mại, dịch vụ" : type === "3" ? "Doanh nghiệp xuất, nhập khẩu" : "Doanh nghiệp sản xuất, kinh doanh" });
+                        $.each(values, function(name, value) { post.push({ name: name, value: value }); });
+                        additionalReportPosts.push(post);
+                    });
                     return true; //it will continue your submission.
                 } else {
                     return false; //ti will stop your submission.
                 }
             },
             success: function(response) {
-                if (response.status != undefined) {
-                    if (!response.status && response.errorCode == 1) {
-                        eval(response.message);
-                        response.status = undefined;
-                    } else {
-                        $("#ModalContent #modal_AddReport").modal("hide");
-                        $("#ModalContent #modal_AddReport").on('hidden.bs.modal',
-                            function() {
-                                if (response.status != undefined) {
-                                    eval(response.message);
-                                    _tableDataImport.ajax.reload(null, true);
-                                    $("#ActionArea").load("/Report/Import/ViewAction");
-                                    response.status = undefined;
-                                }
-                            });
-                    }
-                } else {
-                    $("#ModalContent #modal_AddReport" + " #bodyForm").html(response);
-                }
+                if (response && response.status === true && postNextAdditionalReport($('form#AddReport'))) return;
+                finishAddReport(response);
             }
         });
 
         $(document).ready(function() {
             $('button[type="submit"]').prop('disabled', true);
+            $("#btnConfirmEmptyReportsOk").off("click").on("click", function() {
+                isConfirmedEmptyReports = true;
+                $("#modal_ConfirmEmptyReports").hide();
+                $("form#AddReport").submit();
+            });
+            $("#btnConfirmEmptyReportsCancel").off("click").on("click", function(e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                isConfirmedEmptyReports = false;
+                $("#modal_ConfirmEmptyReports").hide();
+                return false;
+            });
         });
 
     </script>

@@ -1,0 +1,4 @@
+Generated /Users/itzmealvin/GitHub/VNPT/web/B-o-c-o-SCT/Source/ReportDeptTourismSolution/SqlScripts/Preflight_SCT_IndustryChatbot.sql and /Users/itzmealvin/GitHub/VNPT/web/B-o-c-o-SCT/Source/ReportDeptTourismSolution/SqlScripts/Verify_SCT_IndustryChatbot.sql; contracts=61; indexes=6; labels=204
+Generated /Users/itzmealvin/GitHub/VNPT/web/B-o-c-o-SCT/Source/ReportDeptTourismSolution/SqlScripts/Deploy_SCT_IndustryChatbot.sql
+Generated /Users/itzmealvin/GitHub/VNPT/web/B-o-c-o-SCT/Source/ReportDeptTourismSolution/SqlScripts/Deploy_SCT_ReportPerformanceIndexes.sql
+Generated /Users/itzmealvin/GitHub/VNPT/web/B-o-c-o-SCT/Source/ReportDeptTourismSolution/SqlScripts/Deploy_SCT_All.sql

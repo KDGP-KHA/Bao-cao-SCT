@@ -1,0 +1,36 @@
+﻿@using TSFramework.App.Processors
+@{
+    ViewBag.Title = AppProcessor.Messagor.GetMessage("BusinessIndustry_Title");
+}
+
+@section Title
+{
+    @ViewBag.Title
+}
+
+@section Action
+{
+    @Html.Button(true, "AddBusinessIndustry", Url.Action("Add", new { area = "Cate" }), "<i class='fa fa-plus'></i>", AppProcessor.Messagor.GetMessage("Button_Add"), new { @class = "btn btn-sm btn-success pull-right", data_width = "700px" })
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="col-sm-12 table-responsive">
+            <table id="DSBusinessIndustry" class="table table-bordered table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>@AppProcessor.Messagor.GetMessage("Column_No")</th>
+                        <th>@AppProcessor.Messagor.GetMessage("Code_Title")</th>
+                        <th>@AppProcessor.Messagor.GetMessage("Name_Title")</th>
+                        <th>@AppProcessor.Messagor.GetMessage("Column_Action")</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section CustomJS
+{
+    <script src="@Url.Content("~/Areas/Cate/Views/BusinessIndustry/BusinessIndustry.js")"></script>
+}

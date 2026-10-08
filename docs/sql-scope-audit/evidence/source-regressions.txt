@@ -1,0 +1,13 @@
+test_filter_resolution_failure_is_explicit (test_regressions.ReleaseRegression) ... ok
+test_labels_preserve_custom_text (test_regressions.ReleaseRegression) ... ok
+test_monthly_worklist_requires_assignment (test_regressions.ReleaseRegression) ... ok
+test_no_destructive_cleanup (test_regressions.ReleaseRegression) ... ok
+test_no_reporting_wrappers_on_operational_writes (test_regressions.ReleaseRegression) ... ok
+test_operations_do_not_inherit_reporting_controller (test_regressions.ReleaseRegression) ... ok
+test_role_configuration_unchanged (test_regressions.ReleaseRegression) ... ok
+test_xml_and_bundle_dependencies (test_regressions.ReleaseRegression) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 11.655s
+
+OK

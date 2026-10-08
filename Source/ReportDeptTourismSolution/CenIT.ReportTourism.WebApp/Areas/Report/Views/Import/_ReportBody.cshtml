@@ -9,8 +9,16 @@
         if (DateTime.Now.Day > Model.DayDeadlineSendReport && DateTime.Now.Day <= Model.DayDeadlineSendReportLate)
         {
             <div class="alert alert-danger alert-dismissible" style="border-radius: unset;">
-                <h4><i class="icon fa fa-bullhorn"></i> Quá hạn nộp báo cáo tháng @DateTime.Now.ToString("MM/yyyy")!</h4>
-                <p>Đã qua hạn nộp báo cáo lúc <b>24h00 ngày @Model.DayDeadlineSendReport</b> hàng tháng. Báo cáo nộp sau ngày <b>@Model.DayDeadlineSendReport</b> sẽ được xem là trễ hạn.</p>
+                @if (Model.IsEnterpriseUser)
+                {
+                    <h4><i class="icon fa fa-bullhorn"></i> Quá hạn gửi báo cáo tháng @DateTime.Now.ToString("MM/yyyy")!</h4>
+                    <p>Đã qua hạn gửi báo cáo lúc <b>23h59 ngày @Model.DayDeadlineSendReport</b> hàng tháng. Báo cáo gửi sau ngày <b>@Model.DayDeadlineSendReport</b> sẽ được xem là trễ hạn.</p>
+                }
+                else
+                {
+                    <h4><i class="icon fa fa-bullhorn"></i> Quá hạn nhập báo cáo tháng @DateTime.Now.ToString("MM/yyyy")!</h4>
+                    <p>Đã qua hạn nhập báo cáo lúc <b>23h59 ngày @Model.DayDeadlineSendReport</b> hàng tháng. Báo cáo nhập sau ngày <b>@Model.DayDeadlineSendReport</b> sẽ được xem là trễ hạn.</p>
+                }
             </div>
             <hr/>
         }
@@ -45,34 +53,34 @@
 
     <div class="form-group">
         @Html.LabelFor(model => model.EnterpriseId, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            <div class="col-md-10" style="padding-left: 0; padding-right: 0;">
-                @Html.DropDownListFor(model => model.EnterpriseId, new SelectList(Model.ListEnterprises, "Value", "Text", Model.EnterpriseId), "", new { @class = "form-control none-select2", style = "width: 100%;" })
-                @Html.ValidationMessageFor(model => model.EnterpriseId, "", new { @class = "text-danger" })
-            </div>
+        <div class="col-md-5">
+            @Html.DropDownListFor(model => model.EnterpriseId, new SelectList(Model.ListEnterprises, "Value", "Text", Model.EnterpriseId), "", new { @class = "form-control none-select2", style = "width: 100%;" })
+            @Html.ValidationMessageFor(model => model.EnterpriseId, "", new { @class = "text-danger" })
         </div>
-        @Html.HiddenFor(model => model.EnterpriseName)
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.TypeReport, new { @class = "control-label col-md-3" })
-        <div class="col-md-4">
-            @Html.DropDownListFor(model => model.TypeReport, new SelectList(Model.ListTypeBusiness ?? new List<System.Web.UI.WebControls.ListItem>(), "Value", "Text", (int)Model.TypeReport), new { @class = "form-control col-md-12 none-select2", id = "TypeReportSelect", style = "width: 100%;" })
-            @Html.HiddenFor(model => model.TypeReportName, new { id = "TypeReportName" })
-        </div>
-        @Html.LabelFor(model => model.ForMonth, new { @class = "control-label col-md-2" })
-        <div class="col-md-3">
-            <div class="input-group col-md-7">
-                <div class="input-group-addon" style="background-color: #eee; cursor: not-allowed;">
-                    <i class="fa fa-calendar"></i>
-                </div>
+        @Html.LabelFor(model => model.ForMonth, new { @class = "control-label col-md-2", style = "white-space: nowrap;" })
+        <div class="col-md-2">
+            <div class="input-group">
+                <div class="input-group-addon" style="background-color: #eee; cursor: not-allowed;"><i class="fa fa-calendar"></i></div>
                 <input type="text" id="ForMonthDisplay" class="form-control" value="@Model.ForMonth.ToString("MM/yyyy")" disabled="disabled" style="cursor: not-allowed; background-color: #eee;" placeholder="MM/yyyy" />
                 @Html.HiddenFor(model => model.ForMonth, new { id = "ForMonth" })
             </div>
         </div>
+        @Html.HiddenFor(model => model.EnterpriseName)
+        @Html.HiddenFor(model => model.EnterpriseTypeBusiness, new { id = "EnterpriseTypeBusiness" })
     </div>
 
-    <hr/>
+    <div class="form-group">
+        <div class="col-md-12 report-type-tab-row">
+            @Html.HiddenFor(model => model.TypeReport, new { id = "TypeReportSelect" })
+            @Html.HiddenFor(model => model.TypeReportName, new { id = "TypeReportName" })
+            <ul id="TypeReportTabs" class="nav nav-tabs report-type-tabs">
+                @foreach (var type in Model.ListTypeBusiness ?? new List<System.Web.UI.WebControls.ListItem>())
+                {
+                    <li data-type="@type.Value"><a href="javascript:void(0)">@type.Text</a></li>
+                }
+            </ul>
+        </div>
+    </div>
 
     <div class="form-group">
         @Html.HiddenFor(model => model.IsEdit)
@@ -97,21 +105,31 @@
 
 <script type="text/javascript">
 
+    $("<style>.report-type-tab-row{margin-top:12px}.report-type-tabs{display:flex;justify-content:flex-start;align-items:flex-end;flex-wrap:nowrap;width:100%;border-bottom:1px solid #ddd}.report-type-tabs li{display:none;float:none!important;white-space:nowrap}.report-type-tabs li a{cursor:pointer;padding:10px 24px;font-size:14px}</style>").appendTo("head");
+
     $(document).ready(function() {
         var $container = $("#modal_AddReport").length ? $("#modal_AddReport") : $("#DataImport");
-
-        $container.find('#TypeReportSelect').off('change.typeReport').on('change.typeReport', function () {
-            var txt = $(this).find('option:selected').text();
-            $container.find('#TypeReportName').val(txt);
-            var entId = $enterpriseSelect.val();
-            var entText = $enterpriseSelect.find('option:selected').text();
-            if (entId) {
-                triggerLoadReportForm(entId, entText);
-            }
-        });
-        if (!$container.find('#TypeReportName').val() || $container.find('#TypeReportName').val().indexOf('TypeBusiness_') !== -1) {
-            $container.find('#TypeReportName').val($container.find('#TypeReportSelect option:selected').text());
+        var $typeTabs = $container.find('#TypeReportTabs');
+        function configureTypeTabs(typeBusiness) {
+            var types = (typeBusiness || "").toString().split(',').map(function (value) { return $.trim(value); }).filter(function (value) { return value === "1" || value === "2" || value === "3"; });
+            $typeTabs.children('li').each(function () { $(this).toggle(types.indexOf($(this).data('type').toString()) >= 0); });
+            var selected = $container.find('#TypeReportSelect').val();
+            if (types.indexOf(selected) < 0) selected = types.length ? types[0] : "";
+            $container.find('#TypeReportSelect').val(selected);
+            $typeTabs.children('li').removeClass('active').filter('[data-type="' + selected + '"]').addClass('active');
+            $container.find('#TypeReportName').val($typeTabs.children('li.active').text());
         }
+
+        $typeTabs.off('click.typeReport', 'li').on('click.typeReport', 'li', function () {
+            var $tab = $(this);
+            if (!$tab.is(':visible') || $tab.hasClass('active')) return;
+            $container.find('#TypeReportSelect').val($tab.data('type'));
+            $typeTabs.children('li').removeClass('active');
+            $tab.addClass('active');
+            $container.find('#TypeReportName').val($tab.text());
+            var entId = $enterpriseSelect.val(), entText = $enterpriseSelect.find('option:selected').text();
+            if (entId) triggerLoadReportForm(entId, entText);
+        });
 
         @{
             if (string.IsNullOrEmpty(Model.AccessToken) && Model.EnableSignDigitalDoc)
@@ -167,14 +185,85 @@
         });
 
         var lastLoadedKey = "";
+        var reportFormDrafts = {};
+        var reportFormDom = {};
+        function reportDraftKey(enterpriseId, typeReport) {
+            return (enterpriseId || "") + "_" + (typeReport || "");
+        }
+        function saveCurrentReportDraft(enterpriseId, typeReport) {
+            if (!enterpriseId || !typeReport) return;
+            var values = {};
+            $container.find("#TypeReport input[name], #TypeReport select[name], #TypeReport textarea[name]").each(function () {
+                var $field = $(this), name = $field.attr("name");
+                if (!name || $field.is(":checkbox,:radio") && !$field.is(":checked")) return;
+                values[name] = $field.val();
+            });
+            if (Object.keys(values).length) reportFormDrafts[reportDraftKey(enterpriseId, typeReport)] = values;
+            // Giữ cả DOM của biểu mẫu: các dòng mặt hàng được thêm động không thể
+            // dựng lại chỉ bằng các input ẩn khi người dùng quay lại tab.
+            var key = reportDraftKey(enterpriseId, typeReport);
+            var $content = $container.find("#TypeReport").children();
+            if ($content.length) reportFormDom[key] = $content.detach();
+            $container.find("form#AddReport").data("reportFormDrafts", reportFormDrafts);
+        }
+        function preloadReportDraft(enterpriseId, typeReport, forMonthVal) {
+            var key = reportDraftKey(enterpriseId, typeReport);
+            if (!enterpriseId || reportFormDrafts[key]) return;
+            var url = '@Url.Action("LoadViewTypeReport", "Import", new { area = "Report" })?enterpriseId=' + encodeURIComponent(enterpriseId) + '&typeReport=' + encodeURIComponent(typeReport) + (forMonthVal ? ('&forMonth=' + encodeURIComponent(forMonthVal)) : '');
+            $.get(url, function (html) {
+                var values = {};
+                $("<div>").html(html).find("input[name], select[name], textarea[name]").each(function () {
+                    var $field = $(this), name = $field.attr("name");
+                    if (name && (!$field.is(":checkbox,:radio") || $field.is(":checked"))) values[name] = $field.val();
+                });
+                if (Object.keys(values).length) reportFormDrafts[key] = values;
+                $container.find("form#AddReport").data("reportFormDrafts", reportFormDrafts);
+            });
+        }
+        window.GetReportDraftForSubmit = function (enterpriseId, typeReport, forMonthVal) {
+            var key = reportDraftKey(enterpriseId, typeReport);
+            if (reportFormDrafts[key]) return reportFormDrafts[key];
+            var url = '@Url.Action("LoadViewTypeReport", "Import", new { area = "Report" })?enterpriseId=' + encodeURIComponent(enterpriseId) + '&typeReport=' + encodeURIComponent(typeReport) + (forMonthVal ? ('&forMonth=' + encodeURIComponent(forMonthVal)) : '');
+            $.ajax({ url: url, async: false, success: function (html) {
+                var values = {};
+                $("<div>").html(html).find("input[name], select[name], textarea[name]").each(function () {
+                    var $field = $(this), name = $field.attr("name");
+                    if (name && (!$field.is(":checkbox,:radio") || $field.is(":checked"))) values[name] = $field.val();
+                });
+                if (Object.keys(values).length) reportFormDrafts[key] = values;
+            } });
+            return reportFormDrafts[key];
+        };
+        function restoreReportDraft(enterpriseId, typeReport) {
+            var values = reportFormDrafts[reportDraftKey(enterpriseId, typeReport)];
+            if (!values) return;
+            $.each(values, function (name, value) {
+                var $field = $container.find("#TypeReport [name='" + name + "']");
+                if (!$field.length) return;
+                $field.val(value);
+                if ($field.is("select")) $field.trigger("change");
+            });
+        }
         function triggerLoadReportForm(entId, entText) {
             var forMonthVal = $container.find("#ForMonth").val();
             var typeReportVal = $container.find("#TypeReportSelect").val();
+            var loadedTypeReport = $container.data("loadedTypeReport");
+            if (loadedTypeReport && loadedTypeReport !== typeReportVal) {
+                saveCurrentReportDraft(entId, loadedTypeReport);
+            }
             var currentKey = (entId || "") + "_" + (forMonthVal || "") + "_" + (typeReportVal || "");
             if (currentKey === lastLoadedKey && $container.find("#TypeReport").children().length > 0) {
                 return;
             }
             lastLoadedKey = currentKey;
+
+            var domKey = reportDraftKey(entId, typeReportVal);
+            if (reportFormDom[domKey]) {
+                $container.find("#TypeReport").empty().append(reportFormDom[domKey]);
+                restoreReportDraft(entId, typeReportVal);
+                $container.data("loadedTypeReport", typeReportVal);
+                return;
+            }
 
             var isEnableSignDigitalDoc = @(Model.EnableSignDigitalDoc ? "1" : "0");
             var isLoginSmartCA = @(string.IsNullOrEmpty(Model.AccessToken) ? "0" : "1");
@@ -186,9 +275,7 @@
                 return;
             }
 
-            if (typeReportVal == "2") {
-                $('#modal_AddReport button[type="submit"]').prop('disabled', true);
-            } else if (isEnableSignDigitalDoc == 0 || isLoginSmartCA == 1) {
+            if (isEnableSignDigitalDoc == 0 || isLoginSmartCA == 1) {
                 $('#modal_AddReport button[type="submit"]').removeAttr('disabled');
             }
 
@@ -206,11 +293,11 @@
                     $container.find("#TypeReport").html("<div class='alert alert-danger'>Lỗi tải biểu mẫu (" + xhr.status + ": " + xhr.statusText + "). Vui lòng thử lại.</div>");
                     $('#modal_AddReport button[type="submit"]').prop('disabled', true);
                 } else {
-                    if ($container.find("#TypeReportSelect").val() == "2") {
-                        $('#modal_AddReport button[type="submit"]').prop('disabled', true);
-                    } else if (isEnableSignDigitalDoc == 0 || isLoginSmartCA == 1) {
+                    if (isEnableSignDigitalDoc == 0 || isLoginSmartCA == 1) {
                         $('#modal_AddReport button[type="submit"]').removeAttr('disabled');
                     }
+                    restoreReportDraft(entId, typeReportVal);
+                    $container.data("loadedTypeReport", typeReportVal);
                 }
             });
         }
@@ -229,11 +316,10 @@
             }
             if (e && e.params && e.params.data && e.params.data.typeBusiness) {
                 var bizVal = e.params.data.typeBusiness;
-                if ($container.find("#TypeReportSelect option[value='" + bizVal + "']").length > 0) {
-                    $container.find("#TypeReportSelect").val(bizVal);
-                    var txt = $container.find('#TypeReportSelect option:selected').text();
-                    $container.find('#TypeReportName').val(txt);
-                }
+                $(this).data('typeBusiness', bizVal);
+                $container.find('#EnterpriseTypeBusiness').val(bizVal);
+                configureTypeTabs(bizVal);
+                $.each(bizVal.toString().split(','), function (_, type) { preloadReportDraft(entId, $.trim(type), $container.find("#ForMonth").val()); });
             }
             triggerLoadReportForm(entId, entText);
         });
@@ -245,8 +331,11 @@
         var selectedEntVal = $enterpriseSelect.val();
         if (selectedEntVal && selectedEntVal !== "") {
             var selectedEntText = $enterpriseSelect.find("option:selected").text();
+            configureTypeTabs($enterpriseSelect.find("option:selected").data('typeBusiness') || $container.find('#EnterpriseTypeBusiness').val());
+            $.each(($enterpriseSelect.find("option:selected").data('typeBusiness') || $container.find('#EnterpriseTypeBusiness').val() || '').toString().split(','), function (_, type) { preloadReportDraft(selectedEntVal, $.trim(type), $container.find("#ForMonth").val()); });
             triggerLoadReportForm(selectedEntVal, selectedEntText);
         } else {
+            configureTypeTabs("");
             $('#modal_AddReport button[type="submit"]').prop('disabled', true);
         }
     });

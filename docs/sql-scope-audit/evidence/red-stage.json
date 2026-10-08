@@ -1,0 +1,7 @@
+{
+  "command": "python3 -m unittest discover -s tests/sql_scope_audit -v",
+  "exitCode": 1,
+  "tests": 8,
+  "failures": 6,
+  "phase": "before corrections"
+}

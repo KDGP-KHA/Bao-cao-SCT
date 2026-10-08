@@ -1,0 +1,4 @@
+Generated /var/folders/p8/c8nxvh4902j2r20qy60xslyh0000gn/T/scope-portability-1886wb4w/Preflight_IndustryChatbot.sql and /var/folders/p8/c8nxvh4902j2r20qy60xslyh0000gn/T/scope-portability-1886wb4w/Verify_IndustryChatbot.sql; contracts=61; indexes=6; labels=204
+Generated /var/folders/p8/c8nxvh4902j2r20qy60xslyh0000gn/T/scope-portability-1886wb4w/Deploy_IndustryChatbot.sql
+Generated /var/folders/p8/c8nxvh4902j2r20qy60xslyh0000gn/T/scope-portability-1886wb4w/Deploy_ReportPerformanceIndexes.sql
+Generated /var/folders/p8/c8nxvh4902j2r20qy60xslyh0000gn/T/scope-portability-1886wb4w/Deploy_All.sql

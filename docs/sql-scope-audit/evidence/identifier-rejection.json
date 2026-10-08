@@ -1,0 +1,5 @@
+{
+  "rejected": true,
+  "exitCode": 1,
+  "case": "bracket/semicolon database injection"
+}

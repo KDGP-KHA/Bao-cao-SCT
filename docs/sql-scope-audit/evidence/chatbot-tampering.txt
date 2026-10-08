@@ -1,0 +1,1 @@
+PASS: actual ChatbotCatalog rejects six scope/identity/SQL argument injections; valid empty search input accepted.

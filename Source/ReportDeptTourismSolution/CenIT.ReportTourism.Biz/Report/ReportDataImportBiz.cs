@@ -33,13 +33,13 @@ namespace CenIT.ReportTourism.Biz.Report
                 PageSize = -1
             };
             var dataImports = AppProcessor.ProcedureProvider.ExecuteTypedList<ReportDataImportModel>(
-                _reportDataImportsGet, DATA_PROVIDER_NAME,
-                forEmp, enterpriseIds, fromMonth, toMonth, typeBusinessIds,
+                ReportDataImportScope.Procedure(_reportDataImportsGet), DATA_PROVIDER_NAME,
+                ReportDataImportScope.Parameters(forEmp, enterpriseIds, fromMonth, toMonth, typeBusinessIds,
                 search.Search,
                 search.Order,
                 search.OrderDir,
                 search.StartIndex,
-                search.PageSize);
+                search.PageSize));
             total = 0;
             if (dataImports != null && dataImports.Count > 0)
                 total = int.Parse(dataImports.First().TotalRow.ToString());
@@ -49,29 +49,31 @@ namespace CenIT.ReportTourism.Biz.Report
         public List<ReportDataImportModel> GetForUserOnMonth(string forUser, DateTime? onMonth)
         {
             var dataImports = AppProcessor.ProcedureProvider.ExecuteTypedList<ReportDataImportModel>(
-                _reportDataImportsGetForUserOnMonth, DATA_PROVIDER_NAME,
-                forUser, onMonth);
+                ReportDataImportScope.Current == null ? _reportDataImportsGetForUserOnMonth + "_IndustryScope" : _reportDataImportsGetForUserOnMonth + "_Operational", DATA_PROVIDER_NAME,
+                new object[] { forUser, onMonth, forUser });
             return dataImports;
         }
 
         public ReportDataImportModel GetDataImportViaEnterpriseOnMonth(int? enterpriseId, DateTime? forMonth)
         {
             var dataImports = AppProcessor.ProcedureProvider.ExecuteScalarObject<ReportDataImportModel>(
-                _reportDataImportsGetViaEnterpriseOnMonth, DATA_PROVIDER_NAME,
-                enterpriseId, forMonth);
+                ReportDataImportScope.Procedure(_reportDataImportsGetViaEnterpriseOnMonth), DATA_PROVIDER_NAME,
+                ReportDataImportScope.Parameters(enterpriseId, forMonth));
             return dataImports;
         }
 
         public List<ReportDataImportModel> GetViaEnterpriseOnMonth(int? enterpriseId, DateTime? forMonth)
         {
             var dataImports = AppProcessor.ProcedureProvider.ExecuteTypedList<ReportDataImportModel>(
-                _reportDataImportsGetDataImport, DATA_PROVIDER_NAME,
-                enterpriseId, forMonth);
+                ReportDataImportScope.Procedure(_reportDataImportsGetDataImport), DATA_PROVIDER_NAME,
+                ReportDataImportScope.Parameters(enterpriseId, forMonth));
             return dataImports;
         }
 
         public int Import(ReportDataImportModel model)
         {
+            if (ReportDataImportScope.Current != null)
+                ReportDataImportScope.Current.DemandWrite(model.EnterpriseId.GetValueOrDefault(), model.ForMonth, model.TypeReport, "Import");
             var result = AppProcessor.ProcedureProvider.Execute(_reportDataImportsImportDatas, DATA_PROVIDER_NAME,
                 model.EnterpriseId,
                 model.ForMonth,
@@ -87,6 +89,9 @@ namespace CenIT.ReportTourism.Biz.Report
 
         public List<ReportDataImportModel> CheckDataImport(ReportDataImportModel model)
         {
+            if (ReportDataImportScope.Current != null)
+                ReportDataImportScope.Current.Demand(model.EnterpriseId.GetValueOrDefault());
+
             var dataImports = AppProcessor.ProcedureProvider.ExecuteTypedList<ReportDataImportModel>(
                 _reportDataImportsCheckDataImport, DATA_PROVIDER_NAME,
                 model.ForMonth,
@@ -98,6 +103,9 @@ namespace CenIT.ReportTourism.Biz.Report
 
         public bool Delete(ReportDataImportModel model)
         {
+            if (ReportDataImportScope.Current != null)
+                ReportDataImportScope.Current.DemandWrite(model.EnterpriseId.GetValueOrDefault(), model.ForMonth, null, "Delete");
+
             var result = AppProcessor.ProcedureProvider.Execute(_reportDataImportsDelete, DATA_PROVIDER_NAME,
                 model.EnterpriseId, model.ForMonth, model.Reason, model.SavedBy);
             return result == model.EnterpriseId;

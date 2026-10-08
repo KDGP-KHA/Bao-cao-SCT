@@ -1,0 +1,9 @@
+{
+  "command": "PYTHONPATH=/tmp/report-tds:. /tmp/report-powershell/pwsh -NoLogo -NoProfile -File /tmp/report-risk-connect.ps1 -AuditScript tools/sql_scope_audit/live_readonly.py -OutputDirectory docs/sql-scope-audit/evidence",
+  "exitCode": 1,
+  "status": "BLOCKED",
+  "requestedTds": "0x70000000",
+  "errorType": "TimeoutError",
+  "databaseWrites": false,
+  "limitations": "No connection established; no fresh role/hash/actual-record comparison results."
+}

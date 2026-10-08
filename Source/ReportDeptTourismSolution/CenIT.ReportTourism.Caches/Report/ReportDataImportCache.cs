@@ -22,6 +22,7 @@ namespace CenIT.ReportTourism.Caches.Report
         public List<ReportDataImportModel> Get(string forEmp, string enterpriseIds, DateTime? fromMonth,
             DateTime? toMonth, string typeBusinessIds, out int total, SysSearchModel search = null)
         {
+            if (ReportIndustryScope.Current != null || ReportDataImportScope.Current != null) return Api.Get(forEmp, enterpriseIds, fromMonth, toMonth, typeBusinessIds, out total, search);
             var objectKey = EHashMD5.FromObject(search);
             var rawKey =
                 string.Concat($"ListDataImports-{forEmp}-{enterpriseIds}-{fromMonth}-{toMonth}-{typeBusinessIds}-",
@@ -43,6 +44,7 @@ namespace CenIT.ReportTourism.Caches.Report
         [DataObjectMethod(DataObjectMethodType.Select, true)]
         public List<ReportDataImportModel> GetForUserOnMonth(string forUser, DateTime? onMonth)
         {
+            if (ReportIndustryScope.Current != null || ReportDataImportScope.Current != null) return Api.GetForUserOnMonth(forUser, onMonth);
             var rawKey = $"ListDataImportsForUserOnMonth-{forUser}-{onMonth}";
             // See if the item is in the cache
             var dataImports = GetCacheItem(rawKey) as List<ReportDataImportModel>;
@@ -56,6 +58,7 @@ namespace CenIT.ReportTourism.Caches.Report
         [DataObjectMethod(DataObjectMethodType.Select, true)]
         public ReportDataImportModel GetDataImportViaEnterpriseOnMonth(int? enterprise, DateTime? forMonth)
         {
+            if (ReportIndustryScope.Current != null || ReportDataImportScope.Current != null) return Api.GetDataImportViaEnterpriseOnMonth(enterprise, forMonth);
             var rawKey = $"DataImport-{enterprise}-{forMonth}";
             // See if the item is in the cache
             var dataImport = GetCacheItem(rawKey) as ReportDataImportModel;
@@ -69,6 +72,7 @@ namespace CenIT.ReportTourism.Caches.Report
         [DataObjectMethod(DataObjectMethodType.Select, true)]
         public List<ReportDataImportModel> GetViaEnterpriseOnMonth(int? enterprise, DateTime? forMonth)
         {
+            if (ReportIndustryScope.Current != null || ReportDataImportScope.Current != null) return Api.GetViaEnterpriseOnMonth(enterprise, forMonth);
             var rawKey = $"ListDataImportsViaEnterpriseOnMonth-{enterprise}-{forMonth}";
             // See if the item is in the cache
             var dataImports = GetCacheItem(rawKey) as List<ReportDataImportModel>;

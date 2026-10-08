@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -42,6 +42,30 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
 {
     public class ImportController : AppController
     {
+        private CenIT.ReportTourism.Biz.Report.ReportDataImportScope OperationalScope { get; set; }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            base.OnActionExecuting(filterContext);
+            if (filterContext.Result != null) return;
+            OperationalScope = CenIT.ReportTourism.Biz.Report.ReportDataImportScope.Begin(User.UserName);
+            foreach (var parameter in filterContext.ActionParameters)
+            {
+                if (parameter.Value == null) continue;
+                if (string.Equals(parameter.Key, "enterpriseId", StringComparison.OrdinalIgnoreCase))
+                {
+                    long id;
+                    if (long.TryParse(Convert.ToString(parameter.Value), out id) && id > 0) OperationalScope.Demand(id);
+                }
+                else
+                {
+                    var property = parameter.Value.GetType().GetProperty("EnterpriseId");
+                    var id = property == null ? null : property.GetValue(parameter.Value, null);
+                    if (id != null && Convert.ToInt64(id) > 0) OperationalScope.Demand(Convert.ToInt64(id));
+                }
+            }
+        }
+
         private readonly SysConfigsCache _configCache = new SysConfigsCache();
         private readonly CateEnterpriseCache _enterpriseCache = new CateEnterpriseCache();
 
@@ -101,12 +125,12 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
         // GET: Cate/ReportDataImport
         public ActionResult Index()
         {
-            var lstEnterpisePermits = _enterpriseCache.GetViaUser(User.UserName);
+            var lstEnterpisePermits = OperationalScope.GetEnterprises().ToList();
             var lstReportsViaUsers = _importCache.GetForUserOnMonth(User.UserName, DateTime.Now);
             var lstEnterpriseOther = (lstEnterpisePermits ?? new List<CateEnterpriseModel>())
                 .Where(e => lstReportsViaUsers == null || !lstReportsViaUsers.Exists(r => r.EnterpriseId == e.EnterpriseId)).ToList();
 
-            var isEnterpriseUser = lstEnterpisePermits != null && lstEnterpisePermits.Count > 0;
+            var isEnterpriseUser = OperationalScope.IsEnterpriseUser;
             var searchModel = new ReportDataImportSearchModel
             {
                 ListEnterprises = (lstEnterpisePermits ?? new List<CateEnterpriseModel>())
@@ -136,69 +160,43 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
         {
             try
             {
-                var lstEnterpisePermits = _enterpriseCache.GetViaUser(User.UserName);
-                if (lstEnterpisePermits != null && lstEnterpisePermits.Count > 0)
+                int pageSize = 20;
+                int pageIndex = page > 0 ? page - 1 : 0;
+                var keyword = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
+                var typeBiz = string.IsNullOrWhiteSpace(typeBusiness) ? null : typeBusiness.Trim();
+
+                List<CateEnterpriseModel> list = null;
+                try
                 {
-                    var filtered = lstEnterpisePermits.Where(e =>
-                        (string.IsNullOrEmpty(typeBusiness) || e.TypeBusiness == typeBusiness) &&
-                        (string.IsNullOrEmpty(q) ||
-                         (!string.IsNullOrEmpty(e.BusinessName) && e.BusinessName.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) ||
-                         (!string.IsNullOrEmpty(e.TaxCode) && e.TaxCode.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0))
-                    ).ToList();
-
-                    var results = filtered.Select(e => new
-                    {
-                        id = e.EnterpriseId,
-                        text = string.IsNullOrEmpty(e.TaxCode) ? e.BusinessName : string.Format("{0} - {1}", e.BusinessName, e.TaxCode),
-                        typeBusiness = e.TypeBusiness
-                    }).ToList();
-
-                    return Json(new
-                    {
-                        results = results,
-                        pagination = new { more = false }
-                    }, JsonRequestBehavior.AllowGet);
+                    list = AppProcessor.ProcedureProvider.ExecuteTypedList<CateEnterpriseModel>(
+                        "Report_DataImports_Enterprises_SearchSelect2", "ReportTourismProvider",
+                        keyword, typeBiz, pageIndex, pageSize, User.UserName);
                 }
-                else
+                catch (Exception exSp)
                 {
-                    int pageSize = 20;
-                    int pageIndex = page > 0 ? page - 1 : 0;
-                    var keyword = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
-                    var typeBiz = string.IsNullOrWhiteSpace(typeBusiness) ? null : typeBusiness.Trim();
-
-                    List<CateEnterpriseModel> list = null;
-                    try
-                    {
-                        list = AppProcessor.ProcedureProvider.ExecuteTypedList<CateEnterpriseModel>(
-                            "Cate_Enterprises_SearchSelect2", "SysProvider",
-                            keyword, typeBiz, pageIndex, pageSize);
-                    }
-                    catch (Exception exSp)
-                    {
-                        AppProcessor.Logger.Message("ExecuteTypedList error in SearchEnterprisesSelect2: " + exSp.Message);
-                    }
-
-
-                    int total = 0;
-                    if (list != null && list.Count > 0)
-                    {
-                        total = list.First().TotalRow.GetValueOrDefault(0);
-                    }
-
-                    var results = (list ?? new List<CateEnterpriseModel>()).Select(e => new
-                    {
-                        id = e.EnterpriseId,
-                        text = string.IsNullOrEmpty(e.TaxCode) ? e.BusinessName : string.Format("{0} - {1}", e.BusinessName, e.TaxCode),
-                        typeBusiness = e.TypeBusiness
-                    }).ToList();
-
-                    bool more = (pageIndex + 1) * pageSize < total;
-                    return Json(new
-                    {
-                        results = results,
-                        pagination = new { more = more }
-                    }, JsonRequestBehavior.AllowGet);
+                    AppProcessor.Logger.Message("ExecuteTypedList error in SearchEnterprisesSelect2: " + exSp.Message);
                 }
+
+
+                int total = 0;
+                if (list != null && list.Count > 0)
+                {
+                    total = list.First().TotalRow.GetValueOrDefault(0);
+                }
+
+                var results = (list ?? new List<CateEnterpriseModel>()).Select(e => new
+                {
+                    id = e.EnterpriseId,
+                    text = string.IsNullOrEmpty(e.TaxCode) ? e.BusinessName : string.Format("{0} - {1}", e.BusinessName, e.TaxCode),
+                    typeBusiness = e.TypeBusiness
+                }).ToList();
+
+                bool more = ((long)pageIndex + 1) * pageSize < total;
+                return Json(new
+                {
+                    results = results,
+                    pagination = new { more = more }
+                }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -316,7 +314,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
         [ActionType(Type = EnumActionType.View)]
         public async Task<ActionResult> DownloadTemplate(string templateName = "TemplateImport_LuHanh.xlsx")
         {
-            var lstEnterpisePermits = _enterpriseCache.GetViaUser(User.UserName);
+            var lstEnterpisePermits = OperationalScope.GetEnterprises().ToList();
             var lstReportsViaUsers = _importCache.GetForUserOnMonth(User.UserName, DateTime.Now);
             var lstEnterpriseOther = lstEnterpisePermits
                 .Where(e => !lstReportsViaUsers.Exists(r => r.EnterpriseId == e.EnterpriseId)).ToList();
@@ -373,12 +371,12 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
         [ActionType(Type = EnumActionType.View)]
         public ActionResult ViewAction()
         {
-            var lstEnterpisePermits = _enterpriseCache.GetViaUser(User.UserName);
+            var lstEnterpisePermits = OperationalScope.GetEnterprises().ToList();
             var lstReportsViaUsers = _importCache.GetForUserOnMonth(User.UserName, DateTime.Now);
             var lstEnterpriseOther = (lstEnterpisePermits ?? new List<CateEnterpriseModel>())
                 .Where(e => lstReportsViaUsers == null || !lstReportsViaUsers.Exists(r => r.EnterpriseId == e.EnterpriseId)).ToList();
 
-            var isEnterpriseUser = lstEnterpisePermits != null && lstEnterpisePermits.Count > 0;
+            var isEnterpriseUser = OperationalScope.IsEnterpriseUser;
             var searchModel = new ReportDataImportSearchModel
             {
                 ListEnterprises = (lstEnterpisePermits ?? new List<CateEnterpriseModel>())
@@ -422,7 +420,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
         [HttpGet]
         public ActionResult ImportData()
         {
-            var lstEnterpisePermits = _enterpriseCache.GetViaUser(User.UserName);
+            var lstEnterpisePermits = OperationalScope.GetEnterprises().ToList();
             var lstReportsViaUsers = _importCache.GetForUserOnMonth(User.UserName, DateTime.Now);
             var lstEnterpriseOther = lstEnterpisePermits
                 .Where(e => !lstReportsViaUsers.Exists(r => r.EnterpriseId == e.EnterpriseId)).ToList();
@@ -471,7 +469,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
                 ModelState.Remove("FileImport");
                 if (!ModelState.IsValid)
                 {
-                    var lstEnterpisePermits = _enterpriseCache.GetViaUser(User.UserName);
+                    var lstEnterpisePermits = OperationalScope.GetEnterprises().ToList();
                     var lstReportsViaUsers = _importCache.GetForUserOnMonth(User.UserName, DateTime.Now);
                     var lstEnterpriseOther = lstEnterpisePermits
                         .Where(e => !lstReportsViaUsers.Exists(r => r.EnterpriseId == e.EnterpriseId)).ToList();
@@ -640,7 +638,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    var lstEnterpisePermits = _enterpriseCache.GetViaUser(User.UserName);
+                    var lstEnterpisePermits = OperationalScope.GetEnterprises().ToList();
                     var lstReportsViaUsers = _importCache.GetForUserOnMonth(User.UserName, DateTime.Now);
                     var lstEnterpriseOther = lstEnterpisePermits
                         .Where(e => !lstReportsViaUsers.Exists(r => r.EnterpriseId == e.EnterpriseId)).ToList();
@@ -970,7 +968,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model.ListEnterprises = _enterpriseCache.GetViaUser(User.UserName)
+                model.ListEnterprises = OperationalScope.GetEnterprises().ToList()
                     .Select(e => new ListItem(e.BusinessName, e.EnterpriseId.ToString())).ToList();
                 return PartialView("_ImportView", model);
             }
@@ -1358,7 +1356,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
         [ActionType(Type = EnumActionType.Add)]
         public ActionResult Add()
         {
-            var lstEnterpisePermits = _enterpriseCache.GetViaUser(User.UserName);
+            var lstEnterpisePermits = OperationalScope.GetEnterprises().ToList();
             var lstEnterpriseOther = (lstEnterpisePermits ?? new List<CateEnterpriseModel>())
                 .Where(e => !string.IsNullOrWhiteSpace(e.TypeBusiness))
                 .OrderBy(e => e.BusinessName)
@@ -1394,7 +1392,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
                 TypeReport = defaultType,
                 TypeReportName = GetTypeBusinessDisplayName(defaultType),
                 ListTypeBusiness = GetListTypeBusinessItems(),
-                IsEnterpriseUser = (lstEnterpisePermits != null && lstEnterpisePermits.Count > 0)
+                IsEnterpriseUser = OperationalScope.IsEnterpriseUser
             };
             return PartialView("_Add", reportModel);
         }
@@ -1420,7 +1418,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
 
             if (!ModelState.IsValid)
             {
-                var lstEnterpisePermits = _enterpriseCache.GetViaUser(User.UserName);
+                var lstEnterpisePermits = OperationalScope.GetEnterprises().ToList();
                 var lstEnterpriseOther = lstEnterpisePermits
                     .Where(e => e.TypeBusiness == "1").ToList();
 
@@ -1438,7 +1436,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
                     TypeReport = model.TypeReport,
                     TypeReportName = string.IsNullOrWhiteSpace(model.TypeReportName) || model.TypeReportName.StartsWith("TypeBusiness_") ? GetTypeBusinessDisplayName(model.TypeReport) : model.TypeReportName,
                     ListTypeBusiness = GetListTypeBusinessItems(),
-                    IsEnterpriseUser = (lstEnterpisePermits != null && lstEnterpisePermits.Count > 0)
+                    IsEnterpriseUser = OperationalScope.IsEnterpriseUser
                 };
                 return PartialView("_Add", reportModel);
             }
@@ -1784,7 +1782,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
                 AccessToken = (string)Session[$"VNPT-SmartCA-{User?.UserName}-AccessToken"],
                 EnableSignDigitalDoc =
                     (_configCache.GetViaKey("Enable_SignDigital_Doc")?.ConfigValue ?? "0") != "0",
-                IsEnterpriseUser = (_enterpriseCache.GetViaUser(User.UserName)?.Count > 0)
+                IsEnterpriseUser = OperationalScope.IsEnterpriseUser
             };
 
             return PartialView("_Edit", reportModel);
@@ -1883,7 +1881,7 @@ namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
                     IsEdit = true,
                     EnableSignDigitalDoc =
                         (_configCache.GetViaKey("Enable_SignDigital_Doc")?.ConfigValue ?? "0") != "0",
-                    IsEnterpriseUser = (_enterpriseCache.GetViaUser(User.UserName)?.Count > 0)
+                    IsEnterpriseUser = OperationalScope.IsEnterpriseUser
                 };
                 return PartialView("_Edit", reportModel);
             }

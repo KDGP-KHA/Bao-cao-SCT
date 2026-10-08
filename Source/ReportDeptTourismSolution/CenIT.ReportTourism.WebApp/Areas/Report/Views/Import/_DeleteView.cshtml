@@ -8,9 +8,9 @@
 <h4> @Html.Raw(ViewBag.ConfirmMessage)</h4>
 <hr/>
 <div class="form-group">
-    @Html.TitleFor(model => model.Reason, new { @class = "control-label col-md-3" })
-    <div class="col-md-9">
-        @Html.TextAreaFor(model => model.Reason, new { rows = "3", @class = "col-md-10", placeholder = AppProcessor.Messagor.GetMessage("Reason_Title") })
+    <div class="col-md-12">
+    @Html.TitleFor(model => model.Reason, new { @class = "control-label" })
+        @Html.TextAreaFor(model => model.Reason, new { rows = "2", @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("Reason_Title") })
         @Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
     </div>
 </div>

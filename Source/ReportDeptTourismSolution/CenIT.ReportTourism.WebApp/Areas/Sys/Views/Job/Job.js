@@ -80,8 +80,7 @@ function initTableJob() {
                             classButton + " btn-form",
                             "/Sys/Job/ChangeStatus/" + data,
                             "",
-                            text,
-                            800);
+                            text);
 
                         html += _renderButton(true,
                             "EditJob",
@@ -89,15 +88,14 @@ function initTableJob() {
                             "/Sys/Job/Edit/" + data,
                             "",
                             "Cập nhật",
-                            800);
+                            860);
 
                         html += _renderButton(true,
                             "DeleteJob",
                             "fa fa-trash-o btn btn-danger btn-form",
                             "/Sys/Job/Delete/" + data,
                             "",
-                            "Xoá",
-                            800);
+                            "Xoá");
                     }
 
                     return html;

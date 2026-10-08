@@ -148,13 +148,13 @@ namespace CenIT.ReportTourism.WebApp.Controllers
         }
 
         /// <summary>
-        ///     Tài khoản thuộc Sở: có vai trò khác vai trò Doanh nghiệp (AppSettings: Enterprise_Role_Default)
+        ///     Tài khoản thuộc Sở: có vai trò khác vai trò Doanh nghiệp (Configs/AppSettings.config ReportRoles:*)
         /// </summary>
         private bool IsDepartmentUser()
         {
             try
             {
-                var enterpriseRoleIds = (ConfigurationManager.AppSettings["Enterprise_Role_Default"] ?? "5")
+                var enterpriseRoleIds = CenIT.ReportTourism.Biz.Report.ReportRoleMapping.Current.EnterpriseRoleIds
                     .Split(',').Select(r => r.Trim()).ToList();
                 var sysUser = _sysUserCache.GetByUserName(User?.UserName);
                 if (sysUser?.UserId == null) return false;

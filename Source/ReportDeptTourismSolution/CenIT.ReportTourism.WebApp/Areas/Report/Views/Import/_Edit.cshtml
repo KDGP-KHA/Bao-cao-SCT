@@ -96,50 +96,32 @@
 
             <hr />
 
-            @if (Model.TypeReport == EnumTypeBusiness.Trading)
+            @{ ViewBag.IsEdit = true; }
+            @if (Model.TypeReport == EnumTypeBusiness.Trading || ViewBag.IsTradingReport == true)
             {
-                @Html.Partial("_NoTemplateReport")
+                @Html.Partial("_TradingReport", Model.ListDataImports)
             }
-            else if (ViewBag.IsBusinessProductReport == true)
+            else if (Model.TypeReport == EnumTypeBusiness.ImportExport || ViewBag.IsImportExportReport == true)
             {
-                @Html.Partial("_BusinessProductReport", Model.ListDataImports)
+                @Html.Partial("_ImportExportReport", Model.ListDataImports)
             }
             else
             {
-                @Html.Partial("_EditReport", Model.ListDataImports)
+                @Html.Partial("_BusinessProductReport", Model.ListDataImports)
             }
         </div>
     }
 
     <script src="~/Areas/Report/Views/Import/_ReportBody.js"></script>
-    @if (ViewBag.IsBusinessProductReport != true)
-    {
-        <script type="text/javascript">
-            // Mẫu báo cáo sản xuất/thương mại không dùng các validator du lịch cũ.
-            function ValidForm() {
-                var isValid = true;
-                $("#DataReport input[type='number']").each(function () {
-                    var value = $(this).val();
-                    if (value !== "" && !isNaN(value) && parseFloat(value) < 0) {
-                        TooltipErrInput(this, "Giá trị phải lớn hơn hoặc bằng 0");
-                        isValid = false;
-                    } else {
-                        ClearTooltipErrInput(this);
-                    }
-                });
-                return isValid;
-            }
-        </script>
-    }
+
 
     <script type="text/javascript">
         $('form#EditReport').ajaxForm({
             beforeSubmit: function(arr, $form, options) {
-                if (ValidForm()) {
-                    return true; //it will continue your submission.
-                } else {
-                    return false; //ti will stop your submission.
+                if (typeof ValidForm === "function") {
+                    return ValidForm();
                 }
+                return true;
             },
             success: function(response) {
                 if (response.status != undefined) {

@@ -1,10 +1,19 @@
-﻿var _UserActionURLs = {
+var _UserActionURLs = {
     User_GetData: "/Sys/User/Get"
 };
 var _tableUser;
 
 $(document).ready(function() {
     initTableUser();
+
+    $('.dataTables_filter input')
+        .unbind('keypress keyup input')
+        .bind('keypress', function (e) {
+            // Check if the pressed key is Enter (keycode 13)
+            if (e.which == 13) {
+                _tableUser.search(this.value).draw();
+            }
+        });
 });
 
 function initTableUser() {
@@ -17,6 +26,9 @@ function initTableUser() {
         "lengthChange": true,
         "processing": true,
         "serverSide": true,
+        "search": {
+            return: true
+        },
         "ajax":
         {
             "url": _UserActionURLs.User_GetData,
@@ -73,6 +85,16 @@ function initTableUser() {
                                 "/Sys/User/SendMail/" + data,
                                 "",
                                 "Reset mật khẩu");
+                            if (row.CanEditIndustryPermissions === true) {
+                                var industryTitle = $("#DSUser").attr("data-industry-permissions-title") || "";
+                                // The shared renderer places titles inside an HTML attribute.
+                                industryTitle = industryTitle.replace(/&/g, "&amp;").replace(/"/g, "&quot;")
+                                    .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                                html += _renderButton(true, "IndustryPermissions",
+                                    "fa fa-industry btn btn-default btn-form",
+                                    "/Sys/User/IndustryPermissions/" + data, "", industryTitle);
+                            }
+
                             html += _renderButton(true,
                                 "EnterprisesUser",
                                 "fa fa-object-group btn btn-sm bg-purple btn-form",

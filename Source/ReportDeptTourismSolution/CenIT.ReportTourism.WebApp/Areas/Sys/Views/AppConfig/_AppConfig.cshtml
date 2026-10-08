@@ -17,20 +17,20 @@
     }
 }
 @Html.Hidden("ID", id)
-<div id="Message">
+<div id="Config">
 
     <div class="form-group">
-        @Html.TitleFor(model => model.AppKey, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextBoxFor(model => model.AppKey, new { @class = "col-md-7", placeholder = AppProcessor.Messagor.GetMessage("Message_Label_AppKey") })
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.AppKey, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.AppKey, new { @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("Message_Label_AppKey") })
             @Html.ValidationMessageFor(model => model.AppKey, "", new { @class = "text-danger" })
         </div>
 
     </div>
     <div class="form-group">
-        @Html.TitleFor(model => model.AppValue, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextBoxFor(model => model.AppValue, new { @class = "col-md-7", placeholder = AppProcessor.Messagor.GetMessage("Message_Label_AppValue") })
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.AppValue, new { @class = "control-label" })
+            @Html.TextAreaFor(model => model.AppValue, new { rows = 3, @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("Message_Label_AppValue") })
             @Html.ValidationMessageFor(model => model.AppValue, "", new { @class = "text-danger" })
         </div>
     </div>

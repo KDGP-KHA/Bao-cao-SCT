@@ -24,25 +24,15 @@
         <input type="hidden" name="BusinessProductReport" value="true" />
         <style>
             #DataReport tr.business-summary td { font-weight: 700; }
+            #DataReport .report-invalid { border-color: #dd4b39 !important; }
+            #DataReport th, #DataReport td { padding: 5px 8px; vertical-align: middle; }
+            #DataReport .form-control { height: 30px; padding: 4px 8px; }
             .btn-remove-trade { cursor: pointer; margin-left: 8px; font-size: 14px; }
             .btn-remove-trade:hover { color: #a94442 !important; }
+            .trade-header-content { display: flex; align-items: center; gap: 8px; }
+            .btn-add-trade-catalog { width: 22px; height: 22px; padding: 0; margin: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #ccc; border-radius: 2px; background: #f7f7f7; color: #333; cursor: pointer; }
+            .btn-add-trade-catalog:hover { background: #e6e6e6; }
         </style>
-        <div id="TradeProductTemplates" style="display: none;">
-            <select id="ExportProductTemplate" class="none-select2">
-                <option value=""></option>
-                @foreach (var option in exportBusinessProductOptions)
-                {
-                    <option value="@option.Code" data-unit="@option.Unit" data-name="@option.Targets">@option.Targets (@option.Code)</option>
-                }
-            </select>
-            <select id="ImportProductTemplate" class="none-select2">
-                <option value=""></option>
-                @foreach (var option in importBusinessProductOptions)
-                {
-                    <option value="@option.Code" data-unit="@option.Unit" data-name="@option.Targets">@option.Targets (@option.Code)</option>
-                }
-            </select>
-        </div>
         @if (!Model.Any())
         {
             <div class="alert alert-info">
@@ -58,11 +48,11 @@
                         <th rowspan="2" width="32%">Chỉ tiêu</th>
                         <th rowspan="2" width="9%">Đơn vị tính</th>
                         <th rowspan="2" width="20%">Kế hoạch năm báo cáo</th>
-                        <th colspan="2" width="34%">Năm báo cáo</th>
+                        <th colspan="2" width="34%">Năm @forMonth.Year</th>
                     </tr>
                     <tr>
-                        <th width="17%">Thực hiện T@(prevMonth)</th>
-                        <th width="17%">Ước thực hiện T@(currentMonth)</th>
+                        <th width="17%">Thực hiện tháng @prevMonth.ToString("D2")</th>
+                        <th width="17%">Ước thực hiện tháng @currentMonth.ToString("D2")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -81,33 +71,40 @@
                                             || product.Targets == "Kim ngạch nhập khẩu";
                             var isTradeHeader = product.Targets == "Nhóm/mặt hàng xuất khẩu chủ yếu"
                                                 || product.Targets == "Nhóm/mặt hàng nhập khẩu chủ yếu";
+                            var isBusinessProductHeader = string.IsNullOrEmpty(product.Code)
+                                                          || product.Code == "2"
+                                                          || product.Code == "6.0"
+                                                          || product.Code == "7.0";
+                            var tradeHeaderPrefix = product.Targets == "Nhóm/mặt hàng xuất khẩu chủ yếu" ? "XK"
+                                : product.Targets == "Nhóm/mặt hàng nhập khẩu chủ yếu" ? "NK"
+                                : string.Empty;
 
                             string rowDataSummary = "";
                             string rowDataGroup = "";
 
-                            if (product.Code == "06" || product.Targets == "Kim ngạch xuất khẩu")
+                            if (product.Code == "6" || product.Code == "06" || product.Targets == "Kim ngạch xuất khẩu")
                             {
                                 rowDataSummary = "XK";
                             }
-                            else if (product.Code == "07" || product.Targets == "Kim ngạch nhập khẩu")
+                            else if (product.Code == "7" || product.Code == "07" || product.Targets == "Kim ngạch nhập khẩu")
                             {
                                 rowDataSummary = "NK";
                             }
-                            else if (!string.IsNullOrEmpty(product.Code) && product.Code.StartsWith("XK", StringComparison.OrdinalIgnoreCase))
+                            else if (!string.IsNullOrEmpty(product.Code) && (product.Code.StartsWith("XK", StringComparison.OrdinalIgnoreCase) || (product.Level ?? "").StartsWith("6.")))
                             {
                                 rowDataGroup = "XK";
                             }
-                            else if (!string.IsNullOrEmpty(product.Code) && product.Code.StartsWith("NK", StringComparison.OrdinalIgnoreCase))
+                            else if (!string.IsNullOrEmpty(product.Code) && (product.Code.StartsWith("NK", StringComparison.OrdinalIgnoreCase) || (product.Level ?? "").StartsWith("7.")))
                             {
                                 rowDataGroup = "NK";
                             }
 
                             string rowDataRole = "";
-                            if (product.Code == "01" || product.Targets == "Tổng doanh thu")
+                            if (product.Code == "1" || product.Code == "01" || product.Targets == "Tổng doanh thu")
                             {
                                 rowDataRole = "total-revenue";
                             }
-                            else if (product.Code == "0101" || product.Targets == "Trong đó doanh thu công nghiệp")
+                            else if (product.Code == "1.1" || product.Code == "0101" || product.Targets == "Trong đó doanh thu công nghiệp")
                             {
                                 rowDataRole = "industry-revenue";
                             }
@@ -115,11 +112,19 @@
                             var isTradeSummary = !string.IsNullOrEmpty(rowDataSummary);
 
                             <tr class="@(isSummary ? "business-summary" : "")" @(!string.IsNullOrEmpty(rowDataSummary) ? "data-summary=" + rowDataSummary : "") @(!string.IsNullOrEmpty(rowDataGroup) ? "data-group=" + rowDataGroup : "") @(!string.IsNullOrEmpty(rowDataRole) ? "data-role=" + rowDataRole : "")>
-                                @if (string.IsNullOrEmpty(product.Code))
+                                @if (isBusinessProductHeader)
                                 {
                                     <td class="text-center">@product.Level</td>
                                     <td colspan="5" style="text-align: left !important;">
-                                        <strong>@Html.Hidden("Target_" + index, product.Targets)@Html.Hidden("Unit_" + index, product.Unit)@Html.Hidden("Code_" + index, product.Code)@Html.Hidden("Index_" + index, product.Index)@Html.Hidden("Level_" + index, product.Level)@product.Targets</strong>
+                                        <div class="trade-header-content">
+                                            <strong>@Html.Hidden("Target_" + index, product.Targets)@Html.Hidden("Unit_" + index, product.Unit)@Html.Hidden("Code_" + index, product.Code)@Html.Hidden("Index_" + index, product.Index)@Html.Hidden("Level_" + index, product.Level)@product.Targets</strong>
+                                            @if (!string.IsNullOrEmpty(tradeHeaderPrefix))
+                                            {
+                                                <button type="button" class="AddTradeCatalogProduct btn-add-trade-catalog" data-prefix="@tradeHeaderPrefix" title="Tạo mặt hàng mới">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            }
+                                        </div>
                                     </td>
                                 }
                                 else
@@ -151,22 +156,22 @@
                             </tr>
                             var addTradePrefix = string.Empty;
                             if (product.Targets == "Nhóm/mặt hàng xuất khẩu chủ yếu" &&
-                                (nextProduct == null || !((nextProduct.Code ?? string.Empty).StartsWith("XK", StringComparison.OrdinalIgnoreCase))))
+                                (nextProduct == null || (!((nextProduct.Code ?? string.Empty).StartsWith("XK", StringComparison.OrdinalIgnoreCase)) && !((nextProduct.Level ?? string.Empty).StartsWith("6.")))))
                             {
                                 addTradePrefix = "XK";
                             }
-                            else if ((product.Code ?? string.Empty).StartsWith("XK", StringComparison.OrdinalIgnoreCase) &&
-                                     (nextProduct == null || !((nextProduct.Code ?? string.Empty).StartsWith("XK", StringComparison.OrdinalIgnoreCase))))
+                            else if (((product.Code ?? string.Empty).StartsWith("XK", StringComparison.OrdinalIgnoreCase) || (product.Level ?? string.Empty).StartsWith("6.")) &&
+                                     (nextProduct == null || (!((nextProduct.Code ?? string.Empty).StartsWith("XK", StringComparison.OrdinalIgnoreCase)) && !((nextProduct.Level ?? string.Empty).StartsWith("6.")))))
                             {
                                 addTradePrefix = "XK";
                             }
                             else if (product.Targets == "Nhóm/mặt hàng nhập khẩu chủ yếu" &&
-                                     (nextProduct == null || !((nextProduct.Code ?? string.Empty).StartsWith("NK", StringComparison.OrdinalIgnoreCase))))
+                                     (nextProduct == null || (!((nextProduct.Code ?? string.Empty).StartsWith("NK", StringComparison.OrdinalIgnoreCase)) && !((nextProduct.Level ?? string.Empty).StartsWith("7.")))))
                             {
                                 addTradePrefix = "NK";
                             }
-                            else if ((product.Code ?? string.Empty).StartsWith("NK", StringComparison.OrdinalIgnoreCase) &&
-                                     (nextProduct == null || !((nextProduct.Code ?? string.Empty).StartsWith("NK", StringComparison.OrdinalIgnoreCase))))
+                            else if (((product.Code ?? string.Empty).StartsWith("NK", StringComparison.OrdinalIgnoreCase) || (product.Level ?? string.Empty).StartsWith("7.")) &&
+                                     (nextProduct == null || (!((nextProduct.Code ?? string.Empty).StartsWith("NK", StringComparison.OrdinalIgnoreCase)) && !((nextProduct.Level ?? string.Empty).StartsWith("7.")))))
                             {
                                 addTradePrefix = "NK";
                             }
@@ -260,14 +265,11 @@
                 if (indVal > totalVal) {
                     var msg = "Doanh thu công nghiệp (" + formatVNNumber(indVal) + ") không được lớn hơn Tổng doanh thu (" + formatVNNumber(totalVal) + ") ở cột " + f.label + ".";
                     TooltipErrInput($indInput, msg);
-                    if (showAlert) {
-                        alert(msg);
-                        $indInput.focus();
-                    }
+                    $indInput.addClass("report-invalid").focus();
                     isValid = false;
-                    break;
                 } else {
                     ClearTooltipErrInput($indInput);
+                    $indInput.removeClass("report-invalid");
                 }
             }
         }
@@ -510,7 +512,7 @@
             return $("<input />", { id: name, name: name, type: "text", "class": css, placeholder: "0", autocomplete: "off", inputmode: "decimal" });
         };
         var row = $("<tr class='business-product-custom' data-group='" + prefix + "'></tr>");
-        var sectionLevel = prefix === "XK" ? "5" : "6";
+        var sectionLevel = prefix === "XK" ? "6" : "7";
         var childNumber = $("#DataReport input[name^='Level_']").map(function () {
             var level = $(this).val() || "";
             return level.indexOf(sectionLevel + ".") === 0 ? parseInt(level.split(".")[1], 10) || 0 : 0;
@@ -521,9 +523,7 @@
         }).get();
         var storedIndex = (storedIndices.length ? Math.max.apply(null, storedIndices) : -1) + 1;
         row.append($("<td class='text-center'></td>").text(level));
-        var templateId = prefix === "XK"
-            ? "#ExportProductTemplate"
-            : "#ImportProductTemplate";
+        var enterpriseId = @((ViewBag.BusinessProductEnterpriseId ?? 0).ToString());
 
         var selectId = "TradeProductSelect_" + prefix + "_" + index;
         var select = $("<select></select>")
@@ -531,9 +531,6 @@
             .attr("name", selectId)
             .addClass("form-control TradeProductSelect");
 
-        $(templateId).find("option").each(function () {
-            select.append($(this).clone());
-        });
         var target = $("<input />", { id: "Target_" + index, name: "Target_" + index, type: "hidden" });
         var unit = $("<input />", { id: "Unit_" + index, name: "Unit_" + index, type: "hidden" });
         var rowIndex = $("<input />", { id: "Index_" + index, name: "Index_" + index, type: "hidden", value: storedIndex });
@@ -551,23 +548,25 @@
             .append(input("PerformInPeriod_" + index, "form-control text-right number-separator"))
             .append($("<input />", { id: "Code_" + index, name: "Code_" + index, type: "hidden" })));
 
-        select.on("change select2:select", function () {
-            var selected = $(this).find("option:selected");
-            var sourceCode = selected.val();
+        function applyProduct(product) {
+            product = product || {};
+            var sourceCode = product.id || "";
             if (sourceCode && $("#DataReport input[name^='Code_']").not("#Code_" + index).filter(function () { return $(this).val() === sourceCode; }).length) {
                 alert("Sản phẩm này đã có trong nhóm.");
-                $(this).val("").trigger("change.select2");
+                select.val("").trigger("change.select2");
                 target.val("");
                 unit.val("");
                 unitText.text("");
                 $("#Code_" + index).val("");
                 return;
             }
-            target.val(selected.data("name") || "");
-            unit.val(selected.data("unit") || "");
-            unitText.text(selected.data("unit") || "");
+            target.val(product.name || "");
+            unit.val(product.unit || "");
+            unitText.text(product.unit || "");
             $("#Code_" + index).val(sourceCode || "");
-        });
+        }
+        select.on("select2:select", function (event) { applyProduct(event.params.data); });
+        select.on("change", function () { if (!$(this).val()) applyProduct({}); });
 
         select.on("select2:open", function () {
             var s2 = $(this).data("select2");
@@ -585,13 +584,97 @@
                 allowClear: true,
                 placeholder: "Chọn 1 giá trị",
                 width: "100%",
-                dropdownParent: $modalContent.length ? $modalContent : select.parent()
+                dropdownParent: $modalContent.length ? $modalContent : select.parent(),
+                ajax: {
+                    url: "/Report/Import/SearchUnconfiguredBusinessProducts", dataType: "json", delay: 250, global: false,
+                    data: function (params) { return { enterpriseId: enterpriseId, prefix: prefix, q: params.term || "", page: params.page || 1 }; },
+                    processResults: function (data) { return data; }, cache: true
+                }, minimumInputLength: 0
             });
         }
         recalculateTradeSummary(prefix);
     }
 
     $(".AddTradeProduct").off("click").on("click", function () { AddTradeProduct(this, $(this).data("prefix")); });
+
+    $(document).off("click.addTradeCatalogProduct", ".AddTradeCatalogProduct").on("click.addTradeCatalogProduct", ".AddTradeCatalogProduct", function () {
+        var prefix = $(this).data("prefix");
+        $.get("/Report/Import/AddTradeCatalogProduct", { prefix: prefix })
+            .done(function (html) {
+                $("#TradeCatalogProductModal").remove();
+                $("body").append(html);
+                var $modal = $("#TradeCatalogProductModal");
+                $modal.on("hidden.bs.modal", function () { $(this).remove(); });
+                $modal.modal("show");
+            })
+            .fail(function () { alert("Không thể mở biểu mẫu thêm mặt hàng."); });
+    });
+
+    $(document).off("submit.addTradeCatalogProduct", "#AddTradeCatalogProductForm").on("submit.addTradeCatalogProduct", "#AddTradeCatalogProductForm", function (event) {
+        event.preventDefault();
+        var $form = $(this);
+        var prefix = $form.find("[name='prefix']").val();
+        var $submit = $form.find("button[type='submit']").prop("disabled", true);
+        $.ajax({
+            url: "/Report/Import/AddTradeCatalogProduct",
+            type: "POST",
+            data: $form.serialize()
+        }).done(function (response) {
+            if (!response || !response.status) {
+                alert(response && response.message ? response.message : "Không thể thêm mặt hàng.");
+                return;
+            }
+
+            var product = response.product;
+            var templateId = prefix === "XK" ? "#ExportProductTemplate" : "#ImportProductTemplate";
+            $(templateId).append($("<option></option>")
+                .val(product.code)
+                .attr("data-name", product.name)
+                .attr("data-unit", product.unit || "")
+                .text(product.name + " (" + product.code + ")"));
+
+            var $addButton = $(".trade-add-row[data-prefix='" + prefix + "'] .AddTradeProduct").last();
+            if ($addButton.length) {
+                var $targetRow = $addButton.closest("tr").prev("tr.business-product-custom").filter(function () {
+                    return !$(this).find("input[name^='Code_']").val();
+                });
+
+                if (!$targetRow.length) {
+                    AddTradeProduct($addButton[0], prefix);
+                    $targetRow = $addButton.closest("tr").prev("tr.business-product-custom");
+                }
+
+                if ($targetRow.length) {
+                    var $sel = $targetRow.find("select.TradeProductSelect");
+                    var optText = product.name + (product.unit ? " (" + product.unit + ")" : "") + " (" + product.code + ")";
+                    var newOption = new Option(optText, product.code, true, true);
+                    $(newOption).attr("data-name", product.name)
+                                .attr("data-unit", product.unit || "")
+                                .attr("data-code", product.code);
+                    $sel.append(newOption);
+
+                    $sel.trigger({
+                        type: "select2:select",
+                        params: {
+                            data: {
+                                id: product.code,
+                                name: product.name,
+                                unit: product.unit || "",
+                                code: product.code,
+                                text: optText
+                            }
+                        }
+                    });
+                    $sel.trigger("change");
+                }
+            }
+            $("#TradeCatalogProductModal").modal("hide");
+        }).fail(function () {
+            alert("Không thể thêm mặt hàng. Vui lòng thử lại.");
+        }).always(function () {
+            $submit.prop("disabled", false);
+        });
+    });
 
     recalculateTradeSummary("XK");
     recalculateTradeSummary("NK");

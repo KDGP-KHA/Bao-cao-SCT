@@ -33,7 +33,8 @@ function initTableViewDataImport() {
             "dataType": "JSON",
             "data": {
                 "EnterpriseId": function() { return enterpriseId; },
-                "ForMonth": function() { return forMonth; }
+                "ForMonth": function() { return forMonth; },
+                "TypeReport": function() { return typeReport; }
             }
         },
         "columnDefs": [
@@ -85,6 +86,7 @@ function initTableViewDataImport() {
                 "defaultContent": "",
                 "render": function(data, type, row, meta) {
                     if (data == null || data.length === 0) return "";
+                    if (data.indexOf("TM_") === 0) return "";
                     return data.padStart(2, "0");
                 }
             },
@@ -100,7 +102,7 @@ function initTableViewDataImport() {
                         //} else {
                         //    html = data.toLocaleString("he-IL");
                         //}
-                        html = data.toLocaleString("he-IL");
+                        html = Number(data).toLocaleString("vi-VN");
                         return html;
                     } else if (type === "sort") {
                         return data;
@@ -120,7 +122,7 @@ function initTableViewDataImport() {
                         //} else {
                         //    html = data.toLocaleString("he-IL");
                         //}
-                        html = data.toLocaleString("he-IL");
+                        html = Number(data).toLocaleString("vi-VN");
                         return html;
                     } else if (type === "sort") {
                         return data;
@@ -160,7 +162,7 @@ function initTableViewDataImport() {
                         //} else {
                         //    html = data.toLocaleString("he-IL");
                         //}
-                        html = data.toLocaleString("he-IL");
+                        html = Number(data).toLocaleString("vi-VN");
                         return html;
                     } else if (type === "sort") {
                         return data;

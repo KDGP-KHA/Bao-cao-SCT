@@ -10,7 +10,7 @@ using TSFramework.Core.Enums;
 
 namespace CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Controllers
 {
-    public class ExtendInfoController : AppController
+    public class ExtendInfoController : IndustryScopedReportController
     {
         private readonly ReportExtendInfoCache _reportExtendInfoCache;
         private readonly string _reportExtendInfoTitle = AppProcessor.Messagor.GetMessage("ReportExtendInfo_Title");

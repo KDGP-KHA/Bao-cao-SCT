@@ -1,12 +1,13 @@
-/* AdminLTE 2.3.11 / Bootstrap 3.3.7 supply all colors, typography and components.
-   Only dashboard layout, long-label handling and accessibility adjustments live here. */
+/* AdminLTE 2.3.11 / Bootstrap 3.3.7 remain the component and grid foundation.
+   Scoped dashboard hierarchy, spacing, long-label and accessibility refinements. */
 .dashboard-page-note {
-  color: #999;
+  color: #526477;
   cursor: help;
   font-size: 16px;
   vertical-align: middle;
 }
 .management-dashboard {
+  color: #263e53;
   font-variant-numeric: tabular-nums;
 }
 
@@ -102,6 +103,7 @@
 }
 .management-dashboard .dashboard-equal-row > [class*="col-"] {
   display: flex;
+  flex-direction: column;
   min-width: 0;
 }
 .management-dashboard .dashboard-equal-row > [class*="col-"] > .box,
@@ -109,6 +111,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 .management-dashboard .dashboard-equal-row .box-body,
 .management-dashboard .dashboard-equal-row .small-box > .inner {
@@ -116,13 +119,13 @@
 }
 /* Compact KPI cards so every card row fits above the fold. */
 .management-dashboard .small-box {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 .management-dashboard .small-box > .inner {
-  padding: 10px 15px;
+  padding: 18px 20px;
 }
 .management-dashboard .small-box h3 {
-  font-size: 28px;
+  font-size: 30px;
   margin: 0 0 6px;
   white-space: normal;
   overflow-wrap: break-word;
@@ -137,15 +140,8 @@
   margin: 0;
   overflow-wrap: break-word;
 }
-.management-dashboard .small-box .icon {
-  font-size: 60px;
-  top: 5px;
-}
-.management-dashboard .small-box:hover .icon {
-  font-size: 64px;
-}
 .management-dashboard .small-box > .small-box-footer {
-  padding: 4px 10px;
+  padding: 10px 16px;
 }
 .management-dashboard .small-box.bg-gray > .small-box-footer {
   color: rgba(0, 0, 0, 0.7);
@@ -168,6 +164,27 @@
 }
 .management-dashboard .progress-group .progress {
   grid-column: 1 / -1;
+  grid-row: 2;
+}
+.dashboard-analysis-page .dashboard-breakdown-grid {
+  align-items: start;
+}
+.dashboard-analysis-page .dashboard-breakdown-grid .progress-group {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.management-dashboard .progress-group > details {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.management-dashboard .progress-group > .progress-text {
+  min-width: 0;
+}
+.management-dashboard .progress-group > .progress-number {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
 }
 
 /* Keep header tools in flow so long Vietnamese titles cannot overlap them. */
@@ -197,7 +214,7 @@
   line-height: 1.4;
 }
 .management-dashboard .dashboard-chart {
-  height: 240px;
+  height: 280px;
 }
 .management-dashboard .dashboard-chart-empty {
   display: flex;
@@ -219,9 +236,201 @@
 }
 .management-dashboard a:focus-visible,
 .management-dashboard button:focus-visible,
+.management-dashboard input:focus-visible,
+.management-dashboard select:focus-visible,
+.management-dashboard summary:focus-visible,
+.dashboard-page-note:focus-visible,
 .management-dashboard .select2-container--focus .select2-selection {
   outline: 2px solid #23527c;
   outline-offset: 3px;
+}
+
+/* Preserve the AdminLTE component vocabulary; emphasize data over decoration. */
+.management-dashboard .nav-tabs-custom {
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(23, 50, 77, 0.12);
+  margin-bottom: 24px;
+}
+.management-dashboard .dashboard-navigation {
+  margin-bottom: 0;
+  box-shadow: none;
+}
+.management-dashboard .nav-tabs-custom > .nav-tabs {
+  background: #f7f9fc;
+  border-bottom-color: #dce4ec;
+}
+.management-dashboard .nav-tabs-custom > .nav-tabs > li > a {
+  padding: 14px 20px;
+  color: #526477;
+  font-weight: 600;
+}
+.management-dashboard .nav-tabs-custom > .nav-tabs > li.active {
+  border-top-color: #3c8dbc;
+}
+.management-dashboard .nav-tabs-custom > .nav-tabs > li.active > a {
+  color: #17324d;
+}
+.management-dashboard .nav-tabs-custom > .tab-content {
+  padding: 20px;
+}
+.management-dashboard .dashboard-filter-field label {
+  color: #526477;
+  font-weight: 600;
+}
+.management-dashboard .dashboard-filter-secondary {
+  margin-top: 18px;
+  border-top: 1px solid #e6ebf1;
+}
+.management-dashboard .box {
+  box-shadow: 0 1px 3px rgba(23, 50, 77, 0.08);
+  margin-bottom: 24px;
+}
+.management-dashboard .box-header {
+  padding: 16px 20px;
+}
+.management-dashboard .box-header .box-title {
+  font-size: 17px;
+  font-weight: 600;
+  text-wrap: pretty;
+}
+.management-dashboard .box-body:not(.no-padding) {
+  padding: 20px;
+}
+.management-dashboard .box-footer {
+  padding: 12px 20px;
+  background: #fafbfd;
+}
+.management-dashboard .box-tools .label-default {
+  background: #edf2f7;
+  color: #526477;
+  font-weight: 400;
+  font-size: 12px;
+}
+.management-dashboard .small-box > .inner > p + p {
+  margin-top: 10px;
+}
+.management-dashboard .small-box h3 sup {
+  display: inline-block;
+  line-height: 1.5;
+}
+.management-dashboard .small-box p.small {
+  font-size: 13px;
+  line-height: 1.6;
+}
+/* Darker AdminLTE tones keep the original status vocabulary with readable text. */
+.management-dashboard .small-box.bg-light-blue { background-color: #26749f !important; }
+.management-dashboard .small-box.bg-aqua { background-color: #007c98 !important; }
+.management-dashboard .small-box.bg-green { background-color: #008548 !important; }
+.management-dashboard .small-box.bg-teal { background-color: #007e73 !important; }
+.management-dashboard .small-box.bg-red { background-color: #c43c2b !important; }
+.management-dashboard .small-box.bg-orange { background-color: #ab4900 !important; }
+.management-dashboard .small-box.bg-yellow { color: #332209 !important; }
+.management-dashboard .small-box.bg-yellow > .small-box-footer { color: #332209; }
+.management-dashboard .small-box > .small-box-footer { color: #fff; }
+.management-dashboard .small-box.bg-gray > .small-box-footer { color: #334155; }
+.management-dashboard .dashboard-kpi-links {
+  margin: -4px 0 20px;
+  line-height: 1.7;
+}
+.management-dashboard .text-muted {
+  color: #526477;
+}
+.management-dashboard .table > thead > tr > th {
+  background: #f2f6fa;
+  color: #526477;
+  font-weight: 600;
+  border-bottom: 1px solid #dce4ec;
+}
+.management-dashboard .table > thead > tr > th,
+.management-dashboard .table > tbody > tr > td {
+  padding: 12px;
+  vertical-align: middle;
+}
+.management-dashboard .table-condensed > tbody > tr > td {
+  padding: 8px 12px;
+}
+.management-dashboard .table-striped > tbody > tr:nth-of-type(odd) {
+  background: #fafbfd;
+}
+.management-dashboard .table-hover > tbody > tr:hover {
+  background: #edf5fb;
+}
+.management-dashboard .table-responsive {
+  border: 0;
+}
+.management-dashboard .progress {
+  border-radius: 4px;
+  background: #edf2f7;
+}
+.management-dashboard .progress-group {
+  margin-bottom: 16px;
+}
+.management-dashboard .progress-number {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+.management-dashboard .dashboard-chart-toggle {
+  min-height: 32px;
+  padding: 5px 12px;
+}
+.management-dashboard .dashboard-chart-toggle.active {
+  background: #17324d;
+  border-color: #17324d;
+  color: #fff;
+  box-shadow: none;
+}
+.management-dashboard .dashboard-values-toggle {
+  min-height: 32px;
+}
+.management-dashboard .btn,
+.management-dashboard a,
+.management-dashboard summary {
+  touch-action: manipulation;
+}
+.management-dashboard summary {
+  cursor: pointer;
+  padding: 6px 0;
+}
+.management-dashboard .dashboard-note {
+  margin-bottom: 12px;
+  color: #526477;
+  font-size: 13px;
+}
+.management-dashboard .dashboard-note > summary {
+  width: fit-content;
+  min-height: 32px;
+}
+.management-dashboard .dashboard-note > p {
+  max-width: 80ch;
+  margin: 4px 0 8px;
+  line-height: 1.6;
+}
+.management-dashboard .dashboard-breakdown-grid > .dashboard-note {
+  grid-column: 1 / -1;
+}
+.management-dashboard .modal-body {
+  overflow-wrap: anywhere;
+}
+.management-dashboard .modal {
+  overscroll-behavior: contain;
+}
+.management-dashboard .dashboard-skip-link:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.management-dashboard .dashboard-skip-link:focus {
+  display: block;
+  padding: 12px;
+}
+@media (min-width: 1200px) {
+  .dashboard-analysis-page > .dashboard-kpi-row > .col-sm-6,
+  .dashboard-progress-page > .dashboard-kpi-row > .col-sm-6 {
+    width: 25%;
+  }
 }
 
 @media (max-width: 1199px) {
@@ -231,6 +440,26 @@
   }
 }
 @media (max-width: 767px) {
+  .management-dashboard .nav-tabs-custom > .tab-content,
+  .management-dashboard .box-body:not(.no-padding),
+  .management-dashboard .box-header {
+    padding: 16px;
+  }
+  .management-dashboard .nav-tabs-custom > .nav-tabs > li > a {
+    padding: 12px;
+  }
+  .management-dashboard .dashboard-filter-buttons {
+    flex-wrap: wrap;
+  }
+  .management-dashboard .dashboard-filter-buttons .btn,
+  .management-dashboard .dashboard-chart-toggle,
+  .management-dashboard .dashboard-values-toggle,
+  .management-dashboard .pagination > li > a {
+    min-height: 44px;
+  }
+  .management-dashboard .small-box {
+    text-align: left;
+  }
   .management-dashboard .nav-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -256,8 +485,10 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .management-dashboard .small-box .icon,
-  .management-dashboard .collapsing {
-    transition: none;
+  .management-dashboard *,
+  .management-dashboard *::before,
+  .management-dashboard *::after {
+    transition: none !important;
+    animation: none !important;
   }
 }

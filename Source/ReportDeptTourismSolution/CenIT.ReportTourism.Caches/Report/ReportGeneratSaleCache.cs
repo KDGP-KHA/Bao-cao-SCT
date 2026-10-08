@@ -19,6 +19,7 @@ namespace CenIT.ReportTourism.Caches.Report
         [DataObjectMethod(DataObjectMethodType.Select, true)]
         public List<ReportGenerateSaleModel> GetGenerateSaleOnMonth(DateTime? onMonth)
         {
+            if (ReportIndustryScope.Current != null) return Api.GetGenerateSaleOnMonth(onMonth);
             var rawKey = $"ListDataGenerateSaleOnMonth-{onMonth}";
             // See if the item is in the cache
             var data = GetCacheItem(rawKey) as List<ReportGenerateSaleModel>;

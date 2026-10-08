@@ -1,0 +1,30 @@
+﻿@model CenIT.ReportTourism.Modules.SysModule.Areas.Sys.Models.IndustryPermissionsModel
+@using TSFramework.App.Processors
+@{
+    ViewBag.Title = AppProcessor.Messagor.GetMessage("User_IndustryPermissions_Title");
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+@section FormType { bg-primary }
+@section FormIcon { <i class="fa fa-industry" aria-hidden="true"></i> }
+@section FormBody {
+    @using (Ajax.BeginForm("IndustryPermissions", "User", new { area = "Sys" }, new AjaxOptions
+    {
+        HttpMethod = "POST", OnSuccess = "User_OnProcessSuccess(data, 'IndustryPermissions')"
+    }, new { @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.UserId)
+        @Html.Hidden("ConfirmRestoreScope", true)
+        <div class="modal-body">
+            <p><strong>@Model.FullName</strong> <span class="text-muted">(@Model.UserName)</span></p>
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <label for="IndustryIds" class="col-sm-12">@AppProcessor.Messagor.GetMessage("User_IndustryPermissions_Industries")</label>
+                <div class="col-sm-12">
+                    @Html.ListBoxFor(m => m.IndustryIds, Model.Industries,
+                        new { @class = "form-control", size = "12" })
+                </div>
+            </div>
+        </div>
+    }
+}

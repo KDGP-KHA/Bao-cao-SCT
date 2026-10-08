@@ -1,0 +1,24 @@
+﻿@using TSFramework.App.Processors
+@model CenIT.ReportTourism.Models.Cate.CateBusinessProductModel
+
+@{
+    ViewBag.Title = string.Format(AppProcessor.Messagor.GetMessage("Modal_Title_Delete"), AppProcessor.Messagor.GetMessage("BusinessProduct_Title"));
+    Layout = "~/Views/Shared/_FormDel.cshtml";
+}
+
+@section FormBody{
+    @using (Ajax.BeginForm("DeleteProduct", "BusinessIndustry", new { area = "Cate" }, new AjaxOptions
+    {
+        HttpMethod = "POST",
+        OnSuccess = "BusinessProduct_OnProcessSuccess(data, 'DeleteProduct')"
+    }, new { @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.ProductId)
+        @Html.HiddenFor(model => model.IndustryId)
+        @Html.HiddenFor(model => model.IndustryName)
+        @Html.HiddenFor(model => model.ProductCode)
+        @Html.HiddenFor(model => model.ProductName)
+        <h4> @Html.Raw(ViewBag.ConfirmMessage)</h4>
+    }
+}

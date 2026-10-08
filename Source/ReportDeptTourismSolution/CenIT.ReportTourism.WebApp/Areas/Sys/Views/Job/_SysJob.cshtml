@@ -5,48 +5,44 @@
 @Html.HiddenFor(model => model.JobId)
 <div id="JobSchedule">
     <div class="form-group">
-        @Html.TitleFor(model => model.JobLibrary, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.FileFor(model => model.FileLibrary, ".dll", true, new { @class = "col-md-8" })
+        <div class="col-md-6">
+            @Html.TitleFor(model => model.JobLibrary, new { @class = "control-label" })
+            @Html.FileFor(model => model.FileLibrary, ".dll", true, new { @class = "col-md-12" })
             @Html.ValidationMessageFor(model => model.FileLibrary, "", new { @class = "text-danger" })
             @Html.HiddenFor(model => model.JobLibrary)
         </div>
-    </div>
-    <div class="form-group">
-        @Html.TitleFor(model => model.JobName, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextBoxFor(model => model.JobName, new { @class = "col-md-9", placeholder = AppProcessor.Messagor.GetMessage("Job_Label_Name") })
+        <div class="col-md-6">
+            @Html.TitleFor(model => model.JobName, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.JobName, new { @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("Job_Label_JobName") })
             @Html.ValidationMessageFor(model => model.JobName, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
-        @Html.TitleFor(model => model.JobDescription, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextAreaFor(model => model.JobDescription, new { rows = 3, @class = "col-md-9", placeholder = AppProcessor.Messagor.GetMessage("Job_Label_JobDescription") })
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.JobDescription, new { @class = "control-label" })
+            @Html.TextAreaFor(model => model.JobDescription, new { rows = 3, @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("Job_Label_JobDescription") })
             @Html.ValidationMessageFor(model => model.JobDescription, "", new { @class = "text-danger" })
         </div>
     </div>
+
     <div class="form-group">
-        @*@Html.TitleFor(model => model.IsActive, new { @class = "control-label col-md-3" })*@
-        <label class="control-label col-md-3"></label>
         <div class="col-md-9">
-            <div class="checkbox col-md-4">
-                @Html.CheckBoxFor(model => model.IsActive)
-                @Html.TitleFor(model => model.IsActive)
-            </div>
-            @Html.ValidationMessageFor(model => model.JobDescription, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.TitleFor(model => model.CronExpression, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            <div class="input-group col-md-9">
+            @Html.TitleFor(model => model.CronExpression, new { @class = "control-label" })
+            <div class="input-group">
                 @Html.TextBoxFor(model => model.CronExpression, new { @class = "form-control", placeholder = AppProcessor.Messagor.GetMessage("Job_Label_CronExpression") })
                 <span class="input-group-btn">
                     @Html.Button(true, "ImportData", Url.Action("CronExpression", "Job", new { area = "Sys" }), "", "Tạo Lịch", new { @class = "btn btn-primary", data_width = "800px" })
                 </span>
             </div>
             @Html.ValidationMessageFor(model => model.CronExpression, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-md-3">
+            <label>&nbsp;</label>
+            <div class="checkbox">
+                @Html.CheckBoxFor(model => model.IsActive)
+                @Html.TitleFor(model => model.IsActive)
+            </div>
+            @Html.ValidationMessageFor(model => model.JobDescription, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
@@ -62,9 +58,9 @@
 @Html.RenderScripts(ScriptPosition.BodyInside)
 
 <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function () {
         requirejs(['cronstrue'],
-            function(cronstrue) {
+            function (cronstrue) {
                 var expression = $("#JobSchedule #CronExpression").val();
                 if (expression.length > 0) {
                     var result = cronstrue.toString(expression);
@@ -72,9 +68,9 @@
                 }
             });
 
-        $("#JobSchedule #CronExpression").change(function() {
+        $("#JobSchedule #CronExpression").change(function () {
             requirejs(['cronstrue'],
-                function(cronstrue) {
+                function (cronstrue) {
                     var expression = $("#JobSchedule #CronExpression").val();
                     if (expression.length > 0) {
                         var result = cronstrue.toString(expression);

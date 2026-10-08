@@ -27,22 +27,66 @@
                      Value="p_Report_Reports_03_DoanhNghiepChuaGuiBaoCao" />
           <Procedure Name="Report_Reports_04_BaoCaoHoatDongDoanhNghiep"
                      Value="p_Report_Reports_04_BaoCaoHoatDongDoanhNghiep" />
+          
           <Procedure Name="usp_Report_KTXH_TheoEnterprise" Value="usp_Report_KTXH_TheoEnterprise" />
+          <Procedure Name="usp_Report_HoatDongXuatKhau_TheoEnterprise" Value="usp_Report_HoatDongXuatKhau_TheoEnterprise" />
           <Procedure Name="usp_Report_KTXH_Tong" Value="usp_Report_KTXH_Tong" />
+          <Procedure Name="usp_Report_KTXH_Type2_TheoEnterprise" Value="usp_Report_KTXH_Type2_TheoEnterprise" />
+          <Procedure Name="usp_Report_KTXH_Type2_Tong" Value="usp_Report_KTXH_Type2_Tong" />
 
-          <Procedure Name="Report_Dashboard_StatisticEnterprise" Value="p_Report_Dashboard_StatisticEnterprise" />
-          <Procedure Name="Report_Dashboard_StatisticTypeBusiness" Value="p_Report_Dashboard_StatisticTypeBusiness" />
-          <Procedure Name="Report_Dashboard_StatisticVisitor" Value="p_Report_Dashboard_StatisticVisitor" />
-          <Procedure Name="Report_Dashboard_StatisticMapVisitor" Value="p_Report_Dashboard_StatisticMapVisitor" />
-          <Procedure Name="Report_Dashboard_StatisticIncome" Value="p_Report_Dashboard_StatisticIncome" />
-          <Procedure Name="Report_Dashboard_IndustrialSnapshot" Value="p_Report_Dashboard_IndustrialSnapshot" />
-          <Procedure Name="Report_Dashboard_OverviewSummary" Value="p_Report_Dashboard_OverviewSummary" />
+    <Procedure Name="Report_Dashboard_StatisticEnterprise" Value="p_Report_Dashboard_StatisticEnterprise" />
+    <Procedure Name="Report_Dashboard_StatisticTypeBusiness" Value="p_Report_Dashboard_StatisticTypeBusiness" />
+    <Procedure Name="Report_Dashboard_StatisticVisitor" Value="p_Report_Dashboard_StatisticVisitor" />
+    <Procedure Name="Report_Dashboard_StatisticMapVisitor" Value="p_Report_Dashboard_StatisticMapVisitor" />
+    <Procedure Name="Report_Dashboard_StatisticIncome" Value="p_Report_Dashboard_StatisticIncome" />
+    <Procedure Name="Report_Dashboard_IndustrialSnapshot" Value="p_Report_Dashboard_IndustrialSnapshot" />
+    <Procedure Name="Report_Dashboard_FilterOptions" Value="p_Report_Dashboard_FilterOptions" />
+    <Procedure Name="Report_Dashboard_ProgressDetails" Value="p_Report_Dashboard_ProgressDetails" />
+    <Procedure Name="Report_Dashboard_OverviewSummary" Value="p_Report_Dashboard_OverviewSummary" />
 
           <Procedure Name="Report_ExtendInfos_Get" Value="p_Report_ExtendInfos_Get" />
           <Procedure Name="Report_ExtendInfos_Save" Value="p_Report_ExtendInfos_Save" />
           <Procedure Name="Report_ExtendInfos_GetByID" Value="p_Report_ExtendInfos_GetByID" />
           <Procedure Name="Report_ExtendInfos_GetViaMonth" Value="p_Report_ExtendInfos_GetViaMonth" />
 
-     </StoredProcedures>
+    <Procedure Name="Report_Chatbot_IndicatorData" Value="p_Report_Chatbot_IndicatorData" />
+    <Procedure Name="Report_Chatbot_ReportFiles" Value="p_Report_Chatbot_ReportFiles" />
+    <Procedure Name="Report_Chatbot_Metadata" Value="p_Report_Chatbot_Metadata" />
 
+    <Procedure Name="Report_Chatbot_Snapshot" Value="p_Report_Chatbot_Snapshot" />
+    <Procedure Name="Report_Chatbot_Summary" Value="p_Report_Chatbot_Summary" />
+    <Procedure Name="Report_Chatbot_FilterOptions" Value="p_Report_Chatbot_FilterOptions" />
+    <Procedure Name="Report_Chatbot_ProgressDetails" Value="p_Report_Chatbot_ProgressDetails" />
+
+    <!-- Reports-only industry scope; original procedures remain available to other modules. -->
+    <Procedure Name="Report_IndustryPermissions_Scope" Value="p_Report_IndustryPermissions_Scope" />
+    <Procedure Name="Report_IndustryPermissions_Enterprises" Value="p_Report_IndustryPermissions_Enterprises" />
+    <Procedure Name="Report_Industry_Enterprises_SearchSelect2" Value="p_Report_Industry_Enterprises_SearchSelect2" />
+    <Procedure Name="Report_DataImports_Get_IndustryScope" Value="p_Report_DataImports_Get_IndustryScope" />
+    <Procedure Name="Report_DataImports_GetDataImport_IndustryScope" Value="p_Report_DataImports_GetDataImport_IndustryScope" />
+    <Procedure Name="Report_DataImports_GetForUserOnMonth_IndustryScope" Value="p_Report_DataImports_GetForUserOnMonth_IndustryScope" />
+    <Procedure Name="Report_DataImports_GetViaEnterpriseOnMonth_IndustryScope" Value="p_Report_DataImports_GetViaEnterpriseOnMonth_IndustryScope" />
+    <Procedure Name="Report_DataImports_GenerateSaleOfTourism_IndustryScope" Value="p_Report_DataImports_GenerateSaleOfTourism_IndustryScope" />
+    <Procedure Name="Report_Reports_01_UocKetQuaHoatDongKinhDoanh_IndustryScope" Value="p_Report_Reports_01_UocKetQuaHoatDongKinhDoanh_IndustryScope" />
+    <Procedure Name="Report_Reports_02_ThongKeQuocTichKhachDuLich_IndustryScope" Value="p_Report_Reports_02_ThongKeQuocTichKhachDuLich_IndustryScope" />
+    <Procedure Name="Report_Reports_03_DoanhNghiepChuaGuiBaoCao_IndustryScope" Value="p_Report_Reports_03_DoanhNghiepChuaGuiBaoCao_IndustryScope" />
+    <Procedure Name="Report_Reports_04_BaoCaoHoatDongDoanhNghiep_IndustryScope" Value="p_Report_Reports_04_BaoCaoHoatDongDoanhNghiep_IndustryScope" />
+    <Procedure Name="Report_Dashboard_StatisticEnterprise_IndustryScope" Value="p_Report_Dashboard_StatisticEnterprise_IndustryScope" />
+    <Procedure Name="Report_Dashboard_StatisticTypeBusiness_IndustryScope" Value="p_Report_Dashboard_StatisticTypeBusiness_IndustryScope" />
+    <Procedure Name="Report_Dashboard_StatisticVisitor_IndustryScope" Value="p_Report_Dashboard_StatisticVisitor_IndustryScope" />
+    <Procedure Name="Report_Dashboard_StatisticMapVisitor_IndustryScope" Value="p_Report_Dashboard_StatisticMapVisitor_IndustryScope" />
+    <Procedure Name="Report_Dashboard_StatisticIncome_IndustryScope" Value="p_Report_Dashboard_StatisticIncome_IndustryScope" />
+    <Procedure Name="Report_Dashboard_IndustrialSnapshot_IndustryScope" Value="p_Report_Dashboard_IndustrialSnapshot_IndustryScope" />
+    <Procedure Name="Report_Dashboard_FilterOptions_IndustryScope" Value="p_Report_Dashboard_FilterOptions_IndustryScope" />
+    <Procedure Name="Report_Dashboard_ProgressDetails_IndustryScope" Value="p_Report_Dashboard_ProgressDetails_IndustryScope" />
+    <Procedure Name="Report_Dashboard_OverviewSummary_IndustryScope" Value="p_Report_Dashboard_OverviewSummary_IndustryScope" />
+  </StoredProcedures>
+
+    <Procedure Name="Report_DataImports_OperationalScope" Value="p_Report_DataImports_OperationalScope" />
+    <Procedure Name="Report_DataImports_Get_Operational" Value="p_Report_DataImports_Get_Operational" />
+    <Procedure Name="Report_DataImports_GetDataImport_Operational" Value="p_Report_DataImports_GetDataImport_Operational" />
+    <Procedure Name="Report_DataImports_GetViaEnterpriseOnMonth_Operational" Value="p_Report_DataImports_GetViaEnterpriseOnMonth_Operational" />
+    <Procedure Name="Report_DataImports_GetForUserOnMonth_Operational" Value="p_Report_DataImports_GetForUserOnMonth_Operational" />
+    <Procedure Name="Report_DataImports_Enterprises_SearchSelect2" Value="p_Report_DataImports_Enterprises_SearchSelect2" />
+    <Procedure Name="Report_DataImports_CheckOwnership" Value="p_Report_DataImports_CheckOwnership" />
 </Provider>

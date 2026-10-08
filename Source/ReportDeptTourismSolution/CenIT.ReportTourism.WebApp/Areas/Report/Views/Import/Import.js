@@ -8,6 +8,40 @@ $(document).ready(function() {
     initSearchEnterpriseSelect2();
 });
 
+$(document).on("click", "a.js-view-data-report", function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    var url = $(this).attr("href");
+    var modalId = "modal_ViewDataImport";
+    $("#" + modalId).remove();
+
+    var modal = $(
+        '<div id="' + modalId + '" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static">' +
+        '<div class="modal-dialog modal-xlg" role="document"><div class="modal-content"></div></div></div>');
+    $("#ModalContent").append(modal);
+
+    $.ajax({ url: url, type: "GET", cache: false }).done(function(html) {
+        var content = html;
+        if (typeof html === "string" && _isJson(html)) {
+            var response = JSON.parse(html);
+            content = '<div class="modal-header bg-primary"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">Xem dữ liệu báo cáo</h4></div>' +
+                '<div class="modal-body"><div class="alert alert-warning">' + (response.message || "Không thể tải dữ liệu báo cáo.") +
+                '</div></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button></div>';
+        }
+        modal.find(".modal-content").html(content);
+        modal.modal("show");
+    }).fail(function() {
+        modal.find(".modal-content").html(
+            '<div class="modal-header bg-danger"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">Xem dữ liệu báo cáo</h4></div>' +
+            '<div class="modal-body"><div class="alert alert-danger">Không thể tải dữ liệu báo cáo. Vui lòng thử lại.</div></div>' +
+            '<div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button></div>');
+        modal.modal("show");
+    }).always(function() {
+        $("#loader").removeClass("show pageload-loading").css("display", "none");
+    });
+});
+
 function initTableDataImport() {
     _tableDataImport = $("#DataImports").DataTable({
         "Responsive": true,
@@ -97,19 +131,23 @@ function initTableDataImport() {
                                 "/Report/Import/Edit?enterpriseId=" +
                                 row.EnterpriseId +
                                 "&onMonth=" +
-                                moment(row.ForMonth).format("YYYY-MM-DD"),
+                                moment(row.ForMonth).format("YYYY-MM-DD") +
+                                "&typeReport=" + row.TypeReport,
                                 "",
                                 "Chỉnh sửa báo cáo",
                                 1024);
                         }
 
-                        html += _renderButton(true,
+                        // Màn xem dùng modal riêng. Cơ chế modal chung đôi khi chỉ
+                        // tạo backdrop khi response view được tải chậm/lỗi.
+                        html += _renderButton(false,
                             "ViewDataImport",
-                            "fa fa-eye btn btn-primary btn-form",
+                            "fa fa-eye btn btn-primary btn-form js-view-data-report",
                             "/Report/Import/View?enterpriseId=" +
                             row.EnterpriseId +
                             "&onMonth=" +
-                            moment(row.ForMonth).format("YYYY-MM-DD"),
+                            moment(row.ForMonth).format("YYYY-MM-DD") +
+                            "&typeReport=" + row.TypeReport,
                             "",
                             "Xem dữ liệu báo cáo",
                             "1024px");
@@ -133,8 +171,7 @@ function initTableDataImport() {
                                 "&onMonth=" +
                                 moment(row.ForMonth).format("YYYY-MM-DD"),
                                 "",
-                                "Xoá",
-                                800);
+                                "Xoá");
                         }
                     }
                     return html;

@@ -1,19 +1,22 @@
-@model CenIT.ReportTourism.Models.Report.DashboardWarningsModel
+﻿@model CenIT.ReportTourism.Models.Report.DashboardWarningsModel
 @using CenIT.ReportTourism.Models.Report
 @using System.Linq
 @{
     ViewBag.Title = DashboardText.Get("Warnings_Title");
 }
 @section Title {
-    @{ var pageNote = DashboardText.Get("Warnings_Note"); }
-    @ViewBag.Title <span class="dashboard-page-note" tabindex="0" title="@pageNote"><i class="fa fa-info-circle" aria-hidden="true"></i><span class="sr-only">@pageNote</span></span>
+    @ViewBag.Title
 }
 @section HeadCss {
     <link rel="stylesheet" href="@Url.Content("~/Contents/plugins/morris/morris.css")" />
     <link rel="stylesheet" href="@Url.Content("~/Contents/plugins/management-dashboard/management-dashboard.css")" />
 }
 @{
-    Func<int, string> ofComparable = count => Model.ComparableCount > 0 ? String.Format("{0:0.#}%", 100m * count / Model.ComparableCount) : "—";
+    Func<int, string> ofComparable = count => Model.ComparableCount > 0 ? DashboardNumber.Percent(100m * count / Model.ComparableCount) : "—";
+    const int pageSize = DashboardWarningsModel.PageSize;
+    var totalPages = (int)Math.Ceiling(Model.DeclineOver10 / (double)pageSize);
+    Func<int, string> warningPageUrl = page => Url.Action("Warnings", "Dashboard", new { year = Model.Filters.Year, month = Model.Filters.Month, reportType = Model.Filters.ReportType,
+        areaId = Model.Filters.AreaId, economicSectorId = Model.Filters.EconomicSectorId, industryId = Model.Filters.IndustryId, enterpriseId = Model.Filters.EnterpriseId, page });
     var pageRoute = new { year = Model.Filters.Year, month = Model.Filters.Month, reportType = Model.Filters.ReportType,
         areaId = Model.Filters.AreaId, economicSectorId = Model.Filters.EconomicSectorId,
         industryId = Model.Filters.IndustryId, enterpriseId = Model.Filters.EnterpriseId, metric = Model.Filters.Metric };
@@ -26,81 +29,53 @@
         </div>
     </div>
 
-    <div class="row dashboard-equal-row">
-        @if (Model.IsIndustrial)
-        {
-            <div class="col-xs-12 col-md-4">
+    <div id="dashboard-content" class="row dashboard-equal-row dashboard-kpi-row" tabindex="-1">
+            <div class="col-xs-12 col-sm-6 col-md-4">
                 <div class="small-box bg-yellow">
                     <div class="inner">
                         <h3>@(Model.ComparableCount > 0 ? Model.DeclineOver10.ToString() : "—") <sup>@DashboardText.Get("Enterprises")</sup></h3>
                         <p><b>@DashboardText.Get("Warnings_Decline10")</b></p>
                     </div>
-                    <div class="icon"><i class="fa fa-arrow-down" aria-hidden="true"></i></div>
                     <div class="small-box-footer"><b>@ofComparable(Model.DeclineOver10)</b> @DashboardText.Get("Analysis_ComparedCoverage")</div>
                 </div>
             </div>
-            <div class="col-xs-12 col-md-4">
+            <div class="col-xs-12 col-sm-6 col-md-4">
                 <div class="small-box bg-orange">
                     <div class="inner">
                         <h3>@(Model.ComparableCount > 0 ? Model.DeclineOver20.ToString() : "—") <sup>@DashboardText.Get("Enterprises")</sup></h3>
                         <p><b>@DashboardText.Get("Warnings_Decline20")</b></p>
                     </div>
-                    <div class="icon"><i class="fa fa-level-down" aria-hidden="true"></i></div>
                     <div class="small-box-footer"><b>@ofComparable(Model.DeclineOver20)</b> @DashboardText.Get("Analysis_ComparedCoverage")</div>
                 </div>
             </div>
-            <div class="col-xs-12 col-md-4">
+            <div class="col-xs-12 col-sm-6 col-md-4">
                 <div class="small-box bg-red">
                     <div class="inner">
                         <h3>@(Model.ComparableCount > 0 ? Model.DeclineOver30.ToString() : "—") <sup>@DashboardText.Get("Enterprises")</sup></h3>
                         <p><b>@DashboardText.Get("Warnings_Decline30")</b></p>
                     </div>
-                    <div class="icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></div>
                     <div class="small-box-footer"><b>@ofComparable(Model.DeclineOver30)</b> @DashboardText.Get("Analysis_ComparedCoverage")</div>
                 </div>
             </div>
-        }
-        else
-        {
-            <div class="col-xs-12 col-sm-6">
-                <div class="small-box bg-light-blue">
-                    <div class="inner">
-                        <h3>@(Model.Movements.Any() ? String.Format("{0:+#,##0.##;-#,##0.##;0}", Model.Movements.First().Change) : "—") <sup>@Model.Metric.Unit</sup></h3>
-                        <p><b>@DashboardText.Get("Warnings_LargestChange")</b></p>
-                    </div>
-                    <div class="icon"><i class="fa fa-exchange" aria-hidden="true"></i></div>
-                    <div class="small-box-footer">@(Model.Movements.Any() ? Model.Movements.First().Name : "—")</div>
-                </div>
-            </div>
-            <div class="col-xs-12 col-sm-6">
-                <div class="small-box bg-red">
-                    <div class="inner">
-                        <h3>@Model.Movements.Count(x => x.Change < 0) <sup>@DashboardText.Get("Enterprises")</sup></h3>
-                        <p><b>@DashboardText.Get("Warnings_DecliningEnterprises")</b></p>
-                    </div>
-                    <div class="icon"><i class="fa fa-arrow-down" aria-hidden="true"></i></div>
-                    <div class="small-box-footer">@DashboardText.Get("Warnings_InLargestList")</div>
-                </div>
-            </div>
-        }
+
+    </div>
+    <div class="row dashboard-equal-row dashboard-kpi-row">
         <div class="col-xs-12 col-sm-6">
-            <div class="small-box bg-aqua">
+            <div class="small-box bg-gray">
                 <div class="inner">
-                    <h3>@Model.ComparableCount <sup>/ @Model.Assigned</sup></h3>
+                    <h3>@DashboardNumber.Count(Model.ComparableCount) <sup>/ @DashboardNumber.Count(Model.Assigned)</sup></h3>
                     <p><b>@DashboardText.Get("Warnings_Comparable")</b></p>
                 </div>
-                <div class="icon"><i class="fa fa-balance-scale" aria-hidden="true"></i></div>
                 <a class="small-box-footer" href="@Url.Action("Analysis", "Dashboard", pageRoute)">@DashboardText.Get("Overview_ViewAnalysis") <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
             </div>
         </div>
         <div class="col-xs-12 col-sm-6">
-            <div class="small-box bg-purple">
+            <div class="small-box bg-yellow">
                 <div class="inner">
-                    <h3>@Model.ConflictCount <sup>@DashboardText.Get("Enterprises")</sup></h3>
+                    <h3>@DashboardNumber.Count(Model.ConflictCount) <sup>@DashboardText.Get("Enterprises")</sup></h3>
                     <p><b>@DashboardText.Get("Progress_Duplicates")</b></p>
                 </div>
-                <div class="icon"><i class="fa fa-files-o" aria-hidden="true"></i></div>
-                <a class="small-box-footer" href="@Url.Action("Progress", "Dashboard", pageRoute)">@DashboardText.Get("Progress_Title") <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
+                <a class="small-box-footer" href="@Url.Action("Progress", "Dashboard", new { year=Model.Filters.Year,month=Model.Filters.Month,reportType=Model.Filters.ReportType,areaId=Model.Filters.AreaId,economicSectorId=Model.Filters.EconomicSectorId,industryId=Model.Filters.IndustryId,enterpriseId=Model.Filters.EnterpriseId,status="conflict" })">@DashboardText.Get("Progress_Title") <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
             </div>
         </div>
     </div>
@@ -110,7 +85,7 @@
             <div class="box box-danger">
                 <div class="box-header with-border">
                     <h3 class="box-title"><i class="fa fa-bar-chart text-red" aria-hidden="true"></i> @DashboardText.Get("Warnings_Trend")</h3>
-                    <div class="box-tools pull-right"><span class="label label-default">@(Model.IsIndustrial ? DashboardText.Get("Warnings_DeclineOver10") : DashboardText.Get("Warnings_DeclineMom"))</span></div>
+                    <div class="box-tools pull-right"><span class="label label-default">@DashboardText.Get("Warnings_DeclineOver10")</span></div>
                 </div>
                 <div class="box-body">
                     <div id="warning-trend-chart" data-labels="@(Newtonsoft.Json.JsonConvert.SerializeObject(new[] { DashboardText.Get("ChartDecliningEnterprises") }))" data-empty="@DashboardText.Get("ChartEmpty")" class="chart dashboard-chart" role="img" aria-label="@DashboardText.Get("Warnings_TrendAria")"></div>
@@ -121,8 +96,8 @@
                     <div id="warning-trend-values" class="collapse">
                         <div class="table-responsive">
                             <table class="table table-condensed table-striped">
-                                <thead><tr><th>@DashboardText.Get("Month")</th><th class="text-right">@DashboardText.Get("Warnings_DecliningEnterprises")</th></tr></thead>
-                                <tbody>@foreach (var point in Model.Trend) { <tr><td>@point.Month</td><td class="text-right">@(point.Value.HasValue ? point.Value.Value.ToString("#,##0") : DashboardText.Get("Warnings_NoPairs"))</td></tr> }</tbody>
+                                <thead><tr><th scope="col">@DashboardText.Get("Month")</th><th scope="col" class="text-right">@DashboardText.Get("Warnings_DecliningEnterprises")</th></tr></thead>
+                                <tbody>@foreach (var point in Model.Trend) { <tr><td>@point.Month</td><td class="text-right">@(point.Value.HasValue ? DashboardNumber.Amount(point.Value) : DashboardText.Get("Warnings_NoPairs"))</td></tr> }</tbody>
                             </table>
                         </div>
                     </div>
@@ -135,34 +110,64 @@
         <div class="col-xs-12">
             <div class="box box-default">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-list-ol" aria-hidden="true"></i> @(Model.IsIndustrial ? DashboardText.Get("Warnings_DeclineList") : DashboardText.Get("Warnings_ChangeList"))</h3>
+                    <h3 class="box-title"><i class="fa fa-list-ol" aria-hidden="true"></i> @DashboardText.Get("Warnings_DeclineList")</h3>
                     <div class="box-tools pull-right"><span class="label label-default">@Model.Metric.Unit</span></div>
                 </div>
                 <div class="box-body">
                     @if (!Model.Movements.Any())
                     {
-                        <p class="text-muted text-center no-margin">@DashboardText.Get("Warnings_NoChanges")</p>
+                        if (Model.DeclineOver10 > 0)
+                        { <p class="text-muted text-center no-margin">@DashboardText.Get("NoEnterprisesOnPage") <a href="@warningPageUrl(1)">@DashboardText.Get("FirstPage")</a></p> }
+                        else
+                        { <p class="text-muted text-center no-margin">@(Model.ComparableCount == 0 ? DashboardText.Get("Overview_NoComparison") : DashboardText.Get("NoDeclineWarning"))</p> }
                     }
                     else
                     {
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped table-hover no-margin">
-                                <thead><tr><th style="width: 40px;">#</th><th>@DashboardText.Get("Enterprise")</th><th class="text-right">@DashboardText.Get("PreviousPeriod")</th><th class="text-right">@DashboardText.Get("CurrentPeriod")</th><th class="text-right">@DashboardText.Get("Change")</th><th class="text-right">@DashboardText.Get("Rate")</th></tr></thead>
+                                <thead><tr><th scope="col" style="width: 40px;">#</th><th scope="col">@DashboardText.Get("Enterprise")</th><th scope="col" class="text-right">@DashboardText.Get("PreviousPeriod")</th><th scope="col" class="text-right">@DashboardText.Get("CurrentPeriod")</th><th scope="col" class="text-right">@DashboardText.Get("Change")</th><th scope="col" class="text-right">@DashboardText.Get("Rate")</th><th scope="col">@DashboardText.Get("Reason")</th></tr></thead>
                                 <tbody>
-                                    @{ var rank = 0; }
+                                    @{ var rank = (long)(Model.Filters.Page - 1) * pageSize; }
                                     @foreach (var item in Model.Movements)
                                     {
                                         rank++;
-                                        <tr><td>@(rank).</td><td>@item.Name</td><td class="text-right">@item.PreviousValue.ToString("#,##0.##")</td><td class="text-right">@item.CurrentValue.ToString("#,##0.##")</td><td class="text-right text-bold @(item.Change < 0 ? "text-red" : "text-green")">@String.Format("{0:+#,##0.##;-#,##0.##;0}", item.Change)</td><td class="text-right @(item.Percent < 0 ? "text-red" : "")">@(item.Percent.HasValue ? String.Format("{0:+0.0;-0.0;0.0}%", item.Percent.Value) : "—")</td></tr>
+                                        <tr><td>@(rank).</td><td><a class="dashboard-detail-link" href="@Url.Action("EnterpriseDetail","Dashboard",new { enterpriseId=item.EnterpriseId,year=Model.Filters.Year,month=Model.Filters.Month,reportType=Model.Filters.ReportType })">@item.Name</a></td><td class="text-right">@DashboardNumber.Amount(item.PreviousValue)</td><td class="text-right">@DashboardNumber.Amount(item.CurrentValue)</td><td class="text-right text-bold @(item.Change < 0 ? "text-red" : "text-green")">@DashboardNumber.Signed(item.Change)</td><td class="text-right @(item.Percent < 0 ? "text-red" : "")">@(item.Percent.HasValue ? DashboardNumber.SignedPercent(item.Percent.Value) : "—")</td><td>@if (!String.IsNullOrWhiteSpace(item.Reason)) { <details><summary aria-label="@DashboardText.Get("Reason") @item.Name">@DashboardText.Get("View")</summary><p>@item.Reason</p></details> } else { <span class="text-muted">—</span> }</td></tr>
                                     }
                                 </tbody>
                             </table>
                         </div>
                     }
                 </div>
+                @if (Model.DeclineOver10 > 0)
+                {
+                    <div class="box-footer clearfix">
+                        <p class="text-muted small">@DashboardText.Get("Showing") @(Model.Movements.Any() ? ((long)(Model.Filters.Page - 1) * pageSize + 1).ToString() : "0")–@(Model.Movements.Any() ? ((long)(Model.Filters.Page - 1) * pageSize + Model.Movements.Count).ToString() : "0") / @DashboardNumber.Count(Model.DeclineOver10) @DashboardText.Get("DecliningEnterprises")</p>
+                        @if (totalPages > 1)
+                        {
+                            <nav aria-label="@DashboardText.Get("WarningPagination")">
+                                <ul class="pagination pagination-sm no-margin">
+                                    @if (Model.Filters.Page > 1) { <li><a href="@warningPageUrl(1)">@DashboardText.Get("First")</a></li><li><a href="@warningPageUrl(Math.Min(totalPages, Model.Filters.Page - 1))">@DashboardText.Get("Previous")</a></li> }
+                                    @for (var page = Math.Max(1, Math.Min(Model.Filters.Page, totalPages) - 2); page <= Math.Min(totalPages, Math.Min(Model.Filters.Page, totalPages) + 2); page++)
+                                    {
+                                        <li class="@(page == Model.Filters.Page ? "active" : "")"><a href="@warningPageUrl(page)" aria-current="@(page == Model.Filters.Page ? "page" : null)" aria-label="@DashboardText.Get("Page") @page">@page</a></li>
+                                    }
+                                    @if (Model.Filters.Page < totalPages) { <li><a href="@warningPageUrl(Model.Filters.Page + 1)">@DashboardText.Get("Next")</a></li><li><a href="@warningPageUrl(totalPages)">@DashboardText.Get("Last")</a></li> }
+                                </ul>
+                            </nav>
+                        }
+                    </div>
+                }
             </div>
         </div>
     </div>
+
+    <div class="box box-warning"><div class="box-header with-border"><h3 class="box-title">@DashboardText.Get("Progress_MissingCodes")</h3></div><div class="box-body">
+        <p><span class="label label-warning">@DashboardText.Get("Progress_MissingCodes"): @DashboardNumber.Count(Model.Incomplete)</span> <span class="label label-default" title="@(ViewBag.IsIndustryRestricted == true ? DashboardText.Get("IndustryScope") : DashboardText.Get("Overview_ProvinceWide"))">@DashboardText.Get("OutsideRegistry"): @DashboardNumber.Count(Model.Orphans)</span></p>
+        <div class="table-responsive"><table class="table table-condensed"><thead><tr><th scope="col">@DashboardText.Get("Progress_Worklist")</th><th scope="col">@DashboardText.Get("Progress_MissingCodes")</th></tr></thead><tbody>
+        @foreach (var item in Model.Issues) { <tr><td><a class="dashboard-detail-link" href="@Url.Action("EnterpriseDetail","Dashboard",new { enterpriseId=item.EnterpriseId,year=Model.Filters.Year,month=Model.Filters.Month,reportType=Model.Filters.ReportType })">@item.Name</a></td><td>@item.MissingMetricCodes</td></tr> }
+        </tbody></table></div>
+        <a href="@Url.Action("Progress","Dashboard",new { year=Model.Filters.Year,month=Model.Filters.Month,reportType=Model.Filters.ReportType,areaId=Model.Filters.AreaId,economicSectorId=Model.Filters.EconomicSectorId,industryId=Model.Filters.IndustryId,enterpriseId=Model.Filters.EnterpriseId,status="incomplete" })">@DashboardText.Get("FullList")</a>
+    </div></div>
 
 </div>
 @section CustomJS {

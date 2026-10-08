@@ -1,0 +1,408 @@
+{
+  "categoryDatabase": "baocao.sct.cenit.vn.cate",
+  "reportDatabase": "baocao.sct.cenit.vn",
+  "objectCount": 61,
+  "indexCoverageCount": 6,
+  "labelCount": 204,
+  "roleSettings": [
+    {
+      "key": "SystemAdministrator",
+      "id": 1,
+      "scope": "all",
+      "industryEditorTarget": true
+    },
+    {
+      "key": "ReportingRole2",
+      "id": 2,
+      "scope": "industry",
+      "industryEditorTarget": true
+    },
+    {
+      "key": "ReportingRole3",
+      "id": 3,
+      "scope": "industry",
+      "industryEditorTarget": true
+    },
+    {
+      "key": "ReportingRole4",
+      "id": 4,
+      "scope": "industry",
+      "industryEditorTarget": true
+    },
+    {
+      "key": "Enterprise",
+      "id": 5,
+      "scope": "enterprise",
+      "industryEditorTarget": false
+    },
+    {
+      "key": "IndustryAdministrator",
+      "id": 6,
+      "scope": "industry",
+      "industryEditorTarget": true
+    }
+  ],
+  "tables": [
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "Report_UserBusinessIndustryPermissions",
+      "action": "create if missing; preserve grant rows"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "Report_RoleMappings",
+      "action": "create if missing; synchronize release mapping only"
+    }
+  ],
+  "objects": [
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "f_Report_DataImportEnterprises",
+      "type": "IF"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "f_Report_IndustryDataImports",
+      "type": "IF"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "f_Report_IndustryExtendInfos",
+      "type": "IF"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "f_Report_IndustryReportFiles",
+      "type": "IF"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Chatbot_FilterOptions",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Chatbot_IndicatorData",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Chatbot_Metadata",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Chatbot_ProgressDetails",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Chatbot_ReportFiles",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Chatbot_Snapshot",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Chatbot_Summary",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Dashboard_FilterOptions_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Dashboard_IndustrialSnapshot_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Dashboard_OverviewSummary_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Dashboard_ProgressDetails_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Dashboard_StatisticEnterprise_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Dashboard_StatisticIncome_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Dashboard_StatisticMapVisitor_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Dashboard_StatisticTypeBusiness_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Dashboard_StatisticVisitor_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_CheckOwnership",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_Enterprises_SearchSelect2",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_GenerateSaleOfTourism_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_Get_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_Get_Operational",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_GetDataImport_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_GetDataImport_Operational",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_GetForUserOnMonth_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_GetForUserOnMonth_Operational",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_GetViaEnterpriseOnMonth_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_GetViaEnterpriseOnMonth_Operational",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_DataImports_OperationalScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_GenerateSaleOfTourism_ByCode_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_GenerateSaleOfTourism_Sum_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_GenerateSaleOfTourism_SumAmount_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_GenerateSaleOfTourism_SumCustomer_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_GenerateSaleOfTourism_SumPercentForAVG_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_GenerateSaleOfTourism_SumPercentForOther_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_GenerateSaleOfTourism_SumPercentForStart_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_GenerateSaleOfTourism_SumRevenue_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_GenerateSaleOfTourism_SumViaShip_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Industry_Enterprises_SearchSelect2",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_IndustryPermissions_Enterprises",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_IndustryPermissions_Scope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Reports_01_UocKetQuaHoatDongKinhDoanh_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Reports_02_ThongKeQuocTichKhachDuLich_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Reports_03_DoanhNghiepChuaGuiBaoCao_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_Reports_04_BaoCaoHoatDongDoanhNghiep_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_ThongKe_CongSuatPhong_ByStar_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_ThongKe_CongSuatPhong_TrungBinh_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_ThongKe_TongDoanhThu_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_ThongKe_TongKhachDuLich_ByCode_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "p_Report_ThongKe_TongKhachDuLich_IndustryScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "f_Chatbot_AuthorizedEnterprises",
+      "type": "IF"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "f_Chatbot_UserScope",
+      "type": "IF"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "f_Report_IndustryEnterprises",
+      "type": "IF"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "f_Report_IndustryUserScope",
+      "type": "IF"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "p_Cate_Chatbot_EnterpriseProducts",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "p_Cate_Chatbot_EnterpriseScope",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "p_Report_IndustryPermissions_Get",
+      "type": "P"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "p_Report_IndustryPermissions_Save",
+      "type": "P"
+    }
+  ],
+  "indexes": [
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "IX_ReportPerformance_Imports_Period",
+      "table": "Report_DataImports",
+      "keys": "ForMonth,TypeReport,EnterpriseId",
+      "includes": "AccumulatedBeginingOfYear,Code,ComparedSamePeriodLastYear,CreatedDate,IsDeleted,IsLate,LastModifiedDate,PerformInPeriod,PerformPreviousPeriod,Unit"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "IX_ReportPerformance_Imports_EnterprisePeriod",
+      "table": "Report_DataImports",
+      "keys": "EnterpriseId,ForMonth,TypeReport",
+      "includes": "Code,CreatedDate,IsDeleted,IsLate,LastModifiedDate,PerformInPeriod,Unit"
+    },
+    {
+      "database": "baocao.sct.cenit.vn",
+      "name": "IX_ReportPerformance_Files_Period",
+      "table": "Report_ReportFiles",
+      "keys": "ForMonth,EnterpriseId",
+      "includes": "CreatedDate,IsDeleted,IsLate,LastModifiedDate"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "IX_ReportPerformance_Enterprises_Id",
+      "table": "Cate_Enterprises",
+      "keys": "EnterpriseId",
+      "includes": "BusinessName,IsActive,IsApproved,IsDeleted,TaxCode,TypeBusiness,WardId"
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "IX_ReportPerformance_Assignments_UserEnterprise",
+      "table": "Cate_EnterprisePermissions",
+      "keys": "ForUser,EnterpriseId",
+      "includes": ""
+    },
+    {
+      "database": "baocao.sct.cenit.vn.cate",
+      "name": "IX_ReportPerformance_Permissions_RoleFunction",
+      "table": "Sys_Permissions",
+      "keys": "RoleId,FunctionId",
+      "includes": "Action"
+    }
+  ]
+}

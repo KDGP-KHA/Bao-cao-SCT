@@ -1,0 +1,31 @@
+﻿@using TSFramework.App.Processors
+@model CenIT.ReportTourism.Models.Cate.CateBusinessProductModel
+@Html.AntiForgeryToken()
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+@Html.HiddenFor(model => model.ProductId)
+@*@Html.HiddenFor(model => model.IndustryId)
+@Html.HiddenFor(model => model.IndustryName)*@
+
+<div id="BusinessProduct">
+    <div class="form-group">
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.IndustryId, new { @class = "control-label" })
+            @Html.DropDownListFor(model => model.IndustryId, new SelectList(Model.ListIndustries, "Value", "Text"), "", new { @class = "col-md-12 form-control", onchange = "OnChangeCombo(this, '#IndustryName');" })
+            <br /> @Html.ValidationMessageFor(model => model.IndustryId, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.IndustryName)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-3">
+            @Html.TitleFor(model => model.ProductCode, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.ProductCode, new { @class = "col-md-12 form-control", placeholder = AppProcessor.Messagor.GetMessage("Code_Title") })
+            @Html.ValidationMessageFor(model => model.ProductCode, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-md-9">
+            @Html.TitleFor(model => model.ProductName, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.ProductName, new { @class = "col-md-12 form-control", placeholder = AppProcessor.Messagor.GetMessage("Name_Title") })
+            @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>

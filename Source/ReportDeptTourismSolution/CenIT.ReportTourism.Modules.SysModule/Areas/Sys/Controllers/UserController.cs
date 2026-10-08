@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Hosting;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 using CenIT.ReportTourism.Caches.Cate;
@@ -24,6 +27,127 @@ namespace CenIT.ReportTourism.Modules.SysModule.Areas.Sys.Controllers
 {
     public class UserController : AppController
     {
+        [HttpGet]
+        [ActionType(Type = EnumActionType.Edit)]
+        public ActionResult IndustryPermissions(int id = 0)
+        {
+            if (!CanEditIndustryPermissions()) return new HttpStatusCodeResult(403);
+            var model = LoadIndustryPermissions(id);
+            if (model == null) return HttpNotFound();
+            return PartialView("_IndustryPermissions", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionType(Type = EnumActionType.Edit)]
+        public ActionResult IndustryPermissions(IndustryPermissionsModel model)
+        {
+            if (!CanEditIndustryPermissions()) return new HttpStatusCodeResult(403);
+            var current = LoadIndustryPermissions(model.UserId);
+            if (current == null) return HttpNotFound();
+            var selected = (model.IndustryIds ?? new int[0]).Distinct().ToArray();
+            if (selected.Length > 2000 || selected.Any(id => id <= 0))
+                ModelState.AddModelError("IndustryIds", AppProcessor.Messagor.GetMessage("User_IndustryPermissions_InvalidSelection"));
+            if (selected.Any(id => !current.Industries.Any(option => option.Value == id.ToString()
+                && !option.Disabled)))
+                ModelState.AddModelError("IndustryIds", AppProcessor.Messagor.GetMessage("User_IndustryPermissions_InactiveSelection"));
+            if (selected.Length == 0 && !model.ConfirmRestoreScope)
+                ModelState.AddModelError("ConfirmRestoreScope", AppProcessor.Messagor.GetMessage("User_IndustryPermissions_RestoreRequired"));
+            if (!ModelState.IsValid)
+            {
+                current.IndustryIds = selected;
+                current.ConfirmRestoreScope = model.ConfirmRestoreScope;
+                foreach (var option in current.Industries)
+                    option.Selected = selected.Contains(int.Parse(option.Value));
+                return PartialView("_IndustryPermissions", current);
+            }
+            // Identity and audit actor are server-owned. SQL rechecks Sys/User/Edit.
+            try
+            {
+                var savedId = AppProcessor.ProcedureProvider.Execute("Report_IndustryPermissions_Save", "SysProvider",
+                    current.UserId, string.Join(",", selected), User.UserName);
+                if (savedId != current.UserId)
+                    throw new HttpException(503, "Industry permission save did not confirm the target user.");
+            }
+            catch (SqlException exception)
+            {
+                if (exception.Number == 50113) return new HttpStatusCodeResult(403);
+                if (exception.Number < 50001 || exception.Number > 50004) throw;
+                ModelState.AddModelError("IndustryIds", AppProcessor.Messagor.GetMessage("User_IndustryPermissions_DataChanged"));
+                return PartialView("_IndustryPermissions", current);
+            }
+            return Json(new { status = true, message = CreateMessage(AppProcessor.Messagor.GetMessage("User_IndustryPermissions_Saved"),
+                EnumProcessType.Edit, EnumMsgIcon.Success) });
+        }
+
+        private bool CanEditIndustryPermissions()
+        {
+            if (User == null || string.IsNullOrEmpty(User.UserName)) return false;
+            // Existing login cookies may predate serialization of UserId.
+            // Resolve the same signed-in username that SQL uses for authorization.
+            var actor = _userCache.GetByUserName(User.UserName);
+            return actor != null && actor.IsActive && actor.UserId.GetValueOrDefault() > 0
+                && GetCurrentIndustryPermissionRoles(actor.UserId.Value)
+                .Any(role => !role.IsDeleted && role.RoleId == CenIT.ReportTourism.Biz.Report.ReportRoleMapping.Current.SystemAdministratorId);
+        }
+
+        private bool HasIndustryPermissionRole(int? userId)
+        {
+            return userId.HasValue && GetCurrentIndustryPermissionRoles(userId.Value)
+                .Any(role => !role.IsDeleted && CenIT.ReportTourism.Biz.Report.ReportRoleMapping.Current.IsIndustryEditorTarget(role.RoleId));
+        }
+
+        private readonly Dictionary<int, List<SysRoleModel>> _industryPermissionRoles =
+            new Dictionary<int, List<SysRoleModel>>();
+
+        private List<SysRoleModel> GetCurrentIndustryPermissionRoles(int userId)
+        {
+            List<SysRoleModel> roles;
+            if (!_industryPermissionRoles.TryGetValue(userId, out roles))
+            {
+                // Role changes must affect visibility and authorization immediately.
+                // Reuse lookups within this request, never the hour-long user cache.
+                roles = AppProcessor.ProcedureProvider.ExecuteTypedList<SysRoleModel>(
+                    "Sys_Role_GetByUserId", "SysProvider", userId) ?? new List<SysRoleModel>();
+                _industryPermissionRoles.Add(userId, roles);
+            }
+            return roles;
+        }
+
+        private IndustryPermissionsModel LoadIndustryPermissions(int id)
+        {
+            var target = _userCache.GetById(id);
+            if (target == null || !target.IsActive) return null;
+            if (!HasIndustryPermissionRole(id)) return null;
+            DataTable rows;
+            try
+            {
+                rows = AppProcessor.ProcedureProvider.ExecuteProcedure(
+                    "Report_IndustryPermissions_Get", "SysProvider", id, User.UserName);
+            }
+            catch (SqlException exception)
+            {
+                if (exception.Number == 50113) throw new HttpException(403, "User management Edit permission is required.");
+                if (exception.Number == 50002) return null;
+                throw;
+            }
+            return new IndustryPermissionsModel
+            {
+                UserId = id, UserName = target.UserName, FullName = target.FullName,
+                IndustryIds = rows.AsEnumerable().Where(r => Convert.ToBoolean(r["IsSelected"]))
+                    .Select(r => Convert.ToInt32(r["IndustryId"])).ToArray(),
+                Industries = rows.AsEnumerable().Select(r => new SelectListItem
+                {
+                    Value = Convert.ToString(r["IndustryId"]),
+                    Text = Convert.ToString(r["IndustryCode"]) + " — " + Convert.ToString(r["IndustryName"])
+                        + (Convert.ToBoolean(r["IsActive"]) ? "" : " " + AppProcessor.Messagor.GetMessage("User_IndustryPermissions_InactiveIndustry")),
+                    Disabled = !Convert.ToBoolean(r["IsActive"]),
+                    // Keep existing inactive selections visible; do not re-grant them.
+                    Selected = Convert.ToBoolean(r["IsSelected"])
+                }).ToList()
+            };
+        }
+
         private readonly CateEnterpriseCache _cateEnterpriseCache;
         private readonly SysConfigsCache _configsCache;
         private readonly string _funcName = AppProcessor.Messagor.GetMessage("User_Title");
@@ -129,9 +253,15 @@ namespace CenIT.ReportTourism.Modules.SysModule.Areas.Sys.Controllers
             };
             int total;
             var data = _userCache.Get(out total, dataSearch);
+            var canEditIndustries = CanEditIndustryPermissions();
+            var rows = (data ?? new List<SysUserModel>()).Select(item => new
+            {
+                item.UserId, item.FullName, item.UserName, item.IsActive,
+                CanEditIndustryPermissions = canEditIndustries && item.IsActive && HasIndustryPermissionRole(item.UserId)
+            }).ToList();
 
             var result = Json(
-                new { draw = Convert.ToInt32(draw), recordsTotal = total, recordsFiltered = total, data },
+                new { draw = Convert.ToInt32(draw), recordsTotal = total, recordsFiltered = total, data = rows },
                 JsonRequestBehavior.AllowGet);
             return result;
         }

@@ -1,20 +1,46 @@
 ﻿@model CenIT.ReportTourism.Modules.ReportModule.Areas.Report.Models.ReportDataImportSearchModel
 
 @{
-    if (!Model.ExistEnterpriseSubmitReportYet)
+    if (Model.IsEnterpriseUser)
     {
-        <span style="display: inline-block; padding: 6px 14px; font-size: 13px; font-weight: 600; color: #1e7e34; background-color: #eaf6ea; border: 1px solid #c3e6cb; border-radius: 4px; pointer-events: none; user-select: none;">
-            <i class="fa fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>Đã gửi báo cáo
-        </span>
-    }
-    else if (DateTime.Now.Day > Model.DayDeadlineSendReportLate)
-    {
-        <span style="display: inline-block; padding: 6px 14px; font-size: 13px; font-weight: 600; color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; pointer-events: none; user-select: none;">
-            <i class="fa fa-lock" style="color: #dc3545; margin-right: 5px;"></i>Đã hết hạn nộp báo cáo. Chức năng đã bị khoá!
-        </span>
+        if (!Model.ExistEnterpriseSubmitReportYet)
+        {
+            <span style="display: inline-block; padding: 6px 14px; font-size: 13px; font-weight: 600; color: #1e7e34; background-color: #eaf6ea; border: 1px solid #c3e6cb; border-radius: 4px; pointer-events: none; user-select: none;">
+                <i class="fa fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>Đã gửi báo cáo
+            </span>
+            if (Model.IsReportLocked && Model.CanUnlockReport)
+            {
+                <button type="button" class="btn btn-sm btn-warning" style="margin-left:8px;" onclick="if(confirm('Mở khóa báo cáo để doanh nghiệp tiếp tục nhập dữ liệu?')) { $.post('@Url.Action("UnlockReport", "Import", new { area = "Report" })').done(function(r) { alert(r.message); if(r.status) location.reload(); }); }">
+                    <i class="fa fa-unlock"></i> Mở khóa báo cáo
+                </button>
+            }
+        }
+        else if (Model.IsReportLocked)
+        {
+            <span style="display: inline-block; padding: 6px 14px; font-size: 13px; font-weight: 600; color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; pointer-events: none; user-select: none;">
+                <i class="fa fa-lock" style="color: #dc3545; margin-right: 5px;"></i>Đã hết hạn gửi báo cáo. Chức năng đã bị khoá!
+            </span>
+            if (Model.CanUnlockReport)
+            {
+                <button type="button" class="btn btn-sm btn-warning" style="margin-left:8px;" onclick="if(confirm('Mở khóa báo cáo để tiếp tục nhập dữ liệu?')) { $.post('@Url.Action("UnlockReport", "Import", new { area = "Report" })').done(function(r) { alert(r.message); if(r.status) location.reload(); }); }">
+                    <i class="fa fa-unlock"></i> Mở khóa báo cáo
+                </button>
+            }
+        }
+        else
+        {
+            @Html.Button(true, "AddReport", Url.Action("Add", new { area = "Report" }), "<i class='fa fa-paper-plane'></i>", "Gửi báo cáo", new { @class = "btn btn-sm btn-primary", data_width = "1024" })
+        }
     }
     else
     {
+        @* Cán bộ Sở / Admin: always allow input, button is 'Nhập báo cáo' *@
         @Html.Button(true, "AddReport", Url.Action("Add", new { area = "Report" }), "<i class='fa fa-plus'></i>", "Nhập báo cáo", new { @class = "btn btn-sm btn-primary", data_width = "1024" })
+        if (Model.IsReportLocked && Model.CanUnlockReport)
+        {
+            <button type="button" class="btn btn-sm btn-warning" style="margin-left:8px;" onclick="if(confirm('Mở khóa báo cáo để doanh nghiệp tiếp tục nhập dữ liệu?')) { $.post('@Url.Action("UnlockReport", "Import", new { area = "Report" })').done(function(r) { alert(r.message); if(r.status) location.reload(); }); }">
+                <i class="fa fa-unlock"></i> Mở khóa báo cáo
+            </button>
+        }
     }
 }

@@ -1,0 +1,21 @@
+﻿@using TSFramework.App.Processors
+@model CenIT.ReportTourism.Models.Cate.CateEnterpriseTypeModel
+@Html.AntiForgeryToken()
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+@Html.HiddenFor(model => model.EnterpriseTypeId)
+
+<div id="EnterpriseType">
+    <div class="form-group">
+        <div class="col-md-3">
+            @Html.TitleFor(model => model.Code, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.Code, new { @class = "col-md-12 form-control", placeholder = AppProcessor.Messagor.GetMessage("EnterpriseType_Code") })
+            @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-md-9">
+            @Html.TitleFor(model => model.Name, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.Name, new { @class = "col-md-12 form-control", placeholder = AppProcessor.Messagor.GetMessage("EnterpriseType_Name") })
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>

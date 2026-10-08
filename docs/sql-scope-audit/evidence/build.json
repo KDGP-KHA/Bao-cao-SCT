@@ -1,0 +1,6 @@
+{
+  "command": "dotnet msbuild Source/ReportDeptTourismSolution/CenIT.ReportTourism.Biz/CenIT.ReportTourism.Biz.csproj /t:Build /p:Configuration=Release",
+  "exitCode": 1,
+  "status": "BLOCKED",
+  "reason": "MSB3644: .NET Framework v4.5.2 reference assemblies unavailable on macOS"
+}

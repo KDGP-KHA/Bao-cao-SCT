@@ -13,8 +13,8 @@ namespace CenIT.ReportTourism.Biz.Report
         public List<ReportGenerateSaleModel> GetGenerateSaleOnMonth(DateTime? forMonth)
         {
             var dataReports = AppProcessor.ProcedureProvider.ExecuteTypedList<ReportGenerateSaleModel>(
-                _reportGenerateSale, DATA_PROVIDER_NAME,
-                forMonth);
+                ReportIndustryScope.Procedure(_reportGenerateSale), DATA_PROVIDER_NAME,
+                ReportIndustryScope.Parameters(forMonth));
             return dataReports;
         }
     }

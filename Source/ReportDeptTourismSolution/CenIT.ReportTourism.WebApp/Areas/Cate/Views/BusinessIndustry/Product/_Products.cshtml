@@ -1,0 +1,143 @@
+﻿@using TSFramework.App.Processors
+@model CenIT.ReportTourism.Models.Cate.CateBusinessIndustryModel
+<div class="modal-header bg-primary">
+    <button type="button" class="close" style="padding-right: 10px;" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">Sản phẩm thuộc Ngành công nghiệp<b>[@Model.IndustryName]</b></h4>
+</div>
+<div class="modal-body row" id="bodyForm">
+    <div class="col-md-12">
+        @Html.Button(true, "AddProducts", Url.Action("AddProduct", "BusinessIndustry", new { area = "Cate", id = Model.IndustryId }), "<i class='fa fa-plus'></i>", AppProcessor.Messagor.GetMessage("Button_Add"), new { @class = "btn btn-sm btn-success pull-right" })
+
+    </div>
+    <div class="clearfix">
+        <hr />
+    </div>
+    <div class="col-sm-12">
+        <div class="col-sm-12 table-responsive">
+            <table id="ProductByIndustry" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@AppProcessor.Messagor.GetMessage("Column_No")</th>
+                        <th>@AppProcessor.Messagor.GetMessage("BusinessIndustry_Title")</th>
+                        <th>@AppProcessor.Messagor.GetMessage("Code_Title")</th>
+                        <th>@AppProcessor.Messagor.GetMessage("Name_Title")</th>
+                        <th>@AppProcessor.Messagor.GetMessage("Column_Action")</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;@AppProcessor.Messagor.GetMessage("Button_Cancel")</button>
+</div>
+<script type="text/javascript">
+    var _IndustryActionURLs = {
+        ProductByIndustry: "@Url.Action("GetProducts","BusinessIndustry", new{ industryId = Model.IndustryId})"
+    };
+
+    var _tableProductByIndustry;
+
+    $(document).ready(function() {
+        initTableIndustry();
+    });
+
+    function initTableIndustry() {
+        if (window._tableProductByIndustry != undefined) {
+            $("#ProductByIndustry").dataTable().fnDestroy();
+        }
+        _tableProductByIndustry = $("#ProductByIndustry").DataTable({
+            "Responsive": true,
+            //"columnDefs": [{ "className": "text-left custom-middle-align", "targets": [0] }],
+            "language": {
+                "processing":
+                    "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+            },
+            "lengthChange": true,
+            "processing": true,
+            "serverSide": true,
+            "ajax":
+            {
+                "url": _IndustryActionURLs.ProductByIndustry,
+                "type": "POST",
+                "dataType": "JSON",
+                @*"data": {
+                    "": "@Html.Raw(Model.IndustryId)"
+                }*@
+            },
+            "columns": [
+                {
+                    "data": "",
+                    "defaultContent": "1",
+                    "render": function(data, type, row, meta) {
+                        return meta.settings._iDisplayStart + meta.row + 1;
+                    }
+                },
+                {
+                    "data": "IndustryName",
+                    "defaultContent": ""
+                },
+                {
+                    "data": "ProductCode",
+                    "defaultContent": ""
+                },
+                {
+                    "data": "ProductName",
+                    "defaultContent": ""
+                },
+                {
+                    "data": "ProductId",
+                    "style": "width:100px;",
+                    "orderable": false,
+                    "render": function(data, type, row, meta) {
+                        var html = "";
+                        if (type === "display") {
+                            //html += '<a data-modal="" data-modal-id="Edit" href="/Cate/Products/Edit/' +
+                            //    data +
+                            //    '" class="fa fa-pencil btn btn-default btn-form"  title="Cập nhật" data-toggle="tooltip"></a>';
+                            //html += '<a data-modal="" data-modal-id="Delete" href="/Cate/Products/Delete/' +
+                            //    data +
+                            //    '" class="fa fa-trash-o btn btn-danger btn-form" title="Xoá" data-toggle="tooltip"></a>';
+
+                            html += _renderButton(true,
+                                "EditProduct",
+                                "fa fa-pencil btn btn-default btn-form",
+                                "/Cate/BusinessIndustry/EditProduct/" + data,
+                                "",
+                                "Cập nhật");
+
+                            html += _renderButton(true,
+                                "DeleteProduct",
+                                "fa fa-trash-o btn btn-danger btn-form",
+                                "/Cate/BusinessIndustry/DeleteProduct/" + data,
+                                "",
+                                "Xoá");
+                        }
+
+                        return html;
+                    }
+                }
+            ]
+        });
+    }
+
+    function BusinessProduct_OnProcessSuccess(response, formId) {
+        if (response.status != undefined) {
+            $("#ModalContent #modal_" + formId).modal("hide");
+            $("#ModalContent #modal_" + formId).on("hidden.bs.modal",
+                function() {
+                    if (response.status != undefined) {
+                        eval(response.message);
+                        _tableProductByIndustry.ajax.reload(null, false);
+                        response.status = undefined;
+                    }
+                });
+        } else {
+            $("#ModalContent #modal_" + formId + " #bodyForm").html(response);
+        }
+
+    }
+
+</script>

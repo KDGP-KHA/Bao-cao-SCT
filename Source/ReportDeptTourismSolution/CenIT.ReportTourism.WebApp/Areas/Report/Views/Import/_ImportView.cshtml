@@ -10,8 +10,16 @@
         if (DateTime.Now.Day > Model.DayDeadlineSendReport && DateTime.Now.Day <= Model.DayDeadlineSendReportLate)
         {
             <div class="alert alert-danger alert-dismissible" style="border-radius: unset;">
-                <h4><i class="icon fa fa-bullhorn"></i> Quá hạn nộp báo cáo tháng @DateTime.Now.ToString("MM/yyyy")!</h4>
-                <p>Đã qua hạn nộp báo cáo lúc <b>24h00 ngày @Model.DayDeadlineSendReport</b> hàng tháng. Báo cáo nộp sau ngày <b>@Model.DayDeadlineSendReport</b> sẽ được xem là trễ hạn.</p>
+                @if (Model.IsEnterpriseUser)
+                {
+                    <h4><i class="icon fa fa-bullhorn"></i> Quá hạn gửi báo cáo tháng @DateTime.Now.ToString("MM/yyyy")!</h4>
+                    <p>Đã qua hạn gửi báo cáo lúc <b>23h59 ngày @Model.DayDeadlineSendReport</b> hàng tháng. Báo cáo gửi sau ngày <b>@Model.DayDeadlineSendReport</b> sẽ được xem là trễ hạn.</p>
+                }
+                else
+                {
+                    <h4><i class="icon fa fa-bullhorn"></i> Quá hạn nhập báo cáo tháng @DateTime.Now.ToString("MM/yyyy")!</h4>
+                    <p>Đã qua hạn nhập báo cáo lúc <b>23h59 ngày @Model.DayDeadlineSendReport</b> hàng tháng. Báo cáo nhập sau ngày <b>@Model.DayDeadlineSendReport</b> sẽ được xem là trễ hạn.</p>
+                }
             </div>
             <hr/>
         }

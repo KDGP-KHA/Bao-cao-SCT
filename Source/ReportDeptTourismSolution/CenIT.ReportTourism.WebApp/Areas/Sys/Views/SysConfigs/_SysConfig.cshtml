@@ -19,25 +19,25 @@
 <div id="Message">
 
     <div class="form-group">
-        @Html.TitleFor(model => model.ConfigKey, new { @class = "control-label col-md-3" })
         @Html.HiddenFor(model => model.ConfigId)
-        <div class="col-md-9">
-            @Html.TextBoxFor(model => model.ConfigKey, new { @class = "col-md-7", placeholder = AppProcessor.Messagor.GetMessage("Sys_Configs_ConfigKey") })
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.ConfigKey, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.ConfigKey, new { @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("Sys_Configs_ConfigKey") })
             @Html.ValidationMessageFor(model => model.ConfigKey, "", new { @class = "text-danger" })
         </div>
 
     </div>
     <div class="form-group">
-        @Html.TitleFor(model => model.ConfigValue, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextBoxFor(model => model.ConfigValue, new { @class = "col-md-7", placeholder = AppProcessor.Messagor.GetMessage("Sys_Configs_ConfigValue") })
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.ConfigValue, new { @class = "control-label" })
+            @Html.TextBoxFor(model => model.ConfigValue, new { @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("Sys_Configs_ConfigValue") })
             @Html.ValidationMessageFor(model => model.ConfigValue, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
-        @Html.TitleFor(model => model.ConfigDesc, new { @class = "control-label col-md-3" })
-        <div class="col-md-9">
-            @Html.TextAreaFor(model => model.ConfigDesc, new { rows = 3, @class = "col-md-7", placeholder = AppProcessor.Messagor.GetMessage("Sys_Configs_ConfigDesc") })
+        <div class="col-md-12">
+            @Html.TitleFor(model => model.ConfigDesc, new { @class = "control-label" })
+            @Html.TextAreaFor(model => model.ConfigDesc, new { rows = 3, @class = "col-md-12", placeholder = AppProcessor.Messagor.GetMessage("Sys_Configs_ConfigDesc") })
             @Html.ValidationMessageFor(model => model.ConfigDesc, "", new { @class = "text-danger" })
         </div>
     </div>

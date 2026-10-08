@@ -1,0 +1,1 @@
+PASS: SQL Server 2012 parsing: 23 release/fixture files and 194 embedded definitions; syntax only.

@@ -16,7 +16,7 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="col-sm-12 table-responsive">
-            <table id="DSUser" class="table table-bordered table-striped" width="100%">
+            <table id="DSUser" class="table table-bordered table-striped" width="100%" data-industry-permissions-title="@AppProcessor.Messagor.GetMessage("User_IndustryPermissions_Title")">
                 <thead>
                     <tr>
                         <th>@AppProcessor.Messagor.GetMessage("Column_No")</th>
@@ -32,5 +32,5 @@
 
 @section CustomJS
 {
-    <script src="@Url.Content("~/Areas/Sys/Views/User/User.js")"></script>
+    <script src="@Url.Content("~/Areas/Sys/Views/User/User.js?v=20261012_2")"></script>
 }
