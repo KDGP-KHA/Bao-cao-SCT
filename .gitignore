@@ -92,3 +92,30 @@ $RECYCLE.BIN/
 # Local assistant state
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
+
+# local-config-file and local-gitignore
+*.config
+.gitignore
+
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Scripts/bootstrap.js
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Scripts/bootstrap.min.js
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Scripts/jquery-1.10.2.intellisense.js
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Scripts/jquery-1.10.2.js
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Scripts/jquery-1.10.2.min.js
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Scripts/jquery-1.10.2.min.map
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Scripts/modernizr-2.6.2.js
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Content/bootstrap-theme.css
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Content/bootstrap-theme.min.css
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Content/bootstrap.css
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.Modules.CateModule/Content/bootstrap.min.css
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Contents/Modules/Report/Templates/Data_HoatDong_XuatKhauHangHoa.Designer.cs
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Contents/Modules/Report/Templates/Data_HoatDong_XuatKhauHangHoa.xsc
+/Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Contents/Modules/Report/Templates/Data_HoatDong_XuatKhauHangHoa.xss
+Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Contents/Modules/Report/Reports/CenIT.ReportTourism.Reports.ThongKeQuocTichKhachDuLich.dll
+Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Contents/Modules/Report/Reports/CenIT.ReportTourism.Reports.UocKetQuaHoatDongKinhDoanh.dll
+Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Libraries/Authorities/Plugable.SQLProcedureAuthority.dll
+Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Libraries/Procedurors/Plugable.SQLStoreProcedure.dll
+Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Contents/Modules/Report/Reports/CenIT.ReportTourism.Reports.ThongKeQuocTichKhachDuLich.dll
+Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Contents/Modules/Report/Reports/CenIT.ReportTourism.Reports.UocKetQuaHoatDongKinhDoanh.dll
+Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Libraries/Authorities/Plugable.SQLProcedureAuthority.dll
+Source/ReportDeptTourismSolution/CenIT.ReportTourism.WebApp/Libraries/Procedurors/Plugable.SQLStoreProcedure.dll

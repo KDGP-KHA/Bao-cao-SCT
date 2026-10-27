@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37806.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSFramework.Plugable", "TSFramework.Plugable\TSFramework.Plugable.csproj", "{72873826-1ECF-4204-BA56-C3842399BB54}"
 EndProject
@@ -130,7 +129,6 @@ Global
 		{C57F0C85-8A5E-4B11-8C52-D98FA5A9221B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C57F0C85-8A5E-4B11-8C52-D98FA5A9221B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2BEFDA80-7083-4A2A-8092-6F7AE38A5675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BEFDA80-7083-4A2A-8092-6F7AE38A5675}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BEFDA80-7083-4A2A-8092-6F7AE38A5675}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BEFDA80-7083-4A2A-8092-6F7AE38A5675}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9E914CB-2939-44F9-B43C-2F0F03D17D0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -169,5 +167,8 @@ Global
 		{E9E914CB-2939-44F9-B43C-2F0F03D17D0E} = {E5A14798-FE93-4508-BEE7-2BE6869927A2}
 		{A50A69A0-BBB6-4CE3-B524-C8934E97E7E1} = {E5A14798-FE93-4508-BEE7-2BE6869927A2}
 		{214167F9-AD82-45A1-8B6C-8A4446DFA039} = {E5A14798-FE93-4508-BEE7-2BE6869927A2}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3AE250E5-FB1E-4EF3-B643-07C70543670C}
 	EndGlobalSection
 EndGlobal

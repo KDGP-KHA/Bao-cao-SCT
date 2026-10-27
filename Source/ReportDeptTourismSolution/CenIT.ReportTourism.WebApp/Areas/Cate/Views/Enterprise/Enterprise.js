@@ -3,7 +3,7 @@
     Enterprise_MainProductViaIndustries: "/Cate/Enterprise/MainProductViaIndustries"
 };
 var _tableEnterprise;
-$(document).ready(function() {
+$(document).ready(function () {
     initTableEnterprise();
 });
 
@@ -15,7 +15,7 @@ function initTableEnterprise() {
                 "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
         },
         "columnDefs": [
-            { targets: [0, 1, 2, 10], visible: true },
+            { targets: [0, 1, 2, -1], visible: true },
             { targets: "_all", visible: false }
         ],
         "lengthChange": true,
@@ -27,7 +27,7 @@ function initTableEnterprise() {
             "type": "POST",
             "dataType": "JSON",
             "data": {
-                "WardIds": function() {
+                "WardIds": function () {
                     return $("#Search select#ListWardId").val() != null &&
                         $("#Search select#ListWardId").val().length > 0
                         ? $("#Search select#ListWardId").val()
@@ -69,7 +69,7 @@ function initTableEnterprise() {
             {
                 "data": "",
                 "defaultContent": "1",
-                "render": function(data, type, row, meta) {
+                "render": function (data, type, row, meta) {
                     return meta.row + 1;
                 }
             },
@@ -94,10 +94,6 @@ function initTableEnterprise() {
                 "defaultContent": ""
             },
             {
-                "data": "MainIndustryName",
-                "defaultContent": ""
-            },
-            {
                 "data": "EnterpriseTypeName",
                 "defaultContent": ""
             },
@@ -113,7 +109,7 @@ function initTableEnterprise() {
                 "data": "EnterpriseId",
                 "style": "width:100px;",
                 "orderable": false,
-                "render": function(data, type, row, meta) {
+                "render": function (data, type, row, meta) {
                     var html = "";
                     if (type === "display") {
                         if (row.IsActive) {
@@ -157,7 +153,7 @@ function Enterprise_OnProcessSuccess(response, formId) {
     if (response.status != undefined) {
         $("#ModalContent #modal_" + formId).modal("hide");
         $("#ModalContent #modal_" + formId).on("hidden.bs.modal",
-            function() {
+            function () {
                 if (response.status != undefined) {
                     eval(response.message);
                     _tableEnterprise.ajax.reload(null, false);
@@ -177,7 +173,7 @@ function CateDoc_OnProcessSuccess(response, formId) {
     if (response.status != undefined) {
         $("#ModalContent #modal_" + formId).modal("hide");
         $("#ModalContent #modal_" + formId).on("hidden.bs.modal",
-            function() {
+            function () {
                 if (response.status != undefined) {
                     eval(response.message);
                     //_tableUnionResolution.ajax.reload(null, false);
@@ -205,10 +201,10 @@ function OnChangeProvince(cbbProvince, cbbWard) {
         type: "GET",
         url: url,
         dataType: "JSON",
-        success: function(response) {
+        success: function (response) {
             $(cbbWard).append('<option value=""></option>');
             $.each(response.Wards,
-                function(index, item) {
+                function (index, item) {
                     var selected = "";
                     if (wardId.length > 0 && wardId != "0") {
                         if (item.WardId == wardId)
@@ -228,7 +224,7 @@ function OnChangeProvince(cbbProvince, cbbWard) {
 
 // Nạp lại dropdown "Sản phẩm chính" theo các ngành công nghiệp đang chọn
 function OnChangeIndustries(cbbIndustry, cbbProduct) {
-    var industryIds = $.grep($(cbbIndustry).val() || [], function(id) { return id; }).join(",");
+    var industryIds = $.grep($(cbbIndustry).val() || [], function (id) { return id; }).join(",");
 
     // Đổi ngành liên tục: bỏ request cũ, chỉ lấy kết quả của lần chọn cuối
     var request = $(cbbProduct).data("request");
@@ -244,10 +240,10 @@ function OnChangeIndustries(cbbIndustry, cbbProduct) {
         url: _EnterpriseActionURLs.Enterprise_MainProductViaIndustries,
         data: { industryIds: industryIds },
         dataType: "JSON",
-        success: function(response) {
+        success: function (response) {
             FillMainProducts(cbbProduct, response.Products);
         },
-        complete: function() {
+        complete: function () {
             if ($(cbbProduct).data("request") === request) $(cbbProduct).removeData("request");
         }
     });
@@ -260,11 +256,11 @@ function FillMainProducts(cbbProduct, products) {
 
     $(cbbProduct).empty().append('<option value=""></option>');
     $.each(products || [],
-        function(index, item) {
+        function (index, item) {
             $(cbbProduct).append($("<option></option>").val(item.Value).text(item.Text));
         });
 
-    var hasProduct = !!productId && $(cbbProduct).find("option").filter(function() {
+    var hasProduct = !!productId && $(cbbProduct).find("option").filter(function () {
         return this.value === productId;
     }).length > 0;
     $(cbbProduct).val(hasProduct ? productId : "").trigger("change");

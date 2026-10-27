@@ -60,8 +60,18 @@ namespace CenIT.ReportTourism.Models.Cate
 
         [CustomDisplayName("Enterprise_Industry")]
         public string IndustryIds { get; set; }
-        //public string MainIndustryCode { get; set; }
 
+        public bool IsPowerIndustry { get; set; } // true: thuộc ngành điện
+
+        /// công suất tấm pin (ngành điện)
+        [CustomDisplayName("Enterprise_CapacityMWp")]
+        public decimal? CapacityMWp { get; set; }
+
+        /// công suất bộ chuyển đổi (ngành điện)
+        [CustomDisplayName("Enterprise_CapacityMW")]
+        public decimal? CapacityMW { get; set; }
+
+        //public string MainIndustryCode { get; set; }
         //public string MainIndustryName { get; set; }
 
         public List<ListItem> ListBusinessIndustry { get; set; } = new List<ListItem>();

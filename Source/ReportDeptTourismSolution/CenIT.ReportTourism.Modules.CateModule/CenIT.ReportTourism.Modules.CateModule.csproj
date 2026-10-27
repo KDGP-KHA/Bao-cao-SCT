@@ -46,28 +46,22 @@
   <ItemGroup>
     <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="ExcelDataReader.DataSet, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelDataReader.DataSet.3.6.0\lib\net35\ExcelDataReader.DataSet.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="FastMember, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FastMember.1.3.0\lib\net45\FastMember.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -78,48 +72,50 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
-      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\Modules\Cate_StoredProcedures.xml" />
+    <Content Include="Areas\Cate\Views\Districts\Districts.js" />
     <Content Include="Areas\Cate\Views\Enterprise\Enterprise.js" />
     <Content Include="Areas\Cate\Views\National\National.js" />
     <Content Include="Areas\Cate\Views\Provinces\Provinces.js" />
     <Content Include="Areas\Cate\Views\PublicCate\PublicCate.js" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\Accommodation.js" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\InfrastructureRooms.js" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\TypeService.js" />
+    <Content Include="Areas\Cate\Views\TypeServicesForTourist\ServicesForTourist.js" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\TouristAttraction.js" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\TypeService.js" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\InfrastructureClassTransports.js" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\TransportTourists.js" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\BranchOffice.js" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\Traveling.js" />
     <Content Include="Areas\Cate\Views\Wards\Wards.js" />
     <Content Include="Global.asax" />
     <Content Include="Areas\Cate\Views\Enterprise\_Import.cshtml" />
@@ -128,18 +124,94 @@
     <Content Include="Areas\Cate\Views\Enterprise\_Review.cshtml" />
     <Content Include="Areas\Cate\Views\Enterprise\_EnterpriseInfo.cshtml" />
     <Content Include="Areas\Cate\Views\Enterprise\_Approve.cshtml" />
+    <Content Include="Areas\Cate\Views\Districts\Index.cshtml" />
+    <Content Include="Areas\Cate\Views\Districts\_Add.cshtml" />
+    <Content Include="Areas\Cate\Views\Districts\_Delete.cshtml" />
+    <Content Include="Areas\Cate\Views\Districts\_DistrictByProvince.cshtml" />
+    <Content Include="Areas\Cate\Views\Districts\_Districts.cshtml" />
+    <Content Include="Areas\Cate\Views\Districts\_Edit.cshtml" />
+    <Content Include="Areas\Cate\Views\Districts\_Search.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_Accommodation.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_AddRoomType.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_AddTypeService.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_DeleteRoomType.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_DeleteTypeService.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_EditRoomType.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_EditTypeService.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_Info.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_InfrastructureRooms.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_RoomType.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_TabAccommodationInfo.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_TabCertificate.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_TabHRInformation.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_TabInfrastructure.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_TabTypeService.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeAccommodation\_TypeService.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeServicesForTourist\_Info.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeServicesForTourist\_ServicesForTourist.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeServicesForTourist\_TabCertificate.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeServicesForTourist\_TabHRInformation.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeServicesForTourist\_TabInfrastructure.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeServicesForTourist\_TabServicesForTouristInfo.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_AddTypeService.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_DeleteTypeService.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_EditTypeService.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_Info.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_TabCertificate.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_TabHRInformation.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_TabInfrastructure.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_TabTouristAttractionInfo.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_TabTypeService.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_TouristAttraction.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTouristAttraction\_TypeService.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\_AddClassTransport.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\_ClassTransport.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\_DeleteClassTransport.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\_EditClassTransport.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\_Info.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\_InfrastructureClassTransports.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\_TabCertificate.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\_TabHRInformation.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\_TabInfrastructure.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTransportTourists\_TransportTourists.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\_AddBranchOffice.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\_BranchOffice.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\_DeleteBranchOffice.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\_EditBranchOffice.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\_Info.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\_TabBranchOffice.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\_TabCertificate.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\_TabCertificateTravelEscrow.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\_TabHRInformation.cshtml" />
+    <Content Include="Areas\Cate\Views\TypeTraveling\_Traveling.cshtml" />
+    <Content Include="Views\Accommodation\Accommodation.js" />
+    <Content Include="Views\Accommodation\InfrastructureRooms.js" />
+    <Content Include="Views\Accommodation\TypeService.js" />
     <Content Include="Views\MyEnterprise\MyEnterprise.js" />
+    <Content Include="Views\ServicesForTourist\ServicesForTourist.js" />
+    <Content Include="Views\TouristAttraction\TouristAttraction.js" />
+    <Content Include="Views\TouristAttraction\TypeService.js" />
+    <Content Include="Views\TransportTourists\InfrastructureClassTransports.js" />
+    <Content Include="Views\TransportTourists\TransportTourists.js" />
+    <Content Include="Views\Traveling\BranchOffice.js" />
+    <Content Include="Views\Traveling\Traveling.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Cate\CateAreaRegistration.cs" />
+    <Compile Include="Areas\Cate\Controllers\DistrictsController.cs" />
     <Compile Include="Areas\Cate\Controllers\DocController.cs" />
     <Compile Include="Areas\Cate\Controllers\EnterpriseController.cs" />
     <Compile Include="Areas\Cate\Controllers\NationalController.cs" />
     <Compile Include="Areas\Cate\Controllers\ProvincesController.cs" />
     <Compile Include="Areas\Cate\Controllers\PublicCateController.cs" />
+    <Compile Include="Areas\Cate\Controllers\TypeBusiness\TypeAccommodationController.cs" />
+    <Compile Include="Areas\Cate\Controllers\TypeBusiness\TypeServicesForTouristController.cs" />
+    <Compile Include="Areas\Cate\Controllers\TypeBusiness\TypeTouristAttractionController.cs" />
+    <Compile Include="Areas\Cate\Controllers\TypeBusiness\TypeTransportTouristsController.cs" />
+    <Compile Include="Areas\Cate\Controllers\TypeBusiness\TypeTravelingController.cs" />
     <Compile Include="Areas\Cate\Controllers\WardsController.cs" />
     <Compile Include="Areas\Cate\Controllers\BusinessIndustryController.cs" />
     <Compile Include="Areas\Cate\Controllers\BusinessProductController.cs" />
@@ -148,10 +220,16 @@
     <Compile Include="Areas\Cate\Controllers\EnterpriseTypeController.cs" />
     <Compile Include="Areas\Cate\Models\EnterpriseImportModel.cs" />
     <Compile Include="Areas\Cate\Models\EnterpriseSearchModel.cs" />
+    <Compile Include="Areas\Cate\Models\MyDistrictsSearchModel.cs" />
     <Compile Include="Areas\Cate\Models\MyWardsSearchModel.cs" />
     <Compile Include="Areas\Cate\Models\NationSearchModel.cs" />
     <Compile Include="Areas\Cate\Models\PublicCateSearchModel.cs" />
+    <Compile Include="Controllers\AccommodationController.cs" />
     <Compile Include="Controllers\MyEnterpriseController.cs" />
+    <Compile Include="Controllers\ServicesForTouristController.cs" />
+    <Compile Include="Controllers\TouristAttractionController.cs" />
+    <Compile Include="Controllers\TransportTouristsController.cs" />
+    <Compile Include="Controllers\TravelingController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -229,8 +307,62 @@
     <Content Include="Areas\Cate\Views\Wards\_Wards.cshtml" />
     <Content Include="Areas\Cate\Views\Wards\_Search.cshtml" />
     <Content Include="Areas\Cate\Views\Wards\_WardByProvince.cshtml" />
-    <Content Include="packages.config" />
+    <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\ReportTourism.CateModule.pubxml" />
+    <Content Include="Views\Accommodation\_Accommodation.cshtml" />
+    <Content Include="Views\Accommodation\_AddRoomType.cshtml" />
+    <Content Include="Views\Accommodation\_AddTypeService.cshtml" />
+    <Content Include="Views\Accommodation\_DeleteRoomType.cshtml" />
+    <Content Include="Views\Accommodation\_DeleteTypeService.cshtml" />
+    <Content Include="Views\Accommodation\_EditRoomType.cshtml" />
+    <Content Include="Views\Accommodation\_EditTypeService.cshtml" />
+    <Content Include="Views\Accommodation\_Info.cshtml" />
+    <Content Include="Views\Accommodation\_InfrastructureRooms.cshtml" />
+    <Content Include="Views\Accommodation\_RoomType.cshtml" />
+    <Content Include="Views\Accommodation\_TabAccommodationInfo.cshtml" />
+    <Content Include="Views\Accommodation\_TabCertificate.cshtml" />
+    <Content Include="Views\Accommodation\_TabHRInformation.cshtml" />
+    <Content Include="Views\Accommodation\_TabInfrastructure.cshtml" />
+    <Content Include="Views\Accommodation\_TabTypeService.cshtml" />
+    <Content Include="Views\Accommodation\_TypeService.cshtml" />
+    <Content Include="Views\MyEnterprise\_Enterprise.cshtml" />
+    <Content Include="Views\ServicesForTourist\_Info.cshtml" />
+    <Content Include="Views\ServicesForTourist\_ServicesForTourist.cshtml" />
+    <Content Include="Views\ServicesForTourist\_TabCertificate.cshtml" />
+    <Content Include="Views\ServicesForTourist\_TabHRInformation.cshtml" />
+    <Content Include="Views\ServicesForTourist\_TabInfrastructure.cshtml" />
+    <Content Include="Views\ServicesForTourist\_TabServicesForTouristInfo.cshtml" />
+    <Content Include="Views\TouristAttraction\_AddTypeService.cshtml" />
+    <Content Include="Views\TouristAttraction\_DeleteTypeService.cshtml" />
+    <Content Include="Views\TouristAttraction\_EditTypeService.cshtml" />
+    <Content Include="Views\TouristAttraction\_Info.cshtml" />
+    <Content Include="Views\TouristAttraction\_TabCertificate.cshtml" />
+    <Content Include="Views\TouristAttraction\_TabHRInformation.cshtml" />
+    <Content Include="Views\TouristAttraction\_TabInfrastructure.cshtml" />
+    <Content Include="Views\TouristAttraction\_TabTouristAttractionInfo.cshtml" />
+    <Content Include="Views\TouristAttraction\_TabTypeService.cshtml" />
+    <Content Include="Views\TouristAttraction\_TouristAttraction.cshtml" />
+    <Content Include="Views\TouristAttraction\_TypeService.cshtml" />
+    <Content Include="Views\TransportTourists\_AddClassTransport.cshtml" />
+    <Content Include="Views\TransportTourists\_ClassTransport.cshtml" />
+    <Content Include="Views\TransportTourists\_DeleteClassTransport.cshtml" />
+    <Content Include="Views\TransportTourists\_EditClassTransport.cshtml" />
+    <Content Include="Views\TransportTourists\_Info.cshtml" />
+    <Content Include="Views\TransportTourists\_InfrastructureClassTransports.cshtml" />
+    <Content Include="Views\TransportTourists\_TabCertificate.cshtml" />
+    <Content Include="Views\TransportTourists\_TabHRInformation.cshtml" />
+    <Content Include="Views\TransportTourists\_TabInfrastructure.cshtml" />
+    <Content Include="Views\TransportTourists\_TransportTourists.cshtml" />
+    <Content Include="Views\Traveling\_AddBranchOffice.cshtml" />
+    <Content Include="Views\Traveling\_BranchOffice.cshtml" />
+    <Content Include="Views\Traveling\_DeleteBranchOffice.cshtml" />
+    <Content Include="Views\Traveling\_EditBranchOffice.cshtml" />
+    <Content Include="Views\Traveling\_Info.cshtml" />
+    <Content Include="Views\Traveling\_TabBranchOffice.cshtml" />
+    <Content Include="Views\Traveling\_TabCertificate.cshtml" />
+    <Content Include="Views\Traveling\_TabCertificateTravelEscrow.cshtml" />
+    <Content Include="Views\Traveling\_TabHRInformation.cshtml" />
+    <Content Include="Views\Traveling\_Traveling.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

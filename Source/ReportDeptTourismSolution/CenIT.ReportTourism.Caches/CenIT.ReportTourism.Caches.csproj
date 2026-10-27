@@ -37,6 +37,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cate\Accommodation\CateAccommodationServiceCache.cs" />
+    <Compile Include="Cate\Accommodation\CateAccommodationServiceRoomCache.cs" />
+    <Compile Include="Cate\Accommodation\CateAccommodationServiceTypeServiceCache.cs" />
+    <Compile Include="Cate\CateDistrictCache.cs" />
     <Compile Include="Cate\CateEnterpriseRegisterNotifyCache.cs" />
     <Compile Include="Cate\CateEnterpriseCache.cs" />
     <Compile Include="Cate\CateDocCache.cs" />
@@ -51,6 +55,13 @@
     <Compile Include="Cate\CateEconomicSectorCache.cs" />
     <Compile Include="Cate\CateEnterpriseStatusCache.cs" />
     <Compile Include="Cate\CateEnterpriseTypeCache.cs" />
+    <Compile Include="Cate\ServicesForTourist\CateServicesForTouristCache.cs" />
+    <Compile Include="Cate\TouristAttraction\CateTouristAttractionCache.cs" />
+    <Compile Include="Cate\TouristAttraction\CateTouristAttractionTypeServiceCache.cs" />
+    <Compile Include="Cate\TransportTourists\CateTransportTouristsServiceCache.cs" />
+    <Compile Include="Cate\TransportTourists\CateTransportTouristsServiceClassTransportCache.cs" />
+    <Compile Include="Cate\Traveling\CateTravelingServiceBranchOfficeCache.cs" />
+    <Compile Include="Cate\Traveling\CateTravelingServiceCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Report\ReportExtendInfoCache.cs" />
     <Compile Include="Report\ReportCache.cs" />

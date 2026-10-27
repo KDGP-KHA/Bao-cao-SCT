@@ -154,10 +154,16 @@
     <Content Include="App_Data\Modules\Report_StoredProcedures.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Areas\Report\Views\ExtendInfo\ExtendInfo.js" />
     <Content Include="Areas\Report\Views\Home\Home.js" />
     <Content Include="Areas\Report\Views\Import\Import.js" />
     <Content Include="Areas\Report\Views\Import\ViewDataImport.js" />
+    <Content Include="Areas\Report\Views\Import\_AccommodationService.js" />
     <Content Include="Areas\Report\Views\Import\_Import.css" />
+    <Content Include="Areas\Report\Views\Import\_TouristAttractionService.js" />
+    <Content Include="Areas\Report\Views\Import\_TravelingService.js" />
+    <Content Include="Areas\Report\Views\Import\_VNPTToken.js" />
+    <Content Include="Areas\Report\Views\Report\Generate.js" />
     <Content Include="Contents\Modules\Report\plugins\Import\_Import.css" />
     <Content Include="Areas\Report\Views\Import\_ReportBody.js" />
     <Content Include="Areas\Report\Views\Report\Report.js" />
@@ -177,6 +183,12 @@
     <Content Include="Contents\Modules\Report\plugins\vnpt-ca\download.js" />
     <Content Include="Contents\Modules\Report\plugins\vnpt-ca\vnpt-plugin.js" />
     <Content Include="Contents\Modules\Report\plugins\vnpt-ca\VNPT_Products_Plugin_ky_so_1.0.2.2.exe" />
+    <Content Include="Contents\Modules\Report\Templates\Data_TinhHinhHoatDong_TMDV.xsc">
+      <DependentUpon>Data_TinhHinhHoatDong_TMDV.xsd</DependentUpon>
+    </Content>
+    <Content Include="Contents\Modules\Report\Templates\Data_TinhHinhHoatDong_TMDV.xss">
+      <DependentUpon>Data_TinhHinhHoatDong_TMDV.xsd</DependentUpon>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="ReportViewerWebForm.aspx" />
     <Content Include="SqlServerTypes\x64\SqlServerSpatial110.dll" />
@@ -213,6 +225,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Data_Report_Import.xsd</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Contents\Modules\Report\Templates\Data_TinhHinhHoatDong_SXKD.cs">
+      <DependentUpon>Data_TinhHinhHoatDong_SXKD.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Contents\Modules\Report\Templates\Data_TinhHinhHoatDong_SXKD.Designer.cs">
+      <DependentUpon>Data_TinhHinhHoatDong_SXKD.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Contents\Modules\Report\Templates\Data_TinhHinhHoatDong_TMDV.Designer.cs">
+      <DependentUpon>Data_TinhHinhHoatDong_TMDV.xsd</DependentUpon>
     </Compile>
     <Compile Include="Contents\Modules\Report\Templates\_01UocKetQuaHoatDongKinhDoanh.cs">
       <DependentUpon>_01UocKetQuaHoatDongKinhDoanh.xsd</DependentUpon>
@@ -347,6 +368,49 @@
     <Content Include="Areas\Report\Views\Import\_UploadSignedFile.cshtml" />
     <Content Include="Areas\Report\Views\Import\_UploadBaseFile.cshtml" />
     <Content Include="Areas\Report\Views\Import\_BusinessProductReport.cshtml" />
+    <Content Include="Areas\Report\Views\ExtendInfo\Index.cshtml" />
+    <Content Include="Areas\Report\Views\ExtendInfo\_Add.cshtml" />
+    <Content Include="Areas\Report\Views\ExtendInfo\_Edit.cshtml" />
+    <Content Include="Areas\Report\Views\ExtendInfo\_ExtendInfos.cshtml" />
+    <Content Include="Areas\Report\Views\Import\_AccommodationService.cshtml" />
+    <Content Include="Areas\Report\Views\Import\_AddTradeCatalogProduct.cshtml" />
+    <Content Include="Areas\Report\Views\Import\_ImportExportReport.cshtml" />
+    <Content Include="Areas\Report\Views\Import\_Login.cshtml" />
+    <Content Include="Areas\Report\Views\Import\_LoginSmartCA.cshtml" />
+    <Content Include="Areas\Report\Views\Import\_NoTemplateReport.cshtml" />
+    <Content Include="Areas\Report\Views\Import\_SignToken.cshtml" />
+    <Content Include="Areas\Report\Views\Import\_TouristAttractionService.cshtml" />
+    <Content Include="Areas\Report\Views\Import\_TradingReport.cshtml" />
+    <Content Include="Areas\Report\Views\Import\_TravelingService.cshtml" />
+    <Content Include="Areas\Report\Views\Report\_01HoatDong_XuatKhauHangHoa_DoanhNghiep.cshtml" />
+    <Content Include="Areas\Report\Views\Report\_01TinhHinhHoatDong_SanXuatKinhDoanh_DoanhNghiep.cshtml" />
+    <Content Include="Areas\Report\Views\Report\_02TongHop_TinhHinhHoatDong_SanXuatKinhDoanh.cshtml" />
+    <Content Include="Areas\Report\Views\Report\_03ThuongMaiDichVu_DoanhNghiep.cshtml" />
+    <Content Include="Areas\Report\Views\Report\_04TongHop_ThuongMaiDichVu.cshtml" />
+    <Content Include="Areas\Report\Views\Report\_Search.cshtml" />
+    <Content Include="Areas\Report\Views\Report\_View.cshtml" />
+    <None Include="Contents\Modules\Report\Templates\Data_HoatDong_XuatKhauHangHoa.xsd" />
+    <Content Include="Contents\Modules\Report\Templates\Data_TinhHinhHoatDong_SXKD.xsc">
+      <DependentUpon>Data_TinhHinhHoatDong_SXKD.xsd</DependentUpon>
+    </Content>
+    <None Include="Contents\Modules\Report\Templates\Data_TinhHinhHoatDong_SXKD.xsd" />
+    <Content Include="Contents\Modules\Report\Templates\Data_TinhHinhHoatDong_SXKD.xss">
+      <DependentUpon>Data_TinhHinhHoatDong_SXKD.xsd</DependentUpon>
+    </Content>
+    <Content Include="Contents\Modules\Report\Templates\TemplateImport_LuHanh.xlsx" />
+    <Content Include="Contents\Modules\Report\Templates\TemplateImport_LuuTru.xlsx" />
+    <Content Include="Contents\Modules\Report\Templates\_01HoatDong_XuatKhauHangHoa_DoanhNghiep.rdlc" />
+    <Content Include="Contents\Modules\Report\Templates\_01TinhHinhHoatDong_SanXuatKinhDoanh_DoanhNghiep.rdlc" />
+    <Content Include="Contents\Modules\Report\Templates\_02TongHop_TinhHinhHoatDong_SanXuatKinhDoanh.rdlc" />
+    <Content Include="Contents\Modules\Report\Templates\_03ThuongMaiDichVu_DoanhNghiep.rdlc" />
+    <Content Include="Contents\Modules\Report\Templates\_04TongHop_ThuongMaiDichVu.rdlc" />
+    <None Include="Contents\Modules\Report\Templates\Data_TinhHinhHoatDong_TMDV.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Data_TinhHinhHoatDong_TMDV.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Contents\Modules\Report\Templates\_03BaoCao_SanLuongDien.rdlc" />
+    <Content Include="Contents\Modules\Report\Templates\_03BaoCao_SanLuongDien_Chung.rdlc" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\ReportTourism.ReportModule.pubxml" />
     <None Include="Web.Debug.config">

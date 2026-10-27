@@ -1,5 +1,0 @@
-E:\Projects\BaoCaoSoDuLich\trunk\Source\ReportDeptTourismSolution\CenIT.ReportTourism.Jobs.CalculateReport\bin\Debug\CenIT.ReportTourism.Jobs.CalculateReport.dll
-E:\Projects\BaoCaoSoDuLich\trunk\Source\ReportDeptTourismSolution\CenIT.ReportTourism.Jobs.CalculateReport\bin\Debug\CenIT.ReportTourism.Jobs.CalculateReport.pdb
-E:\Projects\BaoCaoSoDuLich\trunk\Source\ReportDeptTourismSolution\CenIT.ReportTourism.Jobs.CalculateReport\obj\Debug\CenIT.ReportTourism.Jobs.CalculateReport.csprojResolveAssemblyReference.cache
-E:\Projects\BaoCaoSoDuLich\trunk\Source\ReportDeptTourismSolution\CenIT.ReportTourism.Jobs.CalculateReport\obj\Debug\CenIT.ReportTourism.Jobs.CalculateReport.dll
-E:\Projects\BaoCaoSoDuLich\trunk\Source\ReportDeptTourismSolution\CenIT.ReportTourism.Jobs.CalculateReport\obj\Debug\CenIT.ReportTourism.Jobs.CalculateReport.pdb

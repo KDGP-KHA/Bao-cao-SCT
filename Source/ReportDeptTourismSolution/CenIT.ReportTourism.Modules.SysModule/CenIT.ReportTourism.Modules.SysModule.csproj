@@ -143,6 +143,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Sys\Controllers\AppConfigController.cs" />
     <Compile Include="Areas\Sys\Controllers\AppLayoutController.cs" />
+    <Compile Include="Areas\Sys\Controllers\DigitalSignController.cs" />
     <Compile Include="Areas\Sys\Controllers\DownloadController.cs" />
     <Compile Include="Areas\Sys\Controllers\FunctionController.cs" />
     <Compile Include="Areas\Sys\Controllers\HomeController.cs" />
@@ -251,6 +252,10 @@
     <Content Include="Areas\Sys\Views\Job\_TabYear.cshtml" />
     <Content Include="Contents\Modules\Sys\plugins\bootstrap-multiselect\less\bootstrap-multiselect.less" />
     <Content Include="Areas\Sys\Views\SysConfigs\_TestUser.cshtml" />
+    <Content Include="Areas\Sys\Views\DigitalSign\Index.cshtml" />
+    <Content Include="Areas\Sys\Views\DigitalSign\_Login.cshtml" />
+    <Content Include="Areas\Sys\Views\DigitalSign\_LoginSmartCA.cshtml" />
+    <Content Include="Areas\Sys\Views\DigitalSign\_UserInfo.cshtml" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\ReportTourism.SysModule.pubxml" />
     <None Include="Web.Debug.config">
@@ -270,6 +275,10 @@
     <ProjectReference Include="..\CenIT.Libs.VNPTSmartCA\CenIT.Libs.VNPTSmartCA.csproj">
       <Project>{2BEFDA80-7083-4A2A-8092-6F7AE38A5675}</Project>
       <Name>CenIT.Libs.VNPTSmartCA</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CenIT.ReportTourism.Biz\CenIT.ReportTourism.Biz.csproj">
+      <Project>{9717a466-e0fa-4093-9e25-a3199f33c2ba}</Project>
+      <Name>CenIT.ReportTourism.Biz</Name>
     </ProjectReference>
     <ProjectReference Include="..\CenIT.ReportTourism.Caches\CenIT.ReportTourism.Caches.csproj">
       <Project>{44F493FC-AF88-45BB-A5C0-1E23EA5B6C8A}</Project>

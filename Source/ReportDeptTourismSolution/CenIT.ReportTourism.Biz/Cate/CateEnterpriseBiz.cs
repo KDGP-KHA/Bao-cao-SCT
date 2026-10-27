@@ -104,13 +104,13 @@ namespace CenIT.ReportTourism.Biz.Cate
                 model.WardName,
                 //model.TypeBusiness,
                 //model.TypeBusinessName,
-
                 model.IndustryIds,
                 model.TypeBusiness,
                 model.EnterpriseTypeId,
                 model.EconomicSectorId,
                 model.EnterpriseStatusId,
-
+                model.CapacityMWp,
+                model.CapacityMW,
                 model.LegalRepresentationName,
                 model.LegalRepresentationPhone,
                 model.LegalRepresentationEmail,

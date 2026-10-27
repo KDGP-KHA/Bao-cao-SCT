@@ -60,6 +60,7 @@
     <Compile Include="Models\Requests\RequestCredentialModel.cs" />
     <Compile Include="Models\Requests\RequestSignHashSmartCAModel.cs" />
     <Compile Include="Models\Requests\RequestUserInfoModel.cs" />
+    <Compile Include="Models\ResponseMessageModel.cs" />
     <Compile Include="Models\Responses\BaseResponseModel.cs" />
     <Compile Include="Models\Responses\ResponseCredentialModel.cs" />
     <Compile Include="Models\Responses\ResponseTranInfoSmartCARespContentModel.cs" />

@@ -185,10 +185,8 @@ namespace CenIT.ReportTourism.Modules.CateModule.Controllers
                 StreetName = model.StreetName,
                 WardId = model.WardId,
                 WardName = model.WardName,
-
                 //TypeBusiness = model.TypeBusiness,
-                //TypeBusinessName = model.TypeBusinessName,
-                
+                //TypeBusinessName = model.TypeBusinessName,                
                 LegalRepresentationName = model.LegalRepresentationName,
                 LegalRepresentationPhone = model.LegalRepresentationPhone,
                 LegalRepresentationEmail = model.LegalRepresentationEmail,

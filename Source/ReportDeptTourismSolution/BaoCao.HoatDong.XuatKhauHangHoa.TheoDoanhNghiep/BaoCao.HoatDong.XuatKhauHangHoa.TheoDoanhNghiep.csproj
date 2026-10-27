@@ -77,6 +77,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -85,4 +86,3 @@
     <PostBuildEvent>xcopy /Y "$(TargetDir)$(TargetFileName)" "$(SolutionDir)CenIT.ReportTourism.WebApp\Contents\Modules\Report\Reports\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
-

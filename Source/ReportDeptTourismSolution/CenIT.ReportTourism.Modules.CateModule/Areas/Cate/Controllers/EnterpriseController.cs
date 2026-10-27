@@ -219,6 +219,8 @@ namespace CenIT.ReportTourism.Modules.CateModule.Areas.Cate.Controllers
                 EnterpriseTypeId = model.EnterpriseTypeId,
                 EconomicSectorId = model.EconomicSectorId,
                 EnterpriseStatusId = model.EnterpriseStatusId,
+                CapacityMWp = model.CapacityMWp,
+                CapacityMW = model.CapacityMW,
 
                 SavedBy = User.Email
             });
@@ -380,6 +382,8 @@ namespace CenIT.ReportTourism.Modules.CateModule.Areas.Cate.Controllers
                 EnterpriseTypeId = model.EnterpriseTypeId,
                 EconomicSectorId = model.EconomicSectorId,
                 EnterpriseStatusId = model.EnterpriseStatusId,
+                CapacityMWp = model.CapacityMWp,
+                CapacityMW = model.CapacityMW,
 
                 SavedBy = User.Email
             });

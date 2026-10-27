@@ -10,7 +10,7 @@
 
 #pragma warning disable 1591
 
-namespace CenIT.ReportTourism.Modules.ReportModule.Contents.Modules.Report.Templates {
+namespace CenIT.ReportTourism.WebApp.Contents.Modules.Report.Templates {
     
     
     /// <summary>

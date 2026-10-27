@@ -67,6 +67,19 @@
                             @Html.HiddenFor(model => model.TypeBusiness)
                         </div>
                     </div>
+                    @Html.HiddenFor(model => model.IsPowerIndustry)
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            @Html.TitleFor(model => model.CapacityMWp, new { @class = "control-label" })
+                            @Html.TextBoxFor(model => model.CapacityMWp, new { type = "number", step = "0.001", @class = "col-md-12 form-control", placeholder = AppProcessor.Messagor.GetMessage("Enterprise_CapacityMWp") })
+                            @Html.ValidationMessageFor(model => model.CapacityMWp, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TitleFor(model => model.CapacityMW, new { @class = "control-label" })
+                            @Html.TextBoxFor(model => model.CapacityMW, new { type = "number", step = "0.001", @class = "col-md-12 form-control", placeholder = AppProcessor.Messagor.GetMessage("Enterprise_CapacityMW") })
+                            @Html.ValidationMessageFor(model => model.CapacityMW, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <div class="col-md-6">
                             @Html.TitleFor(model => model.MainProductId, new { @class = "control-label" })
@@ -124,10 +137,10 @@
                                         @Html.ValidationMessageFor(model => model.BusinessAddress, "", new { @class = "text-danger" })
                                     </div>
                                     @*<div class="col-md-3">
-                                            @Html.TitleFor(model => model.StreetName, new { @class = "control-label" })
-                                            @Html.TextBoxFor(model => model.StreetName, new { @class = "col-md-12 form-control", placeholder = AppProcessor.Messagor.GetMessage("Enterprise_Label_Street") })
-                                            @Html.ValidationMessageFor(model => model.StreetName, "", new { @class = "text-danger" })
-                                        </div>*@
+                            @Html.TitleFor(model => model.StreetName, new { @class = "control-label" })
+                            @Html.TextBoxFor(model => model.StreetName, new { @class = "col-md-12 form-control", placeholder = AppProcessor.Messagor.GetMessage("Enterprise_Label_Street") })
+                            @Html.ValidationMessageFor(model => model.StreetName, "", new { @class = "text-danger" })
+                        </div>*@
                                 </div>
                             </div>
                         </div>

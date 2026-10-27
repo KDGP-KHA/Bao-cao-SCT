@@ -37,6 +37,13 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cate\Accommodation\CateAccommodationServiceCertificateModel.cs" />
+    <Compile Include="Cate\Accommodation\CateAccommodationServiceHRInformationModel.cs" />
+    <Compile Include="Cate\Accommodation\CateAccommodationServiceInfrastructureModel.cs" />
+    <Compile Include="Cate\Accommodation\CateAccommodationServiceInfrastructureRoomModel.cs" />
+    <Compile Include="Cate\Accommodation\CateAccommodationServiceModel.cs" />
+    <Compile Include="Cate\Accommodation\CateAccommodationServiceTypeServiceModel.cs" />
+    <Compile Include="Cate\CateDistrictModel.cs" />
     <Compile Include="Cate\CateDocModel.cs" />
     <Compile Include="Cate\CateEnterpriseModel.cs" />
     <Compile Include="Cate\CateEnterpriseRegisterNotifyModel.cs" />
@@ -52,6 +59,25 @@
     <Compile Include="Cate\CateEconomicSectorModel.cs" />
     <Compile Include="Cate\CateEnterpriseStatusModel.cs" />
     <Compile Include="Cate\CateEnterpriseTypeModel.cs" />
+    <Compile Include="Cate\ServicesForTourist\CateServicesForTouristCertificateModel.cs" />
+    <Compile Include="Cate\ServicesForTourist\CateServicesForTouristHRInformationModel.cs" />
+    <Compile Include="Cate\ServicesForTourist\CateServicesForTouristInfrastructureModel.cs" />
+    <Compile Include="Cate\ServicesForTourist\CateServicesForTouristModel.cs" />
+    <Compile Include="Cate\TouristAttraction\CateTouristAttractionCertificateModel.cs" />
+    <Compile Include="Cate\TouristAttraction\CateTouristAttractionHRInformationModel.cs" />
+    <Compile Include="Cate\TouristAttraction\CateTouristAttractionInfrastructureModel.cs" />
+    <Compile Include="Cate\TouristAttraction\CateTouristAttractionModel.cs" />
+    <Compile Include="Cate\TouristAttraction\CateTouristAttractionTypeServiceModel.cs" />
+    <Compile Include="Cate\TransportTourists\CateTransportTouristsServiceCertificateModel.cs" />
+    <Compile Include="Cate\TransportTourists\CateTransportTouristsServiceHRInformationModel.cs" />
+    <Compile Include="Cate\TransportTourists\CateTransportTouristsServiceInfrastructureClassTransportModel.cs" />
+    <Compile Include="Cate\TransportTourists\CateTransportTouristsServiceInfrastructureModel.cs" />
+    <Compile Include="Cate\TransportTourists\CateTransportTouristsServiceModel.cs" />
+    <Compile Include="Cate\Traveling\CateTravelingServiceBranchOfficeModel.cs" />
+    <Compile Include="Cate\Traveling\CateTravelingServiceCertificateModel.cs" />
+    <Compile Include="Cate\Traveling\CateTravelingServiceCertificateTravelEscrowModel.cs" />
+    <Compile Include="Cate\Traveling\CateTravelingServiceHRInformationModel.cs" />
+    <Compile Include="Cate\Traveling\CateTravelingServiceModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseModel.cs" />
     <Compile Include="Report\DashboardModel.cs" />
